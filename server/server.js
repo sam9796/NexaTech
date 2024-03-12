@@ -2,6 +2,7 @@ const express=require('express')
 const cors=require('cors')
 const mongoose=require('mongoose')
 const Participant = require("./Model/Register.model.js");
+const User = require("./Model/User.model.js");
 const bcrypt=require('bcryptjs')
 const { v4: uuidv4 } = require('uuid');
 const app=express()
@@ -22,7 +23,7 @@ mongoose
 
 
 app.post('/register',async (req,res)=>{
-    const {firstName,lastName,mail,contact,password,gender}=req.body
+    const {firstName,lastName,mail,contact}=req.body
     try{
 
         const register=await Participant.findOne({email:mail})
@@ -30,17 +31,11 @@ app.post('/register',async (req,res)=>{
             return res.status(500).json({success:false,msg:'this email already exist'});
         }
         else {
-            bcrypt.genSalt(10,async function(err, salt) {
-                bcrypt.hash(password, salt, async function(err, hash) {
-                   if(err)return res.status(200).json({success:true,msg:'Check your mail for email id verification'})
-                   else {
                     const newParticipant=await Participant.create({
                         firstName:firstName,
                         lastName:lastName,
                         email:mail,
                         contact:contact,
-                        gender:gender,
-                        password:hash,
                     })
                     if(newParticipant){
                         const data = {
@@ -54,18 +49,53 @@ app.post('/register',async (req,res)=>{
                     else {
                         return res.status(400).json({success:false,msg:'Unable to register the participant'})
                     }
-                }
-               });
-           });
     }
     }catch(error){
         return res.status(400).json({success:false,msg:'Unable to register the participant'})
     }
 })
+app.post('/userRegister',async(req,res)=>{
+    const {firstName,lastName,mail,password}=req.body
+    try{
+        const register=await User.findOne({email:mail})
+        if(register){
+            return res.status(500).json({success:false,msg:'this email already exist'});
+        }
+        else {
+            bcrypt.genSalt(10,async function(err, salt) {
+                bcrypt.hash(password, salt, async function(err, hash) {
+                   if(err)return res.status(400).json({success:true,msg:'unable to register the user'})
+                   else {
+                    const newParticipant=await User.create({
+                        firstName:firstName,
+                        lastName:lastName,
+                        email:mail,
+                        password:hash,
+                    })
+                    if(newParticipant){
+                        const data = {
+                            user: {
+                              id: mail,
+                            },
+                          };
+                          let authtoken = jwt.sign(data, "Shubham@#$%^Jha#$%^");
+                        return res.status(200).json({success:true,token:authtoken})
+                    }
+                    else {
+                        return res.status(400).json({success:false,msg:'Unable to register the user'})
+                    }
+                }
+               });
+           });
+    }
+    }catch(error){
+        return res.status(400).json({success:false,msg:'Unable to register the user'})
+    }
+})
 
 app.post('/login',async(req,res)=>{
     const {mail,password}=req.body
-    try{const register=await Participant.findOne({email:mail})
+    try{const register=await User.findOne({email:mail})
     if(register){
         bcrypt.compare(password,register.password, (err, isMatch) => { 
             if( err || !isMatch ) { 
@@ -84,7 +114,7 @@ app.post('/login',async(req,res)=>{
 }
 }
     catch(error){
-        return res.json({success:false,msg:'no participant with this email id exist'})
+        return res.json({success:false,msg:'no user with this email id exist'})
     }
 })
 
@@ -107,6 +137,6 @@ app.post('/login',async(req,res)=>{
 //     }
 // })
 
-app.listen(8081,()=>{
-    console.log('server listening on port 8081')
+app.listen(8000,()=>{
+    console.log('server listening on port 8000')
 })

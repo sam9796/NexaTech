@@ -3,17 +3,17 @@ const mongoose = require('mongoose');
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const participantSchema=mongoose.Schema({
-       //firstName of participant
-       firstName:{
-           type:String,
-           required:true
-       },
-       //lastName of participant
-       lastName:{
-           type:String,
-           required:true
-       },
-       //email of the participant
+    //firstName of user
+    firstName:{
+        type:String,
+        required:true
+    },
+    //lastName of user
+    lastName:{
+        type:String,
+        required:true
+    },
+    //email of the user
        email:{
            type:String,
            unique:true,
@@ -25,12 +25,12 @@ const participantSchema=mongoose.Schema({
                  },
            }
        },
-       contact:{
+       password:{
         type:String,
         required:true
        },
 
 })
 
-const Participant = mongoose.model('clients', participantSchema);
-module.exports = Participant;
+const User = mongoose.model('users', participantSchema);
+module.exports = User;
