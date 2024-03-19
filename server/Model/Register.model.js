@@ -16,19 +16,16 @@ const participantSchema=mongoose.Schema({
        //email of the participant
        email:{
            type:String,
-           unique:true,
-           required:true,
-           lowercase:true,
-           validate:{
-               validator: function(email) {
-                   return emailRegex.test(email);
-                 },
-           }
        },
        contact:{
         type:String,
-        required:true
        },
+       verify:{
+        type:Boolean,
+       },
+       otp:{
+        type:String,
+       }
 
 })
 
