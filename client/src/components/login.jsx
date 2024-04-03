@@ -51,12 +51,12 @@ function Login() {
     }
   }
   return (
-    <div className='flex flex-row justify-center h-[100vh] w-5/6 mx-auto'>
-      <div className='bg-[#C6D2ED] w-1/2 rounded-xl flex flex-col justify-center'>
+    <div className='flex flex-wrap-reverse sm:flex-nowrap flex-row justify-center h-[100vh] lg:w-5/6 mx-auto'>
+      <div className='bg-[#C6D2ED] w-5/6 sm:w-1/2 rounded-xl flex flex-col justify-center'>
         <img src={Logo} alt="Not found" className='mx-auto' />
         <div className='text-xl font-bold text-center mt-10'>Welcome User</div>
         <div className='text-md font-bold text-center mt-7'>Login to Nexiara Dashboard</div>
-        <div className='w-1/2 mx-auto mt-5'>
+        <div className='w-5/6 md:w-1/2 mx-auto mt-5'>
         <div >Email Address</div>
         <input type="email" value={user} onChange={(e)=>{setUser(e.target.value)}} className='w-full py-2 px-3 text-md outline-none border border-[#315EFF] rounded-lg placeholder:text-sm' placeholder='Enter your username or email address here'/>
         <div className='mt-2'>Password</div>
@@ -65,12 +65,12 @@ function Login() {
         <div className='w-1/2 mx-auto'>
         <button onClick={()=>{log()}} className='w-full mt-5 py-2 text-xl font-semibold text-white bg-[#315EFF] rounded-lg'>Log In</button>
         </div>
-        <div className='text-sm w-1/2 mx-auto mt-1'>
+        <div className='text-sm mx-3 sm:w-1/2 sm:mx-auto mt-1'>
         This login is only for the Nexiara employees. If you are a student and wish to enroll for Nexiara training program, Please cotact us
         <span className='font-semibold underline ms-1'>here</span>
         </div>
       </div>
-        <img src={c1} className='rounded-xl h-[100vh] w-1/2' alt="" />
+        <img src={c1} className='rounded-xl h-[100vh] sm:w-1/2' alt="" />
       
     </div>
   )

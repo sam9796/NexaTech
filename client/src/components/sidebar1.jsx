@@ -1,12 +1,12 @@
 import React,{useEffect, useState} from 'react'
 import { useNavigate,useLocation } from 'react-router-dom';
 
-function Sidebar() {
+function Sidebar1() {
     const [nav,setNav]=useState([true,false,false,false,false,false,false])
     const locate=useLocation();
     const url=locate.pathname
     useEffect(()=>{
-        if(url=='/event' || url=='/indiEvent'){
+        if(url=='/event1'){
             setNav([false,true,false,false,false,false,false])
         }
     },[])
@@ -20,18 +20,18 @@ function Sidebar() {
     }
     const handleLogout=(e)=>{
         e.preventDefault();
-        localStorage.removeItem('token')
-        navigate('/login')
+        localStorage.removeItem('token1')
+        navigate('/login1')
     }
   return (
     <div className='flex flex-col gap-3 mt-5'>
         <div className='flex gap-9'>
         <div className={`${nav[0]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
-      <div onClick={(e)=>{handleClick(e,'dashboard',0)}} className={`cursor-pointer font-semibold ${nav[0]?'text-white bg-[#315EFF]':''} rounded-lg py-2 px-5`}>Dashboard</div>
+      <div onClick={(e)=>{handleClick(e,'dashboard1',0)}} className={`cursor-pointer font-semibold ${nav[0]?'text-white bg-[#315EFF]':''} rounded-lg py-2 px-5`}>Dashboard</div>
       </div>
       <div className='flex gap-9'>
         <div className={`${nav[1]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
-      <div onClick={(e)=>{handleClick(e,'event',1)}} className={`cursor-pointer font-semibold  ${nav[1]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Events</div>
+      <div onClick={(e)=>{handleClick(e,'event1',1)}} className={`cursor-pointer font-semibold  ${nav[1]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Events</div>
       </div>
       <div className='flex gap-9'>
         <div className={`${nav[2]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
@@ -47,23 +47,9 @@ function Sidebar() {
       </div>
       <div className='flex gap-9'>
         <div className={`${nav[5]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
-      <div className={`cursor-pointer font-semibold  ${nav[5]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Assessment</div>
+      <div className={`cursor-pointer font-semibold  ${nav[5]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Invoices</div>
       </div>
       <hr/>
-      <div className='pl-5 text-[#7398b8] font-medium mt-1'>PAGES</div>
-      <div className='flex gap-9'>
-        <div className={`${nav[5]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
-      <div className={`cursor-pointer font-semibold  ${nav[5]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Product</div>
-      </div>
-      <div className='flex gap-9'>
-        <div className={`${nav[5]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
-      <div className={`cursor-pointer font-semibold  ${nav[5]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Product</div>
-      </div>
-      <div className='flex gap-9'>
-        <div className={`${nav[5]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
-      <div className={`cursor-pointer font-semibold  ${nav[5]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Product</div>
-      </div>
-      <hr />
       <div className='flex gap-9'>
         <div className={`${nav[5]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
       <div className={`cursor-pointer font-semibold  ${nav[5]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Settings</div>
@@ -72,9 +58,8 @@ function Sidebar() {
         <div className={`${nav[5]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
       <div onClick={(e)=>{handleLogout(e)}} className={`cursor-pointer font-semibold  ${nav[5]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Log Out</div>
       </div>
-
     </div>
   )
 }
 
-export default Sidebar
+export default Sidebar1

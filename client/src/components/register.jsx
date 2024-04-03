@@ -1,8 +1,10 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import Logo from '../assets/logo.png' 
 import c1 from '../assets/Rectangle 12.png'
 import {toast } from 'react-toastify';
 import {validate} from 'react-email-validator';
+import { Link,useLocation,useNavigate } from 'react-router-dom';
+
 
 function Register() {
     const [verify1,setVerify1]=useState(false);
@@ -14,6 +16,14 @@ function Register() {
     const [check,setCheck]=useState(false);
     const [otp1,setOtp1]=useState('');
     const [otp2,setOtp2]=useState('');
+    const [event,setEvent]=useState('')
+    const locate=useLocation();
+    const navigate=useNavigate()
+    useEffect(()=>{
+        const queryParams = new URLSearchParams(location.search);
+        const param1 = queryParams.get('event');
+        setEvent(param1)
+    },[])
     const sendOTP=async ()=>{
         if(contact.length==0 || first.length=='0' || second.length=='0'){toast.error('Please enter the correct contact number for verification',{
             closeOnClick:true,
@@ -204,7 +214,9 @@ function Register() {
         })
         const resp1=await resp.json()
         if(resp1.success){
+            localStorage.setItem('token1',resp1.token)
             setFirst('');setSecond('');setMail('');setContact('');setCheck(false);setVerify1(false);setVerify2(false);setOtp1('');setOtp2('')
+            navigate('/dashboard1',{state:{event:event}})
         }
         if(resp1.success){
             toast.success(resp1.msg,{
@@ -222,11 +234,11 @@ function Register() {
         }
     }
   return (
-    <div className='flex flex-row justify-center py-2 w-5/6 mx-auto'>
-      <div className='bg-[#C6D2ED] w-1/2 rounded-xl flex py-2 flex-col justify-center'>
+    <div className='flex flex-wrap-reverse sm:flex-nowrap flex-row justify-center py-2 w-full lg:w-5/6 mx-auto'>
+      <div className='bg-[#C6D2ED] w-5/6 sm:w-1/2 rounded-xl flex py-2 flex-col justify-center'>
         <img src={Logo} alt="Not found" className='mx-auto' />
         <div className='text-md font-bold text-center mt-5'>Register to Enroll Nexiaras Training Program</div>
-        <div className='w-1/2 mx-auto mt-3'>
+        <div className='w-5/6 md:w-1/2 mx-auto mt-3'>
         <div>First Name</div>
         <input type="text" value={first} onChange={(e)=>{setFirst(e.target.value)}} className='w-full py-2 px-3 text-md outline-none border border-[#315EFF] rounded-lg placeholder:text-sm' placeholder='Enter your first name'/>
         <div className='mt-2'>Last Name</div>
@@ -255,8 +267,12 @@ function Register() {
         <div className='w-1/2 mx-auto'>
         <button onClick={()=>register()} className='w-full mt-5 py-2 text-xl font-semibold text-white bg-[#315EFF] rounded-lg'>Register</button>
         </div>
+        <div className='text-sm w-1/2 mx-auto mt-1 text-center'>
+      If already registered
+      <Link to='/login1' className='font-semibold underline ms-1'>Login here</Link>
       </div>
-        <img src={c1} className='rounded-xl h-[100vh] w-1/2' alt="" /> 
+      </div>
+        <img src={c1} className='rounded-xl h-[100vh]  sm:w-1/2' alt="" /> 
     </div>
   )
 }

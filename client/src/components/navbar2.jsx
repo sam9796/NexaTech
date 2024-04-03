@@ -6,22 +6,21 @@ import Bell from '../assets/Icon.png'
 import Flag from '../assets/Flag.png'
 import Man from '../assets/man.png'
 
-function Navbar({visible,setVisible}) {
+function Navbar2({visible,setVisible}) {
     const [user,setUser]=useState('');
     const navigate=useNavigate();
     useEffect(()=>{
         const handle=async ()=>{
-            const resp=await fetch('http://localhost:8000/getData',{
+            const resp=await fetch('http://localhost:8000/getData1',{
                 method:'GET',
                 headers:{
                     'Content-Type':'application/json',
-                    'auth-token':localStorage.getItem('token')
+                    'auth-token':localStorage.getItem('token1')
                 }
             })
             const resp1=await resp.json();
             if(resp1.success){
                 setUser(resp1.user);
-                console.log(user)
             }
             else {
                 toast.error(resp1.msg,{
@@ -29,18 +28,18 @@ function Navbar({visible,setVisible}) {
                     pauseOnHover:true,
                     closeOnClick:true
                 })
-                navigate('/login')
+                navigate('/login1')
             }
         }
-        if(localStorage.getItem('token'))handle();
-        else navigate('/login')
+        if(localStorage.getItem('token1'))handle();
+        else navigate('/login1')
     },[])
   return (
     <div className='flex w-full items-center mt-5 pl-5'>
       <div>
         <img src={Logo} alt="" className='w-1/2'/>
       </div>
-      <div className='flex w-5/6 items-center justify-between px-4 gap-3 md:gap-0 md:px-10'>
+      <div className='flex w-5/6 items-center justify-between gap-3 md:gap-0 md:px-10'>
         <div className='my-auto w-full sm:w-3/4 lg:w-1/3 flex border h-10 border-[#315EFF] bg-[#EEF2FF] rounded-full px-4'>
         <input type="text" className='bg-[#EEF2FF] w-full outline-none border-none py-2' placeholder='Search'/>
         <div className='my-auto'>
@@ -53,7 +52,7 @@ function Navbar({visible,setVisible}) {
 </div>
         </div>
         <div className='flex gap-5 items-center'>
-        <img src={Bell} alt="" className='hidden lg:block'/>
+        <img src={Bell} alt="" className='hidden lg:block' />
         <div className='hidden lg:flex gap-1'>
             <img src={Flag} alt="" className='gap-1'/>
             <select name="lang" id="lang" className='outline-none'>
@@ -63,15 +62,14 @@ function Navbar({visible,setVisible}) {
         </div>
         <div className='hidden lg:flex gap-1'>
         <img src={Man} alt="" />
-        <div>
-            <div className='text-md font-semibold'>{user}</div>
-            <div className='text-xs'>Admin</div>
-        </div>
+            <div className='text-md font-semibold my-auto'>{user}</div>
+        
         </div>
         <div className='block lg:hidden' onClick={()=>{setVisible(!visible)}}>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
 </svg>
+
         </div>
         </div>
       </div>
@@ -79,4 +77,4 @@ function Navbar({visible,setVisible}) {
   )
 }
 
-export default Navbar
+export default Navbar2

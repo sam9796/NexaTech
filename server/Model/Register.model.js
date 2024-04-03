@@ -2,6 +2,23 @@ const mongoose = require('mongoose');
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const eventSchema=mongoose.Schema({
+    eventId:{
+        type:String,
+    },
+    quesId:[String],
+    quesCheck:[Boolean],
+    options: [{
+        finished:{type:Boolean},
+        selected:{type:String},
+    }],
+    finshed:{type:Boolean,
+    default:false},
+    lastDate:{
+        type:Date,
+    }
+})
+
 const participantSchema=mongoose.Schema({
        //firstName of participant
        firstName:{
@@ -23,6 +40,7 @@ const participantSchema=mongoose.Schema({
        verify:{
         type:Boolean,
        },
+       events:[eventSchema],
        otp:{
         type:String,
        }
