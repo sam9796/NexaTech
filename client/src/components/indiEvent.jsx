@@ -425,7 +425,7 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
       </div>
       <p className='mt-5 text-lg'>{event.description}</p>
       <div className='mt-5'></div>
-      <QRCodeCanvas value={`http://localhost:5173/register?event=${event._id}`}/>
+      <QRCodeCanvas value={`http://3.110.223.82:8000/register?event=${event._id}`}/>
       {/* {!(event.finished) && (
         <>
         { stop?(
@@ -434,6 +434,7 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
         (<button onClick={()=>{handleQuiz(event._id,event.date,event.time)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Start Quiz</button>)}</>) } */}
         { (addQues || edit) ? (<div className='mt-5'>
             <select className='outline-none py-2 px-4 rounded-md' name="ques" id="ques" onChange={(e)=>{setType(e.target.value)}}>
+                <option value='none'>None</option>
                 <option value='single'>Single Choice</option>
                 <option value='multiple'>Multiple Choice</option>
                 <option value='dropdown'>Dropdown</option>

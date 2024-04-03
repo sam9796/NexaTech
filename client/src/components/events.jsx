@@ -263,8 +263,8 @@ function events() {
                     {editEvent && (<button onClick={()=>{handleEditEvent()}}className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Edit Event</button>)}
                 </div>
             </div>
-        ):(
-            <>
+        ):(<div>
+            <div className='flex flex-wrap'>
             {events.map((e1)=>{
                 return (
                     <div className="bg-white responsive-cell-block wk-desk-3 wk-ipadp-3 wk-tab-6 wk-mobile-12 card-container rounded-xl">
@@ -294,8 +294,9 @@ function events() {
                   </div>
                 )
             })}
+            </div>
             <button onClick={()=>{setCreateEvent(true)}} className='px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Create Event</button>
-            </>)
+            </div>)
         }
         </div>
         <div className={`border-2 mx-auto text-center  p-0 ${visible?'hidden':'block'} absolute px-5 rounded-lg bg-white right-0 lg:hidden`}>

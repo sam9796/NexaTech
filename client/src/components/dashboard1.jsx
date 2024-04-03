@@ -191,6 +191,7 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
       <Sidebar1/>
       </div>
       <div className='w-full rounded-md bg-[#CCEFFF] lg:mr-3 py-5'>
+        <div className='flex flex-wrap'>
       {events.map((e1,ind)=>{
                 return (
                     <div className="bg-white responsive-cell-block wk-desk-3 wk-ipadp-3 wk-tab-6 wk-mobile-12 card-container rounded-xl">
@@ -224,6 +225,7 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
                   </div>
                 )
             })}
+            </div>
       </div>
       <div className={`mx-auto text-center  p-0 ${visible?'hidden':'block'} absolute px-5 rounded-lg bg-white right-0 lg:hidden`}>
       <div className='flex flex-col gap-5 items-center my-2'>

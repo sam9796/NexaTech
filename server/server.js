@@ -289,7 +289,8 @@ app.post('/saveEvent',fetchuser,async (req,res)=>{
 
 app.get('/getEvents',fetchuser,async (req,res)=>{
     const user=req.user.id;
-    let events=await Event.findOne({user:user});
+    let events=await Event.find({user:user});
+    console.log(events)
     if(!events){
         return res.json({success:false})
     }
