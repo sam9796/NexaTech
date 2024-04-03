@@ -259,7 +259,7 @@ function Quiz() {
         handle();
         mqttClient.on('connect', () => {
           })
-          mqttClient.subscribe(`shubham_j@ee.iitr.ac.in/state`);
+          mqttClient.subscribe(`${locate.state.user}/state`);
    mqttClient.on('message', (topic, message) => {
        switch (topic) {
            case `${locate.state.user}/state`:                                                           

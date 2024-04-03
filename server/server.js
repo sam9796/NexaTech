@@ -16,6 +16,7 @@ const Question=require('./Model/Question.model.js')
 const Razorpay=require('razorpay');
 const Payment= require("./Model/Payment.model.js");
 const crypto=require('crypto')
+const path=require('path')
 require("dotenv").config();
 
 app.use(cors());
@@ -23,6 +24,42 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 const accountSid = 'AC5dc360f574765ae0cbe3d52d93e7e60d';
 const authToken = '71a7d9fd6df8380ae1ec8b109bd2d8e8';
+const buildPath = path.join(__dirname, "../client/dist"); 
+
+//serving the static files which is our build here and specifying all the paths here where are there on the website
+
+// app.use(express.static(buildPath));
+// app.get('/login1', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/login', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/dashboard', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/dashboard1', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/event', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/indiEvent', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/result', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/enroll', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/register', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/quiz', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+
 mongoose
   .connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
@@ -369,7 +406,8 @@ app.post('/postQues',fetchuser,async (req,res)=>{
         k2.push({eventId:eventId,quesId:[id]})
     }
     await Participant.findOneAndUpdate({email:user},{events:k2})
-    return res.json({success:true,ques:k3})
+    if(k3.length==0)return res.json({success:true,ques:[id]})
+    else return res.json({success:true,ques:k3})
 })
 app.post('/getQues1',fetchuser,async (req,res)=>{
     const {quesId}=req.body;

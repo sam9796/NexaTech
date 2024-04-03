@@ -31,7 +31,7 @@ function IndiOpt(params){
                let m = parseInt(JSON.parse(message.toString()).val);   
                opt+=m;
                setOpt(opt);
-               val[ind]=opt/2;
+               val[ind]=opt;
                setVal(val);
                break;
            default:
