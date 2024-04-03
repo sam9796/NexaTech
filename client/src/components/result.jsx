@@ -59,7 +59,7 @@ function IndiQues(params){
             setVal(k1);
         }
         const getQues=async ()=>{
-            const resp1=await fetch('http://localhost:8000/getPart',{
+            const resp1=await fetch('http://3.110.223.82:8000/getPart',{
                 method:'POST',   
                 headers:{
                     'Content-Type':'application/json',
@@ -96,7 +96,7 @@ function IndiQues(params){
         if(q1.type=='multiple')v1=val;
         else if(q1.type=='single')v1=check1;
         else v1=val1;
-        const resp=await fetch('http://localhost:8000/checkques',{
+        const resp=await fetch('http://3.110.223.82:8000/checkques',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -173,7 +173,7 @@ function Result() {
     const [id,setId]=useState('')
     const locate=useLocation();
     const navigate=useNavigate()
-    const postQues=async (id)=>{const resp1=await fetch('http://localhost:8000/postQues',{
+    const postQues=async (id)=>{const resp1=await fetch('http://3.110.223.82:8000/postQues',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -185,7 +185,7 @@ function Result() {
        if(resp2.success){
         let k5=[];
         for(let i=0;i<resp2.ques.length;++i){
-            const res1=await fetch('http://localhost:8000/getQues1',{
+            const res1=await fetch('http://3.110.223.82:8000/getQues1',{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',
@@ -201,7 +201,7 @@ function Result() {
         setQues(k5);
        }
     }
-    const getAllQues=async()=>{const res=await fetch('http://localhost:8000/getAllQues',{
+    const getAllQues=async()=>{const res=await fetch('http://3.110.223.82:8000/getAllQues',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
@@ -217,7 +217,7 @@ function Result() {
     }
     }
     const getDate = async()=>{
-      const resp=await fetch('http://localhost:8000/getDate',{
+      const resp=await fetch('http://3.110.223.82:8000/getDate',{
         method:'POST',
         headers:{
           'auth-token':localStorage.getItem('token1'),
@@ -235,7 +235,7 @@ function Result() {
       }
     } 
     const handle=async ()=>{
-      const resp=await fetch('http://localhost:8000/getData1',{
+      const resp=await fetch('http://3.110.223.82:8000/getData1',{
           method:'GET',
           headers:{
               'Content-Type':'application/json',

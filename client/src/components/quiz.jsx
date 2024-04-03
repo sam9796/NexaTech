@@ -68,7 +68,7 @@ function IndiQues(params){
             setVal(k1);
         }
         const getQues=async ()=>{
-            const resp1=await fetch('http://localhost:8000/getPart',{
+            const resp1=await fetch('http://3.110.223.82:8000/getPart',{
                 method:'POST',   
                 headers:{
                     'Content-Type':'application/json',
@@ -105,7 +105,7 @@ function IndiQues(params){
         if(q1.type=='multiple')v1=val;
         else if(q1.type=='single')v1=check1;
         else v1=val1;
-        const resp=await fetch('http://localhost:8000/checkques',{
+        const resp=await fetch('http://3.110.223.82:8000/checkques',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -184,7 +184,7 @@ function Quiz() {
     const navigate=useNavigate()
 
     const handleClick=async ()=>{
-        const resp1=await fetch('http://localhost:8000/checkQues1',{
+        const resp1=await fetch('http://3.110.223.82:8000/checkQues1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -204,7 +204,7 @@ function Quiz() {
             })
         }
     }
-    const postQues=async (m)=>{const resp1=await fetch('http://localhost:8000/postQues',{
+    const postQues=async (m)=>{const resp1=await fetch('http://3.110.223.82:8000/postQues',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -216,7 +216,7 @@ function Quiz() {
        if(resp2.success){
         let k5=[];
         for(let i=0;i<resp2.ques.length;++i){
-            const res1=await fetch('http://localhost:8000/getQues1',{
+            const res1=await fetch('http://3.110.223.82:8000/getQues1',{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',
@@ -233,7 +233,7 @@ function Quiz() {
        }
     }
     const handle=async ()=>{
-        const resp=await fetch('http://localhost:8000/getData1',{
+        const resp=await fetch('http://3.110.223.82:8000/getData1',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
