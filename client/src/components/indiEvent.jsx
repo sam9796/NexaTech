@@ -446,7 +446,7 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
                 <option value='single'>Single Choice</option>
                 <option value='multiple'>Multiple Choice</option>
                 <option value='dropdown'>Dropdown</option>
-                <option value='short'>Descriptive</option>
+                <option value='descriptive'>Descriptive</option>
             </select>
             <div className='text-lg font-medium mt-3'>Write Question</div>
             <textarea type="text" value={desc} onChange={(e)=>{setDesc(e.target.value)}} rows-4 className='outline-none border-none py-2 rounded-md px-2 w-full' ></textarea>
