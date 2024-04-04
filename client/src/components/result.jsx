@@ -11,12 +11,7 @@ function IndiOpt(params){
     
     return (
         <>
-        <input type="radio" name='options' checked={ind==check}  value={`${ind}`} disabled={submit} onChange={(e)=>{
-            handlePublish(id,check,-1)
-            setCheck(ind)
-            handlePublish(id,ind,1); }}  className='mr-2'/>
-        <label htmlFor="option">{v1}</label>
-        <br />
+        
         </>
     )
 }
@@ -30,13 +25,7 @@ function IndiOpt1(params){
     },[checked])
     return (
         <>
-        <input type="checkbox" value={`${ind}`} checked={submit?val[ind]:checked} disabled={submit} onChange={(e)=>{
-            let k1=val;
-            k1[ind]=e.target.checked;
-            setVal(k1)
-            setChecked(e.target.checked)
-            if(e.target.checked)handlePublish(id,ind,1)
-            else handlePublish(id,ind,-1); }} className='mr-2'/>
+        <input type="checkbox" value={`${ind}`} checked={submit?val[ind]:checked} disabled={submit}  className='mr-2'/>
         <label htmlFor="option">{v1}</label>
         <br />
         </>
@@ -44,12 +33,35 @@ function IndiOpt1(params){
 }
 
 function IndiQues(params){
-    const {q1,ind1,eventId}=params
+    const {sz,q1,ind1,eventId,val2,setVal2}=params
     const [check1,setCheck1]=useState(-1);
     const [val,setVal]=useState([]);
     const [val1,setVal1]=useState('')
     const [submit,setSubmit]=useState(false)
     const [check,setCheck]=useState(false)
+    const [big,setBig]=useState(0);
+
+    const handle=()=>{
+      if(ind1==3 || ind1==5 || ind1==11 || ind1==13){
+        val2[0]+=(3-check1);
+      }else if(ind1==0 || ind1==7 || ind1==10 || ind1==12){
+        val2[1]+=(3-check1);
+      }
+      else if(ind1==1 || ind1==6 || ind1==8 || ind1==15){
+        val2[2]+=(3-check1);
+      }
+      else {
+        val2[3]+=(3-check1);
+      }
+      setVal2(val2);
+      console.log(val2)
+    }
+    useEffect(()=>{
+      if(sz==(ind1+1)){let v1=val2;
+      v1.sort();
+      v1.reverse();
+      setBig(v1[0]);}
+    },[val2])
     useEffect(()=>{
         let k1=[]
         if(q1.type=='multiple'){
@@ -59,7 +71,7 @@ function IndiQues(params){
             setVal(k1);
         }
         const getQues=async ()=>{
-            const resp1=await fetch('http://3.110.223.82:8000/getPart',{
+            const resp1=await fetch('http://localhost:8000/getPart',{
                 method:'POST',   
                 headers:{
                     'Content-Type':'application/json',
@@ -87,29 +99,8 @@ function IndiQues(params){
             }
         }
         getQues();
+        handle();
     },[])
-    const handlePublish=(id,ind,inc)=>{
-        mqttClient.publish(`${id}/${ind}`,JSON.stringify({val:inc}))
-    }
-    const handleSubmit=async ()=>{
-        let v1;
-        if(q1.type=='multiple')v1=val;
-        else if(q1.type=='single')v1=check1;
-        else v1=val1;
-        const resp=await fetch('http://3.110.223.82:8000/checkques',{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json',
-                'auth-token':localStorage.getItem('token1')
-            },
-            body:JSON.stringify({ques:q1,resp:v1})
-        })
-        const resp1=await resp.json();
-        if(resp1.success){
-                setSubmit(true);
-                if(resp1.check)setCheck(true);
-        }
-    }
     return (
         <div className='my-5 mx-10'>
     <div className='mt-4'>Q{ind1+1}</div>
@@ -121,7 +112,10 @@ function IndiQues(params){
     { q1.type=='single' && q1.options.map((v1,ind)=>
     {
         return (
-            <IndiOpt id={q1._id} v1={v1} ind={ind} check={check1} submit={submit} setCheck={setCheck1}/>
+          <>
+             <input type="radio" name={q1._id} checked={ind==check1} disabled={submit}  className='mr-2'/>
+        <label htmlFor="option">{v1}</label>
+        <br /></>
         )
     })
     }
@@ -144,7 +138,7 @@ function IndiQues(params){
     )
     }
     {q1.type=='descriptive'  && (<input value={val1} disabled={submit} onChange={(e)=>{setVal1(e.target.value)}} className='p-2 mx-1 rounded-md bg-white'/>)}
-    {submit && 
+    {q1.eventId!='660e9851132c16d83a65f910' && submit && 
         (check?(
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -158,7 +152,119 @@ function IndiQues(params){
         ))
         
     }
-    {!submit && <button onClick={()=>{handleSubmit()}} className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>POST</button>}
+    {eventId=='660e9851132c16d83a65f910' && (sz==(ind1+1)) && <div className='flex flex-wrap gap-2'>
+       {big==val2[0] && <div>
+          <div className='text-3xl font-semibold mx-2'>Authoritative</div>
+          <table className='mx-2 w-full sm:w-3/4 md:w-1/2'>
+            <tr>
+              <th className='border-2 border-black'>Strengths</th>
+              <th className='border-2 border-black'>Weaknesses</th>
+            </tr>
+            <tr>
+              <td className='border-2 border-black'>Group members know
+exactly where they stand.</td>
+<td className='border-2 border-black'>Unlikely to win full
+commitment from all group
+members.</td>
+            </tr>
+            <tr>
+              <td className='border-2 border-black'>Decisions can be taken
+rapidly, which is great in a
+crisis.</td>
+<td className='border-2 border-black'>Can lead to un-informed
+and shallow decisions.</td>
+            </tr>
+            <tr>
+              <td className='border-2 border-black'>Members can concentrate
+on 'operational' tasks,
+without having to worry
+about 'strategic' issues.</td>
+<td className='border-2 border-black'>Does not allow members
+any space to develop.</td>
+            </tr>
+          </table>
+        </div>}
+        {big==val2[1] && <div>
+          <div className='text-3xl font-semibold mx-2'>Democratic</div>
+          <table className='mx-2  w-full sm:w-3/4 md:w-1/2'>
+            <tr>
+              <th className='border-2 border-black'>Strengths</th>
+              <th className='border-2 border-black'>Weaknesses</th>
+            </tr>
+            <tr>
+              <td className='border-2 border-black'>Gives power to group
+members</td>
+<td className='border-2 border-black'>May slow down tasks,
+encouraging talk not action</td>
+            </tr>
+            <tr>
+              <td className='border-2 border-black'>Energises and motivates
+group members to achieve
+their tasks</td>
+<td className='border-2 border-black'>Can frustrate members
+who like clear direction</td>
+            </tr>
+            <tr>
+              <td className='border-2 border-black'>Builds individual
+responsibility amongst
+members.</td>
+<td className='border-2 border-black'>The most popular decisions
+are not always the best</td>
+            </tr>
+          </table>
+          </div>}
+          {big==val2[2] && <div>
+            <div className='text-3xl font-semibold mx-2'>Facilitative</div>
+          <table className='mx-2 sm:mx-2 w-full sm:w-3/4 md:w-1/2'>
+            <tr>
+              <th className='border-2 border-black'>Strengths</th>
+              <th className='border-2 border-black'>Weaknesses</th>
+            </tr>
+            <tr>
+              <td className='border-2 border-black'>Gives plenty of space for
+creative ideas to emerge
+and be explored</td>
+<td className='border-2 border-black'>Can allow the group to
+become aimless and chaotic</td>
+            </tr>
+            <tr>
+              <td className='border-2 border-black'>Enables individual learning</td>
+<td className='border-2 border-black'>The leadership 'gap' can
+get filled by other people,
+who have to operate as
+'informal' leaders</td>
+            </tr>
+            <tr>
+              <td className='border-2 border-black'>Can be empowering in the
+right circumstances</td>
+<td className='border-2 border-black'></td>
+            </tr>
+          </table>
+          </div>}
+          {big==val2[3] && <div>
+            <div className='text-3xl font-semibold mx-2'>Situational</div>
+          <table className='mx-2  w-full sm:w-3/4 md:w-1/2'>
+            <tr>
+              <th className='border-2 border-black'>Strengths</th>
+              <th className='border-2 border-black'>Weaknesses</th>
+            </tr>
+            <tr>
+              <td className='border-2 border-black'>Allows groups to change
+over the time.</td>
+<td className='border-2 border-black'>Difficult to carry off
+effectively - group
+members never know what
+to expect, and may resist
+changes in style.</td>
+            </tr>
+            <tr>
+              <td className='border-2 border-black'>Adapts to urgent and non-
+urgent situations.</td>
+<td className='border-2 border-black'></td>
+            </tr>
+          </table>
+          </div>}
+      </div>}
     </div>
     )
 }
@@ -170,10 +276,12 @@ function Result() {
     const [submit,setSubmit]=useState(false)
     const [visible,setVisible]=useState(true);
     const [visible1,setVisible1]=useState(false)
+    const [val2,setVal2]=useState([0,0,0,0])
     const [id,setId]=useState('')
+    const [sz,setSz]=useState(0)
     const locate=useLocation();
     const navigate=useNavigate()
-    const postQues=async (id)=>{const resp1=await fetch('http://3.110.223.82:8000/postQues',{
+    const postQues=async (id)=>{const resp1=await fetch('http://localhost:8000/postQues',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -185,7 +293,7 @@ function Result() {
        if(resp2.success){
         let k5=[];
         for(let i=0;i<resp2.ques.length;++i){
-            const res1=await fetch('http://3.110.223.82:8000/getQues1',{
+            const res1=await fetch('http://localhost:8000/getQues1',{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',
@@ -201,7 +309,7 @@ function Result() {
         setQues(k5);
        }
     }
-    const getAllQues=async()=>{const res=await fetch('http://3.110.223.82:8000/getAllQues',{
+    const getAllQues=async()=>{const res=await fetch('http://localhost:8000/getAllQues',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
@@ -211,13 +319,15 @@ function Result() {
      })
     const res1=await res.json();
     if(res1.success){
+      setSz(res1.ques.length)
       for(let i=0;i<res1.ques.length;++i){
         postQues(res1.ques[i]._id);
+        
       }
     }
     }
     const getDate = async()=>{
-      const resp=await fetch('http://3.110.223.82:8000/getDate',{
+      const resp=await fetch('http://localhost:8000/getDate',{
         method:'POST',
         headers:{
           'auth-token':localStorage.getItem('token1'),
@@ -235,7 +345,7 @@ function Result() {
       }
     } 
     const handle=async ()=>{
-      const resp=await fetch('http://3.110.223.82:8000/getData1',{
+      const resp=await fetch('http://localhost:8000/getData1',{
           method:'GET',
           headers:{
               'Content-Type':'application/json',
@@ -273,7 +383,7 @@ function Result() {
       <div className='w-full rounded-md bg-[#CCEFFF]'>
       {ques.map((q1,ind1)=>{
         
-        return (  <IndiQues q1={q1} ind1={ind1} eventId={locate.state.eventId}/> )
+        return (  <IndiQues q1={q1} sz={sz} ind1={ind1} eventId={locate.state.eventId} val2={val2} setVal2={setVal2}/> )
         })}
         {visible && <button onClick={()=>{handleNavigate()}}  className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Enroll</button>}
       </div>

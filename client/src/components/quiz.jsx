@@ -18,7 +18,7 @@ function IndiOpt(params){
     }
     return (
         <>
-        <input type="radio" name='options' checked={ind==check}  value={`${ind}`} disabled={submit} onChange={(e)=>{
+        <input type="radio" name={id} checked={ind==check}  value={`${ind}`} disabled={submit} onChange={(e)=>{
             handlePublish(id,check,-1)
             setCheck(ind)
             handlePublish(id,ind,1); }}  className='mr-2'/>
@@ -68,7 +68,7 @@ function IndiQues(params){
             setVal(k1);
         }
         const getQues=async ()=>{
-            const resp1=await fetch('http://3.110.223.82:8000/getPart',{
+            const resp1=await fetch('http://localhost:8000/getPart',{
                 method:'POST',   
                 headers:{
                     'Content-Type':'application/json',
@@ -105,7 +105,7 @@ function IndiQues(params){
         if(q1.type=='multiple')v1=val;
         else if(q1.type=='single')v1=check1;
         else v1=val1;
-        const resp=await fetch('http://3.110.223.82:8000/checkques',{
+        const resp=await fetch('http://localhost:8000/checkques',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -153,7 +153,7 @@ function IndiQues(params){
     )
     }
     {q1.type=='descriptive'  && (<input value={val1} disabled={submit} onChange={(e)=>{setVal1(e.target.value)}} className='p-2 mx-1 rounded-md bg-white'/>)}
-    {submit && 
+    {q1.eventId!='660e9851132c16d83a65f910' && submit && 
         (check?(
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -182,9 +182,15 @@ function Quiz() {
     const [visible,setVisible]=useState(false);
     const locate=useLocation();
     const navigate=useNavigate()
-
+    useEffect(() => {
+        // Prompt confirmation when reload page is triggered
+        window.onbeforeunload = () => { return "" };
+            
+        // Unmount the window.onbeforeunload event
+        return () => { window.onbeforeunload = null };
+    }, []);
     const handleClick=async ()=>{
-        const resp1=await fetch('http://3.110.223.82:8000/checkQues1',{
+        const resp1=await fetch('http://localhost:8000/checkQues1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -204,7 +210,7 @@ function Quiz() {
             })
         }
     }
-    const postQues=async (m)=>{const resp1=await fetch('http://3.110.223.82:8000/postQues',{
+    const postQues=async (m)=>{const resp1=await fetch('http://localhost:8000/postQues',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -216,7 +222,7 @@ function Quiz() {
        if(resp2.success){
         let k5=[];
         for(let i=0;i<resp2.ques.length;++i){
-            const res1=await fetch('http://3.110.223.82:8000/getQues1',{
+            const res1=await fetch('http://localhost:8000/getQues1',{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',
@@ -233,7 +239,7 @@ function Quiz() {
        }
     }
     const handle=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getData1',{
+        const resp=await fetch('http://localhost:8000/getData1',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',

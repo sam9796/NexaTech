@@ -42,7 +42,7 @@ function IndiOpt(params){
         setOpt(val[ind]);
     },[opt])
     return (<div className='flex gap-2'><div className='my-2 p-2 mx-1 rounded-md bg-white'>{ind+1+'. '}{v1}</div>
-    <div className='my-auto'>{def?(def):(opt)}</div>
+    <div className='my-auto'>{def?(def):(opt/2)}</div>
     </div>)
 }
 
@@ -60,7 +60,11 @@ function IndiQues(params){
         setSubmit(true);
     }
     const handleGraph=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getGraph',{
+        for(let i=0;i<val.length;++i){
+            val[i]/=2;
+            setVal(val);
+        }
+        const resp=await fetch('http://localhost:8000/getGraph',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -70,11 +74,15 @@ function IndiQues(params){
         })
         const resp1=await resp.json();
         if(resp1.success){
-
+            toast.success('Result saved successfully',{
+                autoClose:4000,
+                pauseOnHover:true,
+                closeOnClick:true
+            })
         }
     }
     const handleDelete=async (id)=>{
-        const resp=await fetch('http://3.110.223.82:8000/deleteQues',{
+        const resp=await fetch('http://localhost:8000/deleteQues',{
             method:'DELETE',
             headers:{
                 'Content-Type':'application/json',
@@ -176,7 +184,7 @@ function IndiEvent() {
     const [id1,setId1]=useState('')
     const navigate=useNavigate();
     const getAll=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getAllQues',{
+        const resp=await fetch('http://localhost:8000/getAllQues',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -221,7 +229,7 @@ function IndiEvent() {
             });
             return;
         }
-        const resp=await fetch('http://3.110.223.82:8000/addQues',{
+        const resp=await fetch('http://localhost:8000/addQues',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -265,7 +273,7 @@ function IndiEvent() {
             });
             return;
         }
-        const resp=await fetch('http://3.110.223.82:8000/editQues',{
+        const resp=await fetch('http://localhost:8000/editQues',{
             method:'PATCH',
             headers:{
                 'Content-Type':'application/json',
@@ -336,7 +344,7 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
     setStop(true);
     }
     const handlePost=async (eventId)=>{
-        const resp=await fetch('http://3.110.223.82:8000/postQues',{
+        const resp=await fetch('http://localhost:8000/postQues',{
             method:'POST',
             headers:{
                 'auth-token':localStorage.getItem('token'),
@@ -363,7 +371,7 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
         }
     }
     const handleStop=async(id)=>{
-        const resp=await fetch('http://3.110.223.82:8000/editStop',{
+        const resp=await fetch('http://localhost:8000/editStop',{
             method:'PATCH',
             headers:{
                 'Content-Type':'application/json',
@@ -390,7 +398,7 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
         await getAll();
     }
     const handle=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getData2',{
+        const resp=await fetch('http://localhost:8000/getData2',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -425,7 +433,7 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
       </div>
       <p className='mt-5 text-lg'>{event.description}</p>
       <div className='mt-5'></div>
-      <QRCodeCanvas value={`http://3.110.223.82:8000/register?event=${event._id}`}/>
+      <QRCodeCanvas value={`http://localhost:8000/register?event=${event._id}`}/>
       {/* {!(event.finished) && (
         <>
         { stop?(
