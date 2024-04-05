@@ -89,8 +89,8 @@ await client.messages
         to: `+91${contact}`
     })
     .then(async (message)=>{
-       if(!l1)await Participant.create({firstName:firstName,lastName:lastName,contact:contact,verify:false,otp:otp});
-       else await Participant.findOneAndUpdate({contact:contact},{otp:otp});
+       if(!l1)await Participant.create({firstName:firstName,lastName:lastName,contact:contact,verify:false,otp:' '});
+       else await Participant.findOneAndUpdate({contact:contact},{otp:' '});
        return res.json({success:true,msg:'SMS sent successfully'})
     })
     .catch(error=>{
