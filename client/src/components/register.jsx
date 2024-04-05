@@ -103,14 +103,14 @@ function Register() {
         });
         return;
     }
-    else if(!verify1){
-        toast.error('Please verify contact first',{
-            closeOnClick:true,
-            autoClose:4000,
-            pauseOnHover:true,
-        })
-        return;
-    }
+    // else if(!verify1){
+    //     toast.error('Please verify contact first',{
+    //         closeOnClick:true,
+    //         autoClose:4000,
+    //         pauseOnHover:true,
+    //     })
+    //     return;
+    // }
     const resp=await fetch('http://3.110.223.82:8000/verifyMail',{
         method:'POST',
         headers:{
