@@ -89,7 +89,7 @@ app.post('/verifyContact',async (req,res)=>{
 //         to: `+91${contact}`
 //     })
 //     .then(async (message)=>{
-       await Participant.create({firstName:firstName,lastName:lastName,contact:contact,verify:false,otp:' '});
+       await Participant.create({firstName:firstName,lastName:lastName,contact:contact,email:'',verify:false,otp:' '});
        return res.json({success:true,msg:'SMS sent successfully'})
     // })
     // .catch(error=>{
