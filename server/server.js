@@ -82,20 +82,20 @@ app.post('/verifyContact',async (req,res)=>{
  }
 const client = require('twilio')(accountSid, authToken);
 const otp=otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
-await client.messages
-    .create({
-        body: `Here is your Nexiara Verification code ${otp}`,
-        from: '+17867444554',
-        to: `+91${contact}`
-    })
-    .then(async (message)=>{
+// await client.messages
+//     .create({
+//         body: `Here is your Nexiara Verification code ${otp}`,
+//         from: '+17867444554',
+//         to: `+91${contact}`
+//     })
+//     .then(async (message)=>{
        if(!l1)await Participant.create({firstName:firstName,lastName:lastName,contact:contact,verify:false,otp:' '});
        else await Participant.findOneAndUpdate({contact:contact},{otp:' '});
        return res.json({success:true,msg:'SMS sent successfully'})
-    })
-    .catch(error=>{
-        return res.json({success:false,msg:'Unable to send the SMS'})
-    });
+    // })
+    // .catch(error=>{
+    //     return res.json({success:false,msg:'Unable to send the SMS'})
+    // });
 })  
 app.post('/verifyContact1',async (req,res)=>{
     const {otp,contact}=req.body;
