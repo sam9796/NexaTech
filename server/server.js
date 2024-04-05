@@ -76,12 +76,12 @@ mongoose
 
 app.post('/verifyContact',async (req,res)=>{
  const {firstName,lastName,contact}=req.body;
- const l1=await Participant.findOne({contact:contact})
- if(l1 && l1.verify){
-    return res.json({success:false,msg:'Contact already in use'})
- }
-const client = require('twilio')(accountSid, authToken);
-const otp=otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
+//  const l1=await Participant.findOne({contact:contact})
+//  if(l1 && l1.verify){
+//     return res.json({success:false,msg:'Contact already in use'})
+//  }
+// const client = require('twilio')(accountSid, authToken);
+// const otp=otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
 // await client.messages
 //     .create({
 //         body: `Here is your Nexiara Verification code ${otp}`,
@@ -89,8 +89,7 @@ const otp=otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: fa
 //         to: `+91${contact}`
 //     })
 //     .then(async (message)=>{
-       if(!l1)await Participant.create({firstName:firstName,lastName:lastName,contact:contact,verify:false,otp:' '});
-       else await Participant.findOneAndUpdate({contact:contact},{otp:' '});
+       await Participant.create({firstName:firstName,lastName:lastName,contact:contact,verify:false,otp:' '});
        return res.json({success:true,msg:'SMS sent successfully'})
     // })
     // .catch(error=>{
