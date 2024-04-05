@@ -176,14 +176,14 @@ function Register() {
         }
     }
     const register=async ()=>{
-        if(!verify1){
-            toast.error('Please verfiy contact first',{
-                closeOnClick:true,
-            autoClose:4000,
-            pauseOnHover:true,
-            })
-            return;
-        }
+        // if(!verify1){
+        //     toast.error('Please verfiy contact first',{
+        //         closeOnClick:true,
+        //     autoClose:4000,
+        //     pauseOnHover:true,
+        //     })
+        //     return;
+        // }
         if(!verify2){
             toast.error('Please verfiy contact first',{
                 closeOnClick:true,
