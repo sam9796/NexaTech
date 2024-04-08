@@ -30,24 +30,135 @@ function IndiOpt(params){
            case `${id}/${ind}`:                                                         
                let m = parseInt(JSON.parse(message.toString()).val);   
                opt+=m;
-               setOpt(opt);
+               setOpt(opt)
                val[ind]=opt;
                setVal(val);
                break;
            default:
        }
    });
+   
     },[])
-    useEffect(()=>{
-        setOpt(val[ind]);
-    },[opt])
-    return (<div className='flex gap-2'><div className='my-2 p-2 mx-1 rounded-md bg-white'>{ind+1+'. '}{v1}</div>
-    <div className='my-auto'>{def?(def):(opt/2)}</div>
+    return (<div className='flex gap-2'><div className='my-2 p-2 mx-1 rounded-md bg-white'>{v1}</div>
+    <div className='my-auto'>{def?(def):(opt)}</div>
     </div>)
 }
 
+function IndiOpt3(params){
+    const {q1}=params;
+    const [horz,setHorz]=useState([]);
+    const [vert,setVert]=useState([]);
+    const handle=()=>{
+        let p1=q1.options;
+        let p3=false;
+        let p4=[];
+        let p5=[];
+        for(let i=0;i<p1.length;++i){
+            let p2=p1[i].split(':');
+            if(p2.length>1){
+                p4.push(p2[0]);
+                p5.push(p2[1]);
+                p3=true;
+            }
+            else{
+                if(p3)p5.push(p1[i]);
+                else p4.push(p1[i]);
+            }
+        }
+        setHorz(p4);
+        setVert(p5);
+    }
+    useEffect(()=>{
+        handle();
+    },[])
+    return (
+        <>
+        <table>
+            <tr>
+                <th></th>
+                {
+                    horz.map((q3)=>{
+                        return (
+                            <th className='px-1'>{q3}</th>
+                        )
+                    })
+                }
+            </tr>
+            {vert.map((q3,ind)=>{
+                return (
+                    <tr>
+                        <th>{q3}</th>
+                        {horz.map((q2,ind1)=>{
+                            return (
+                                <th className='px-1'>
+                                    {q1.count.length?q1.count[(horz.length)*ind+ind1]:0}
+                                </th>
+                            )
+                        })}
+                    </tr>
+                )
+            })}
+        </table>
+        </>
+    )
+}
+function IndiOpt4(params){
+    const {visible,q1,val}=params;
+    const [horz,setHorz]=useState([]);
+    const [vert,setVert]=useState([]);
+    const [data,setData]=useState([]);
+    const [valChart,setvalChart]=useState('None')
+    const handle=()=>{
+        let p1=q1.options;
+        let p3=false;
+        let p4=[];
+        let p5=[];
+        for(let i=0;i<p1.length;++i){
+            let p2=p1[i].split(':');
+            if(p2.length>1){
+                p4.push(p2[0]);
+                p5.push(p2[1]);
+                p3=true;
+            }
+            else{
+                if(p3)p5.push(p1[i]);
+                else p4.push(p1[i]);
+            }
+        }
+        setHorz(p4);
+        setVert(p5);
+    }
+    useEffect(()=>{
+        handle();
+        setData(q1.count.slice(0,horz.length))
+    },[])
+    const handleGraph=(val1)=>{
+        setData(q1.count.slice(val1*(horz.length),(val1+1)*(horz.length)));
+    }
+    return (
+        <>
+            <select name="chart" id="chart1" className='mt-4 py-2 px-4 rounded-md outline-none' value={valChart}
+                onChange={(e)=>{setvalChart(e.target.value);handleGraph(e.target.value)}}>
+                    {vert.map((p2,ind2)=>{
+                        return (<option value={ind2}>{p2}</option>)
+                    })}
+                </select>
+        <div className={`${visible}`}>
+            {val=='bar' && <MyChart chartData={{labels:horz,datasets:[{
+                labels:'No. of participants',
+                data:data}] }} visibility={visible}/>}
+            {val=='pie' && <Piechart chartData={{labels:horz,datasets:[{
+                labels:'No. of participants',
+                data:data}] }} visibility={visible}/>}
+            {val=='line' && <Linechart chartData={{labels:horz,datasets:[{
+                labels:'No. of participants',
+                data:data}] }} visibility={visible}/>}
+                </div>
+                </>
+    )
+}
 function IndiQues(params){
-    const {q1,ind,part,setEdit,setDesc,setOption,setType,setId}=params
+    const {q1,ind,part,setEdit,setDesc,setOption,setType,setId,setId2,setAns}=params
     const [submit,setSubmit]=useState(false);
     const [val,setVal]=useState(Array(q1.options.length).fill(0));
     const [visible,setVisible]=useState('hidden')
@@ -60,10 +171,6 @@ function IndiQues(params){
         setSubmit(true);
     }
     const handleGraph=async ()=>{
-        for(let i=0;i<val.length;++i){
-            val[i]/=2;
-            setVal(val);
-        }
         const resp=await fetch('http://3.110.223.82:8000/getGraph',{
             method:'POST',
             headers:{
@@ -113,7 +220,9 @@ function IndiQues(params){
         setDesc(q1.description);
         setType(q1.type);
         setOption(l1);
-        setId(q1._id);    
+        setId(q1._id);
+        setAns(q1.resp)
+            setId2(q1.eventId);
     }
     return (
         <>
@@ -130,14 +239,15 @@ function IndiQues(params){
 </svg>
             </div>
             </div>
-        {q1.options.map((v1,ind)=>
-        {return <IndiOpt v1={v1} ind={ind} id={q1._id} val={val} setVal={setVal} def={q1.count[ind]}/>})}
+        {(q1.type!='grid' && q1.type!='multigrid') && q1.options.map((v1,ind)=>
+        {return <IndiOpt v1={v1} ind={ind} id={q1._id} val={val} setVal={setVal} def={q1.count[q1.type=='descriptive'?0:ind]}/>})}
+        { (q1.type=='grid' || q1.type=='multigrid') && <IndiOpt3 q1={q1}/>}
             <div className='flex gap-4 flex-wrap md:flex-nowrap'>
             {/* <div className='mt-2'>Correct.{" "+q1.correct}</div>
             <div>Incorrect.{" "+q1.incorrect}</div> */}
-            {submit?(
-               <button onClick={()=>{handleGraph()}} className='mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Stop</button>
-            ):(<button onClick={()=>{handlePublish(q1)}} className='mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Post</button>)}
+            {
+            //    <button className='mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Stop</button>
+            <button onClick={()=>{handlePublish(q1)}} className='mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Post</button>}
             <button className='mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'
             onClick={()=>{
                 if(visible=='hidden')setVisible('visible')
@@ -153,7 +263,7 @@ function IndiQues(params){
                 </select>
             </div>
             </div>
-            <div className={`${visible}`}>
+            {(q1.type!='grid' && q1.type!='multigrid') && <div className={`${visible}`}>
             {valChart=='bar' && <MyChart chartData={{labels:q1.options,datasets:[{
                 labels:'No. of participants',
                 data:q1.count}] }} visibility={visible}/>}
@@ -163,7 +273,12 @@ function IndiQues(params){
             {valChart=='line' && <Linechart chartData={{labels:q1.options,datasets:[{
                 labels:'No. of participants',
                 data:q1.count}] }} visibility={visible}/>}
-                </div>
+                </div>}
+            {(q1.type=='grid' || q1.type=='multigrid') &&
+                <>
+                <IndiOpt4 visible={visible} q1={q1} val={valChart}/>
+                </>
+                }
             </>
     )
 }
@@ -181,7 +296,9 @@ function IndiEvent() {
     const [response,setResponse]=useState('')
     const [stop,setStop]=useState(false)
     const [visible,setVisible]=useState(false)
+    const [voption,setVoption]=useState('')
     const [id1,setId1]=useState('')
+    const [id2,setId2]=useState('')
     const navigate=useNavigate();
     const getAll=async ()=>{
         const resp=await fetch('http://3.110.223.82:8000/getAllQues',{
@@ -211,7 +328,6 @@ function IndiEvent() {
     }
     useEffect(()=>{
         setEvent(l1.state)
-        
         getAll();
     },[ques])
     useEffect(()=>{
@@ -251,6 +367,7 @@ function IndiEvent() {
                 closeOnClick:true
             })
             setType('');setOption('');setDesc('');
+            setVoption('');
             navigate('/event');
         }
         else {
@@ -265,7 +382,7 @@ function IndiEvent() {
     
     const handleEditClick=async ()=>{
         const l1=option.split(',');
-        if(desc.length==0 || ((type=='single' || type=='multiple' || type=='dropdown') && l1.length<=1) || response.length==0){
+        if(id2.length==0 || desc.length==0 || ((type=='single' || type=='multiple' || type=='dropdown') && l1.length<=1) || response.length==0){
             toast.error('Please enter all the details',{
                 autoClose:4000,
                 pauseOnHover:true,
@@ -284,7 +401,8 @@ function IndiEvent() {
                 description:desc,
                 options:l1,
                 type:type,
-                response:response
+                response:response,
+                eventId:id2,
             })
         })
         const resp1=await resp.json();
@@ -297,6 +415,7 @@ function IndiEvent() {
             setId('');
             setEdit(false);
             setType('');setOption('');setDesc('');setResponse('');
+            setVoption('');
             navigate('/event');
         }
         else {
@@ -370,33 +489,7 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
             })
         }
     }
-    const handleStop=async(id)=>{
-        const resp=await fetch('http://3.110.223.82:8000/editStop',{
-            method:'PATCH',
-            headers:{
-                'Content-Type':'application/json',
-                'auth-token':localStorage.getItem('token')
-            },
-            body:JSON.stringify({eventId:id})
-        })
-        const resp1=await resp.json();
-        if(resp1.success){
-            toast.success(resp1.msg,{
-                autoClose:4000,
-                pauseOnHover:true,
-                closeOnClick:true
-            })
-            navigate('/event')
-        }
-        else {
-            toast.error(resp1.msg,{
-                autoClose:4000,
-                pauseOnHover:true,
-                closeOnClick:true
-            })  
-        }
-        await getAll();
-    }
+
     const handle=async ()=>{
         const resp=await fetch('http://3.110.223.82:8000/getData2',{
             method:'GET',
@@ -416,6 +509,12 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
     useEffect(()=>{
         handle();
     },[])
+    const clipBoard=()=>{
+        navigator.clipboard.writeText(event._id);
+
+  // Alert the copied text
+  alert("Copied the EventId");
+    }
   return (
     <div>
       <Navbar visible={visible} setVisible={setVisible}/>
@@ -434,6 +533,8 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
       <p className='mt-5 text-lg'>{event.description}</p>
       <div className='mt-5'></div>
       <QRCodeCanvas value={`http://3.110.223.82:8000/register?event=${event._id}`}/>
+      <div className='mt-5'></div>
+      <div onClick={()=>{clipBoard()}}className='cursor-pointer inline font-semibold px-4 py-2 bg-[#315EFF] text-white rounded-md mb-10'>Copy EventId</div>
       {/* {!(event.finished) && (
         <>
         { stop?(
@@ -443,6 +544,9 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
         { (addQues || edit) ? (<div className='mt-5'>
             <select className='outline-none py-2 px-4 rounded-md' name="ques" id="ques" onChange={(e)=>{setType(e.target.value)}}>
                 <option value='none'>None</option>
+                <option value="grid">Multiple Choice Grid</option>
+                <option value="multigrid">Checkbox Grid</option>
+                <option value="linear">Linear Scale</option>
                 <option value='single'>Single Choice</option>
                 <option value='multiple'>Multiple Choice</option>
                 <option value='dropdown'>Dropdown</option>
@@ -452,21 +556,26 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
             <textarea type="text" value={desc} onChange={(e)=>{setDesc(e.target.value)}} rows-4 className='outline-none border-none py-2 rounded-md px-2 w-full' ></textarea>
             <div className='text-lg font-medium mt-3'>Write Answers</div>
             <input type="text" className='outline-none border-none py-2 rounded-md px-2 w-full' value={response} onChange={(e)=>{setResponse(e.target.value)}} placeholder='Write Correct Answers'/>
-            {(type==='single'||type==='multiple'||type==='dropdown') && 
+            {(type==='single'||type==='multiple'||type==='dropdown' || type=='linear' || type=='grid' || type=='multigrid') && 
             <>
             <div className='text-lg font-medium mt-3'>Write Options</div>
             <input type="text" className='outline-none border-none py-2 rounded-md px-2 w-full' value={option} onChange={(e)=>{setOption(e.target.value)}} placeholder='Write Options Separated By Comma'/>
             </>
             }
             {addQues && <button onClick={()=>{handleClick()}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Save Question</button>}
-            {edit && <button onClick={()=>{handleEditClick()}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Save Question</button>
+            {edit && 
+            <>
+            <div className='text-lg font-medium mt-3'>EventId</div>
+            <input type="text" className='outline-none border-none py-2 rounded-md px-2 w-full' value={id2} onChange={(e)=>{setId2(e.target.value)}} placeholder='Write Options Separated By Comma'/>   
+            <button onClick={()=>{handleEditClick()}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Save Question</button>
+            </>
             }
         </div>):
         (
             <>
         {ques.map((q1,ind)=>{
             return (  
-            <IndiQues q1={q1} ind={ind} part={event.participant} setDesc={setDesc} setOption={setOption} setEdit={setEdit} setType={setType}setId={setId}/>
+            <IndiQues q1={q1} ind={ind} setId2={setId2} setAns={setResponse} part={event.participant} setDesc={setDesc} setOption={setOption} setEdit={setEdit} setType={setType}setId={setId}/>
             )
         })}
         <br/>

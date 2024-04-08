@@ -22,8 +22,6 @@ require("dotenv").config();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-const accountSid = 'AC5dc360f574765ae0cbe3d52d93e7e60d';
-const authToken = '71a7d9fd6df8380ae1ec8b109bd2d8e8';
 const buildPath = path.join(__dirname, "../client/dist"); 
 
 //serving the static files which is our build here and specifying all the paths here where are there on the website
@@ -74,52 +72,12 @@ mongoose
     key_secret: process.env.key_secret
 });
 
-app.post('/verifyContact',async (req,res)=>{
- const {firstName,lastName,contact}=req.body;
-//  const l1=await Participant.findOne({contact:contact})
-//  if(l1 && l1.verify){
-//     return res.json({success:false,msg:'Contact already in use'})
-//  }
-// const client = require('twilio')(accountSid, authToken);
-// const otp=otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
-// await client.messages
-//     .create({
-//         body: `Here is your Nexiara Verification code ${otp}`,
-//         from: '+17867444554',
-//         to: `+91${contact}`
-//     })
-//     .then(async (message)=>{
-       await Participant.create({firstName:firstName,lastName:lastName,contact:contact,email:'',verify:false,otp:' '});
-       return res.json({success:true,msg:'SMS sent successfully'})
-    // })
-    // .catch(error=>{
-    //     return res.json({success:false,msg:'Unable to send the SMS'})
-    // });
-})  
-app.post('/verifyContact1',async (req,res)=>{
-    const {otp,contact}=req.body;
-    const f1=await Participant.findOne({contact:contact})
-    if(!f1){
-        return res.json({success:false,msg:'Contact not found in the record'})
-    }
-    else {
-        if(f1.otp==otp){
-            return res.json({success:true,msg:'OTP verified successfuly'})
-        }
-        else {
-            return res.json({success:false,msg:'Enter correct OTP'})
-        }
-    }
-})
 app.post('/verifyMail',async (req,res)=>{
     const {firstName,lastName,contact,email}=req.body;
-    const f1=await Participant.findOne({contact:contact})
-    if(f1.verify){
+    const f1=await Participant.findOne({email:email})
+    if(f1){
         return res.json({success:false,msg:'Mail already in use'})
      }
-    if(!f1){
-        return res.json({success:false,msg:'Please verify contact first'})
-    }
     const otp=otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
     let transporter =nodemailer.createTransport({
         service: 'gmail',
@@ -138,10 +96,9 @@ app.post('/verifyMail',async (req,res)=>{
       
       transporter.sendMail(mailOptions,async function(error, info){
         if (error) {
-            console.log(error)
           return res.json({success:false,msg:"Unable to send the mail"})
         } else {
-            await Participant.findOneAndUpdate({contact:contact},{firstName:firstName,lastName:lastName,contact:contact,email:email,verify:false,otp:otp});
+            await Participant.create({firstName:firstName,lastName:lastName,contact:contact,email:email,verify:false,otp:otp});
             return res.json({success:true,msg:'Mail sent successfully'})
         }
       });
@@ -331,8 +288,9 @@ app.delete('/deleteQues',fetchuser,async (req,res)=>{
     return res.json({success:true})
 })
 app.patch('/editQues',fetchuser,async (req,res)=>{
-    const {id,description,options,type,response}=req.body;
+    const {id,description,options,type,response,eventId}=req.body;
     await Question.findByIdAndUpdate(id,{
+        eventId:eventId,
         description:description,options:options,type:type,resp:response
     })
     return res.json({success:true})
@@ -370,7 +328,8 @@ app.post('/getPart',fetchuser,async (req,res)=>{
                     if(res1.events[i].quesCheck.length>j)k1=res1.events[i].quesCheck[j];
                     
                     if(res1.events[i].options.length>j){k2=res1.events[i].options[j].finished;
-                    k3=res1.events[i].options[j].selected;}
+                    k3=res1.events[i].options[j].selected;
+                }
                 }
             }
         }
@@ -425,11 +384,32 @@ app.post('/checkQues',fetchuser,async (req,res)=>{
             }
             else arr.push(false);
             t1=resp;
+            let t3=ques.count;
+            if(t3.length==0){
+                let t2=[];
+                for(let i=0;i<ques.options.length;++i){
+                    t2.push(0);
+                }
+                t2[k1]+=1;
+                await Question.findOneAndUpdate({_id:ques._id},{count:t2})
+            }
+            else {ques.count[k1]+=1;
+                await Question.findOneAndUpdate({_id:ques._id},{count:ques.count})}
         }
         else if(ques.type=='multiple'){
             let arr1=[];
+            let t2=ques.count;
+            let t3=[];
+            if(t2.length==0){
+                for(let i=0;i<ques.options.length;++i){
+                    t3.push(0);
+                }
+            }
+            if(t3.length==0){
+                t3=ques.count;
+            }
             for(let j=0;j<resp.length;++j){
-                if(resp[j]){arr1.push(j);t1=t1+(j);}
+                if(resp[j]){arr1.push(j);t1=t1+(j);t3[j]+=1}
             }
             let alp=true;
             for(let j=0;j<ques.resp.length;++j){
@@ -437,16 +417,117 @@ app.post('/checkQues',fetchuser,async (req,res)=>{
                 if(arr1.indexOf(t1)==-1){alp=false;break;}
             }
             arr.push(alp);
+            await Question.findOneAndUpdate({_id:ques._id},{count:t3})
         }
         else if(ques.type=='dropdown'){
+            let t2=ques.count;
+            let t3=[];
+            if(t2.length==0){
+                for(let i=0;i<ques.options.length;++i){
+                    t3.push(0);
+                }
+            }
+            if(t3.length==0){
+                t3=ques.count;
+            }
             if(ques.resp==resp){arr.push(true);}
             else {arr.push(false);}
+            let ind=-1;
+            for(let i=0;i<ques.options;++i){
+                if(resp==ques.options[i]){ind=i;break;}
+            }
+            t3[ind]+=1;
+            await Question.findOneAndUpdate({_id:ques._id},{count:t3})
             t1=resp;
         }
         else if(ques.type=='descriptive'){
+            let t2=ques.count;
+            let t3=[];
+            if(t2.length==0){
+                t3.push(0);
+            }
+            if(t3.length==0){
+                t3=ques.count;
+            }
+            t3[0]+=1;
             if(ques.resp==resp){arr.push(true);}
             else {arr.push(false);}
+            await Question.findOneAndUpdate({_id:ques._id},{count:t3})
             t1=resp;
+        }
+        else if(ques.type=='grid'){
+            let t2=ques.count
+            arr.push(true);
+            
+            let h=0,v=0;
+            let alp=false;
+            for(let i=0;i<ques.options.length;++i){
+                let p1=ques.options[i].split(':');
+                if(p1.length==2){
+                    ++h;
+                    alp=true;
+                }
+                if(alp)++v;
+                else ++h;
+            }
+            let t3=[];
+            if(t2.length==0){
+                for(let i=0;i<v*h;++i)t3.push(0);
+            }
+            if(t3.length==0){
+                t3=ques.count;
+            }
+            let ind=0;
+            for(let i in resp){
+                t3[h*ind+parseInt(resp[i])]+=1;
+                t1+=(resp[i]);
+                ++ind;
+            }
+            await Question.findOneAndUpdate({_id:ques._id},{count:t3})
+        }
+        else if(ques.type=='multigrid'){
+            let t2=ques.count;
+            arr.push(true);
+            let h=0,v=0;
+            let alp=false;
+            for(let i=0;i<ques.options.length;++i){
+                let p1=ques.options[i].split(':');
+                if(p1.length==2){
+                    ++h;
+                    alp=true;
+                }
+                if(alp)++v;
+                else ++h;
+            }
+            let t3=[];
+            if(t2.length==0){
+                for(let i=0;i<v*h;++i)t3.push(0);
+            }
+            if(t3.length==0){
+                t3=ques.count;
+            }
+            for(let i=0;i<resp.length;++i){
+                for(let j=0;j<resp[0].length;++j){
+                    if(resp[i][j]){t1+=j;t3[i*h+j]+=1;}
+                }
+                if(i!=resp.length-1)t1+=':';
+            }
+            await Question.findOneAndUpdate({_id:ques._id},{count:t3})
+        }else if(ques.type=='linear'){
+            let t2=ques.count;
+            let t3=[];
+            if(t2.length==0){
+                for(let i=0;i<ques.options.length;++i){
+                    t3.push(0);
+                }
+            }
+            if(t3.length==0){
+                t3=ques.count;
+            }
+            t3[parseInt(resp)]+=1;
+            arr.push(true);
+            await Question.findOneAndUpdate({_id:ques._id},{count:t3})
+            t1+=(resp);
         }
     
     let part=await Participant.findOne({email:id})

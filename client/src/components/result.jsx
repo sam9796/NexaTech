@@ -31,7 +31,236 @@ function IndiOpt1(params){
         </>
     )
 }
+function IndiOpt22(params){
+  const {ind,ind1,submit,val,setVal}=params
+  useEffect(()=>{
+    console.log(val[ind])
+  })
+  return (
+                              <th className='px-1'>
+                                  <input type="radio" name={ind}  disabled={submit} checked={val[ind]==ind1} onChange={(e)=>{
+                                      val[parseInt(ind)]=ind1;
+                                      setVal(val);
+                                  }}/>
+                              </th>
+  )
+}
+function IndiOpt21(params){
+  const {ind,submit,q1,horz,val,setVal}=params
+  return(
+              <tr>
+                      <th>{q1}</th>
+                      {horz.map((q2,ind1)=>{
+                          return (
+                              <IndiOpt22 ind={ind} ind1={ind1} submit={submit} val={val} setVal={setVal}/>
+                          )
+                      })}
+                  </tr>
+  )
+}
+function IndiOpt32(params){
+  const {ind,submit,val,setVal,ind1}=params
+  const [check,setCheck]=useState(false)
+  return (
+                              <th className='px-1'>
+                                  <input type="checkbox" checked={submit?val[ind][ind1]:check} name={ind} disabled={submit}
+                                  onChange={(e)=>{
+                                      setCheck(e.target.checked)
+                                      val[parseInt(ind)][parseInt(ind1)]=(e.target.checked);
+                                      setVal(val);
+                                  }}
+                                  />
+                              </th>
+  )
+}
+function IndiOpt31(params){
+  const {ind,submit,q1,horz,val,setVal}=params
+  return(
+              <tr>
+                      <th>{q1}</th>
+                      {horz.map((q2,ind1)=>{
+                          return (
+                              <IndiOpt32 ind={ind} ind1={ind1} submit={submit} val={val} setVal={setVal} />
+                          )
+                      })}
+                  </tr>
+  )
+}
+function IndiOpt2(params){
+  const {q1,submit,id,val,setVal,setSubmit,eventId}=params;
+  const [horz,setHorz]=useState([]);
+  const [vert,setVert]=useState([]);
+  const getQues=async (p7)=>{
+      const resp1=await fetch('http://3.110.223.82:8000/getPart',{
+          method:'POST',   
+          headers:{
+              'Content-Type':'application/json',
+              'auth-token':localStorage.getItem('token1')
+          },
+          body:JSON.stringify({eventId:eventId,id:id})        
+       })
+      const resp2=await resp1.json();
+      if(resp2.success){
+        console.log(resp2,id)
+          if(resp2.k2){
+              setSubmit(resp2.k2);
+              let i1=resp2.k3;
+              console.log('Hello',resp2)
+              for(let i=0;i<i1.length;++i){
+                  p7[i]=parseInt(i1[i]);
+              }
+          }
+          console.log(p7)
+          return p7;
+      }
+  }
+  const handle=async ()=>{
+      let p1=q1.options;
+      let p3=false;
+      let p4=[];
+      let p5=[];
+      for(let i=0;i<p1.length;++i){
+          let p2=p1[i].split(':');
+          if(p2.length>1){
+              p4.push(p2[0]);
+              p5.push(p2[1]);
+              p3=true;
+          }
+          else{
+              if(p3)p5.push(p1[i]);
+              else p4.push(p1[i]);
+          }
+      }
+      setHorz(p4);
+      setVert(p5);
+      let p6=[];
+      for(let j=0;j<p5.length;++j){
+      p6.push(-1);
+  }
+  p6=await getQues(p6)
+  setVal(p6);
+  }
+  useEffect(()=>{
+      handle();
+  },[])
+  return (
+      <>
+      <table>
+          <tr>
+              <th></th>
+              {
+                  horz.map((q1)=>{
+                      return (
+                          <th className='px-1'>{q1}</th>
+                      )
+                  })
+              }
+          </tr>
+          {vert.map((q1,ind)=>{
+              return (
+                  <IndiOpt21 q1={q1} ind={ind} horz={horz} submit={submit} val={val} setVal={setVal}/>
+              )
+          })}
+      </table>
+      </>
+  )
+}
+function IndiOpt3(params){
+  const {q1,submit,id,val,setVal,setSubmit,eventId}=params;
+  const [horz,setHorz]=useState([]);
+  const [vert,setVert]=useState([]);
+  const getQues=async (p7)=>{
+      const resp1=await fetch('http://3.110.223.82:8000/getPart',{
+          method:'POST',   
+          headers:{
+              'Content-Type':'application/json',
+              'auth-token':localStorage.getItem('token1')
+          },
+          body:JSON.stringify({eventId:eventId,id:q1._id})        
+       })
+      const resp2=await resp1.json();
+      if(resp2.success){
+          if(resp2.k2){
+              setSubmit(resp2.k2);
+              let i1=resp2.k3.split(':');
+              for(let i=0;i<i1.length;++i){
+                  for(let j=0;j<i1[i].length;++j){
+                      let t1=parseInt(i1[i][j]);
+                      p7[i][t1]=true;
+                  }
+              }
+          }
+          return p7;
+      }
+  }
+  const handle=async()=>{
+      let p1=q1.options;
+      let p3=false;
+      let p4=[];
+      let p5=[];
+      for(let i=0;i<p1.length;++i){
+          let p2=p1[i].split(':');
+          if(p2.length>1){
+              p4.push(p2[0]);
+              p5.push(p2[1]);
+              p3=true;
+          }
+          else{
+              if(p3)p5.push(p1[i]);
+              else p4.push(p1[i]);
+          }
+      }
+      setHorz(p4);
+      setVert(p5);
+      let p6=[];
+      let p7=[];
+      for(let j=0;j<p5.length;++j){
+          p6=[];
+      for(let i=0;i<p4.length;++i){
+          p6.push(false);
+      }
+      p7.push(p6);
+  }
+  p7=await getQues(p7);
+  setVal(p7);
+  }
+  useEffect(()=>{
+      handle();
+  },[])
+  return (
+      <>
+      <table>
+          <tr>
+              <th></th>
+              {
+                  horz.map((q1)=>{
+                      return (
+                          <th className='px-1'>{q1}</th>
+                      )
+                  })
+              }
+          </tr>
+          {vert.map((q1,ind)=>{
+              return (
+                 <IndiOpt31 q1={q1} ind={ind} horz={horz} submit={submit} val={val} setVal={setVal}/>
+              )
+          })}
+      </table>
+      </>
+  )
+}
 
+function IndiOpt4(params){
+  const {id,val,submit,check,setCheck,ind}=params
+  return (
+      <div>
+      <input type="radio" name={id} checked={ind==check}   disabled={submit} onChange={(e)=>{
+          setCheck(ind) }}  className='mr-2'/>
+      <br/>
+      <label htmlFor="option">{val}</label>
+      </div>
+  )
+}
 function IndiQues(params){
     const {sz,q1,ind1,eventId,val2,setVal2}=params
     const [check1,setCheck1]=useState(-1);
@@ -54,7 +283,6 @@ function IndiQues(params){
         val2[3]+=(3-check1);
       }
       setVal2(val2);
-      console.log(val2)
     }
     useEffect(()=>{
       if(sz==(ind1+1)){let v1=val2;
@@ -98,7 +326,7 @@ function IndiQues(params){
                 }
             }
         }
-        getQues();
+        if(q1.type!='grid' && q1.type!='multigrid') getQues();
         handle();
     },[])
     return (
@@ -138,7 +366,8 @@ function IndiQues(params){
     )
     }
     {q1.type=='descriptive'  && (<input value={val1} disabled={submit} onChange={(e)=>{setVal1(e.target.value)}} className='p-2 mx-1 rounded-md bg-white'/>)}
-    {q1.eventId!='660e9851132c16d83a65f910' && submit && 
+
+    {/* {q1.eventId!='660e9851132c16d83a65f910' && submit && 
         (check?(
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -151,7 +380,13 @@ function IndiQues(params){
 
         ))
         
-    }
+    } */}
+        {q1.type=='grid' && <IndiOpt2 id={q1._id} q1={q1} submit={submit} val={val} setVal={setVal} setSubmit={setSubmit} eventId={eventId}/>}
+    {q1.type=='multigrid' && <IndiOpt3 id={q1._id} q1={q1} eventId={eventId} submit={submit} setSubmit={setSubmit} val={val} setVal={setVal}/>}
+    <div className='flex flex-wrap gap-2'>
+    {q1.type=='linear' && q1.options.map((i1,ind)=>{
+        return <IndiOpt4 val={i1} id={q1._id} check={check1} eventId={eventId} setCheck={setCheck1} setSubmit={setSubmit} submit={submit} ind={ind}/>
+    })}</div>
     {eventId=='660e9851132c16d83a65f910' && (sz==(ind1+1)) && <div className='flex flex-wrap gap-2'>
        {big==val2[0] && <div>
           <div className='text-3xl font-semibold mx-2'>Authoritative</div>
@@ -273,7 +508,6 @@ function Result() {
     const [ques,setQues]=useState([])
     const [resp,setResp]=useState([])
     const [check,setCheck]=useState([])
-    const [submit,setSubmit]=useState(false)
     const [visible,setVisible]=useState(true);
     const [visible1,setVisible1]=useState(false)
     const [val2,setVal2]=useState([0,0,0,0])
