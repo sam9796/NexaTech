@@ -12,6 +12,8 @@ import Dashboard1 from './components/dashboard1';
 import Quiz from './components/quiz';
 import Result from './components/result';
 import Enroll from './components/enroll';
+import Events1 from './components/events1';
+import EventMain from './components/eventMain';
 
 function App() {
 
@@ -29,6 +31,8 @@ function App() {
       <Route exact path='/quiz' element={<Quiz/>}/>
       <Route exact path='/result' element={<Result/>}/>
       <Route exact path='/enroll' element={<Enroll/>}/>
+      <Route exact path='/event1' element={<Events1/>}/>
+      <Route exact path='/eventmain' element={<EventMain/>}/>
      </Routes>
      </BrowserRouter>
       <ToastContainer/>

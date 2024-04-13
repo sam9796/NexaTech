@@ -11,7 +11,7 @@ function Navbar2({visible,setVisible}) {
     const navigate=useNavigate();
     useEffect(()=>{
         const handle=async ()=>{
-            const resp=await fetch('http://3.110.223.82:8000/getData1',{
+            const resp=await fetch('http://localhost:8000/getData1',{
                 method:'GET',
                 headers:{
                     'Content-Type':'application/json',
@@ -45,8 +45,8 @@ function Navbar2({visible,setVisible}) {
         <div className='my-auto'>
         <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g opacity="0.5">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M9.69366 12.535C12.4235 11.3748 13.696 8.22136 12.5358 5.49152C11.3757 2.76168 8.22221 1.4892 5.49237 2.64936C2.76253 3.80951 1.49005 6.96297 2.6502 9.69281C3.81036 12.4226 6.96382 13.6951 9.69366 12.535Z" stroke="black" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M11.3904 11.3896L15.5557 15.5556" stroke="black" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path fillRule="evenodd" clipRule="evenodd" d="M9.69366 12.535C12.4235 11.3748 13.696 8.22136 12.5358 5.49152C11.3757 2.76168 8.22221 1.4892 5.49237 2.64936C2.76253 3.80951 1.49005 6.96297 2.6502 9.69281C3.81036 12.4226 6.96382 13.6951 9.69366 12.535Z" stroke="black" strokeWidth="1.2" strokeLinecap="round" stroke-linejoin="round"/>
+<path d="M11.3904 11.3896L15.5557 15.5556" stroke="black" strokeWidth="1.2" strokeLinecap="round" stroke-linejoin="round"/>
 </g>
 </svg>
 </div>
@@ -66,8 +66,8 @@ function Navbar2({visible,setVisible}) {
         
         </div>
         <div className='block lg:hidden' onClick={()=>{setVisible(!visible)}}>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+  <path strokeLinecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
 </svg>
 
         </div>

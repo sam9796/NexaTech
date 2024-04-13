@@ -167,11 +167,10 @@ function IndiQues(params){
     const handlePublish=(q1)=>{
         let n=part.length
         for(let i=0;i<n;++i){
-        mqttClient.publish(`${part[i]}/state`,JSON.stringify(q1));}
-        setSubmit(true);
+        mqttClient.publish(`${q1.eventId}/${part[i]}/state`,JSON.stringify(q1));}
     }
     const handleGraph=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getGraph',{
+        const resp=await fetch('http://localhost:8000/getGraph',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -189,7 +188,7 @@ function IndiQues(params){
         }
     }
     const handleDelete=async (id)=>{
-        const resp=await fetch('http://3.110.223.82:8000/deleteQues',{
+        const resp=await fetch('http://localhost:8000/deleteQues',{
             method:'DELETE',
             headers:{
                 'Content-Type':'application/json',
@@ -299,9 +298,20 @@ function IndiEvent() {
     const [voption,setVoption]=useState('')
     const [id1,setId1]=useState('')
     const [id2,setId2]=useState('')
-    const navigate=useNavigate();
+    const navigate=useNavigate()
+    const [chat,setChat]=useState('')
+    const [timer,setTimer]=useState('')
+
+    const handlePublish=()=>{
+        let n=event.participant.length
+        let part=event.participant
+         for(let j=0;j<ques.length;++j)
+        for(let i=0;i<n;++i){
+        mqttClient.publish(`${ques[j].eventId}/${part[i]}/state`,JSON.stringify(ques[j]));}
+    }
+
     const getAll=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getAllQues',{
+        const resp=await fetch('http://localhost:8000/getAllQues',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -345,7 +355,7 @@ function IndiEvent() {
             });
             return;
         }
-        const resp=await fetch('http://3.110.223.82:8000/addQues',{
+        const resp=await fetch('http://localhost:8000/addQues',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -390,7 +400,7 @@ function IndiEvent() {
             });
             return;
         }
-        const resp=await fetch('http://3.110.223.82:8000/editQues',{
+        const resp=await fetch('http://localhost:8000/editQues',{
             method:'PATCH',
             headers:{
                 'Content-Type':'application/json',
@@ -463,7 +473,7 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
     setStop(true);
     }
     const handlePost=async (eventId)=>{
-        const resp=await fetch('http://3.110.223.82:8000/postQues',{
+        const resp=await fetch('http://localhost:8000/postQues',{
             method:'POST',
             headers:{
                 'auth-token':localStorage.getItem('token'),
@@ -491,7 +501,7 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
     }
 
     const handle=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getData2',{
+        const resp=await fetch('http://localhost:8000/getData2',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -515,6 +525,25 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
   // Alert the copied text
   alert("Copied the EventId");
     }
+    const handleSend=()=>{
+        let part=event.participant
+        for(let i=0;i<part.length;++i){
+            mqttClient.publish(`${event._id}/${part[i]}/inst`,JSON.stringify(chat));
+        }
+        setChat('');
+        toast.success('Sent Successfully',{
+            autoClose:4000,
+            pauseOnHover:true,
+            closeOnClick:true
+        })
+    }
+    const handleTimer=async ()=>{
+        let part=event.participant
+        for(let i=0;i<part.length;++i){
+            mqttClient.publish(`${event._id}/${part[i]}/timer`,JSON.stringify(timer));
+        }
+        setTimer('')
+    }
   return (
     <div>
       <Navbar visible={visible} setVisible={setVisible}/>
@@ -532,7 +561,7 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
       </div>
       <p className='mt-5 text-lg'>{event.description}</p>
       <div className='mt-5'></div>
-      <QRCodeCanvas value={`http://3.110.223.82:8000/register?event=${event._id}`}/>
+      <QRCodeCanvas value={`http://localhost:8000/register?event=${event._id}`}/>
       <div className='mt-5'></div>
       <div onClick={()=>{clipBoard()}}className='cursor-pointer inline font-semibold px-4 py-2 bg-[#315EFF] text-white rounded-md mb-10'>Copy EventId</div>
       {/* {!(event.finished) && (
@@ -580,7 +609,16 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
         })}
         <br/>
         <button onClick={()=>{setAddQues(true)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Add Question</button>
+        <br />
+        <button onClick={()=>{handlePublish()}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Send All</button>
         </>)}
+        <div className='text-lg font-medium mt-10'>Write Instructions</div>
+        <textarea type="text" value={chat} onChange={(e)=>{setChat(e.target.value)}} rows-4 className='outline-none border-none py-2 rounded-md px-2 w-full' ></textarea>
+        <button onClick={()=>{handleSend()}} className=' mt-5 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Send</button>
+        <div className='mt-5'>
+            <input type="text" value={timer} onChange={(e)=>{setTimer(e.target.value)}} className='px-2 py-2 text-xl my-auto rounded-md mr-3  w-full sm:w-1/2 md:w-1/3 outline-none'/>
+            <button onClick={()=>{handleTimer()}} className=' mt-5 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Set Timer</button>
+        </div>
         </div>
         </div>
         <div className={`border-2 mx-auto text-center  p-0 ${visible?'hidden':'block'} absolute px-5 rounded-lg bg-white right-0 lg:hidden`}>

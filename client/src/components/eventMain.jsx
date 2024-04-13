@@ -5,6 +5,8 @@ import Bell from '../assets/Icon.png'
 import Flag from '../assets/Flag.png'
 import Man from '../assets/man.png'
 import { useLocation,useNavigate } from 'react-router-dom'
+import Welcome from '../assets/welcome.png'
+
 import mqtt from 'mqtt'
 
 const mqttClient=mqtt.connect('ws://65.2.179.139:9001/mqtt', {
@@ -410,15 +412,17 @@ function IndiQues(params){
     )
 }
 
-function Quiz() {
+function EventMain() {
     const [ques,setQues]=useState([])
     const [resp,setResp]=useState([])
     const [check,setCheck]=useState([])
     const [submit,setSubmit]=useState(false)
     const [id,setId]=useState('')
     const [user,setUser]=useState('')
-    const [clock,setClock]=useState(0)
     const [visible,setVisible]=useState(false);
+    const [vis,setVis]=useState(false);
+    const [vis1,setVis1]=useState(false);
+    const [chat,setChat]=useState('');
     const locate=useLocation();
     const navigate=useNavigate()
     useEffect(() => {
@@ -428,6 +432,22 @@ function Quiz() {
         // Unmount the window.onbeforeunload event
         return () => { window.onbeforeunload = null };
     }, []);
+        
+        useEffect(()=>{
+            setTimeout(()=>{setVis(true)},3000)
+        },[])
+    // useEffect(() => {
+        
+    //     const intervalId = setInterval(() => {
+    //         setSeconds(prevSeconds => {
+    //             const newSeconds = prevSeconds - 1;
+    //             localStorage.setItem('timerSeconds', newSeconds);
+    //             return newSeconds;
+    //         });
+    //     }, 1000);
+    //     if(seconds<=0){console.log('timerfinish');clearInterval(intervalId);localStorage.removeItem('timerSeconds')}
+    // }, []);
+
     const handleClick=async ()=>{
         const resp1=await fetch('http://localhost:8000/checkQues1',{
             method:'POST',
@@ -477,37 +497,6 @@ function Quiz() {
         setQues(k5);
        }
     }
-    const handleTimer=(minutes)=>{
-        let interval;
-        let currentTime = localStorage.getItem('currentTime');
-let targetTime = localStorage.getItem('targetTime');
-if (targetTime == null && currentTime == null) {
-  currentTime = new Date();
-  targetTime = new Date(currentTime.getTime() + (minutes * 60000));
-  localStorage.setItem('currentTime', currentTime);
-  localStorage.setItem('targetTime', targetTime);
-}
-else{
-  currentTime = new Date(currentTime);
-  targetTime = new Date(targetTime);
-}
-
-if(!checkComplete()){
-  interval = setInterval(checkComplete, 1000);
-}
-
-function checkComplete() {
-  if (currentTime > targetTime) {
-    clearInterval(interval);
-    localStorage.removeItem('currentTime')
-    localStorage.removeItem('targetTime')
-    handleClick();
-  } else {
-    currentTime = new Date();
-    setClock(targetTime-currentTime)
-  }
-}
-    }
     const handle=async ()=>{
         const resp=await fetch('http://localhost:8000/getData1',{
             method:'GET',
@@ -530,29 +519,31 @@ function checkComplete() {
             navigate('/login1')
         }
       }
-      useEffect(()=>{
-        handle();
-      },[])
+
     useEffect(()=>{
+        handle();
         mqttClient.on('connect', () => {
           })
-          mqttClient.subscribe(`${locate.state.eventId}/${user}/state`);
-          mqttClient.subscribe(`${locate.state.eventId}/${user}/timer`)
-          
+         
+          mqttClient.subscribe(`${locate.state.eventId}/${locate.state.user}/state`);
+          mqttClient.subscribe(`${locate.state.eventId}/${locate.state.user}/inst`);
    mqttClient.on('message', (topic, message) => {
+    
        switch (topic) {
-           case `${locate.state.eventId}/${user}/state`:                                                           
+           case `${locate.state.eventId}/${locate.state.user}/state`:                                                           
                let m = JSON.parse(message.toString());
             postQues(m);
+            setVis1(true);
                break;
-            case `${locate.state.eventId}/${user}/timer`:
-                let m1=JSON.parse(message.toString())
-                let m2=parseInt(m1);
-                handleTimer(m2)
+            case `${locate.state.eventId}/${locate.state.user}/inst`:
+             let m1=JSON.parse(message.toString());
+             setChat(m1);
+             setVis1(true);
+             break;
            default:
        }
    });
-    })
+    },[])
   return (
     <div>
     <Navbar1 setVisible={setVisible} visible={visible}/>
@@ -561,14 +552,22 @@ function checkComplete() {
       <Sidebar1/>
       </div>
       <div className='w-full rounded-md bg-[#CCEFFF]'>
-        {clock>0 && <div className='m-3'>
-            <h1 className='text-3xl font-bold'>Time Left: {Math.floor(clock/60000)}:{(Math.floor((clock/1000)%60)) < 10 ? `0${Math.floor((clock/1000)%60)}` : Math.floor((clock/1000)%60)}</h1>
-        </div>}
+       <div className={`${vis1?'hidden':''} flex flex-row flex-wrap-reverse md:flex-nowrap mx-6 my-5`}>
+            <div className='w-full mx-2 md:mx-0 md:w-1/2 my-auto text-center'>
+                <div className='text-[#315EFF] text-5xl lg:text-7xl font-bold'>WELCOME</div>
+                <div className='text-xl mt-1 text-white font-semibold'>Wait for further instructions...</div>
+            </div>
+            <div className='w-full mx-2 md:mx-2 md:w-1/2'>
+                <img src={Welcome} alt="" className=''/>
+            </div>
+        </div>
       {ques.map((q1,ind1)=>{
-        
         return (  <IndiQues q1={q1} ind1={ind1} eventId={locate.state.eventId}/> )
         })}
-        <button onClick={()=>{handleClick()}} className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Submit</button>
+        <div  className={`${chat.length?'block':'hidden'} text-xl mx-8 px-4 py-2 my-4 rounded-md bg-white font-semibold`}>
+        {chat}
+      </div>
+      <button onClick={()=>{handleClick()}} className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Leave Event</button>
       </div>
       <div className={`mx-auto text-center  p-0 ${visible?'hidden':'block'} absolute px-5 rounded-lg bg-white right-0 lg:hidden`}>
       <div className='flex flex-col gap-5 items-center my-2'>
@@ -593,4 +592,4 @@ function checkComplete() {
   )
 }
 
-export default Quiz
+export default EventMain

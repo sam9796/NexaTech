@@ -25,7 +25,7 @@ function IndiOpt1(params){
     },[checked])
     return (
         <>
-        <input type="checkbox" value={`${ind}`} checked={submit?val[ind]:checked} disabled={submit}  className='mr-2'/>
+        <input type="checkbox" value={`${ind}`} checked={submit?val[ind]:checked} disabled={true}  className='mr-2'/>
         <label htmlFor="option">{v1}</label>
         <br />
         </>
@@ -34,11 +34,10 @@ function IndiOpt1(params){
 function IndiOpt22(params){
   const {ind,ind1,submit,val,setVal}=params
   useEffect(()=>{
-    console.log(val[ind])
   })
   return (
                               <th className='px-1'>
-                                  <input type="radio" name={ind}  disabled={submit} checked={val[ind]==ind1} onChange={(e)=>{
+                                  <input type="radio" name={ind}  disabled={true} checked={val[ind]==ind1} onChange={(e)=>{
                                       val[parseInt(ind)]=ind1;
                                       setVal(val);
                                   }}/>
@@ -63,7 +62,7 @@ function IndiOpt32(params){
   const [check,setCheck]=useState(false)
   return (
                               <th className='px-1'>
-                                  <input type="checkbox" checked={submit?val[ind][ind1]:check} name={ind} disabled={submit}
+                                  <input type="checkbox" checked={submit?val[ind][ind1]:check} name={ind} disabled={true}
                                   onChange={(e)=>{
                                       setCheck(e.target.checked)
                                       val[parseInt(ind)][parseInt(ind1)]=(e.target.checked);
@@ -90,8 +89,10 @@ function IndiOpt2(params){
   const {q1,submit,id,val,setVal,setSubmit,eventId}=params;
   const [horz,setHorz]=useState([]);
   const [vert,setVert]=useState([]);
+  const [check,setCheck]=useState(false);
+
   const getQues=async (p7)=>{
-      const resp1=await fetch('http://3.110.223.82:8000/getPart',{
+      const resp1=await fetch('http://localhost:8000/getPart',{
           method:'POST',   
           headers:{
               'Content-Type':'application/json',
@@ -101,16 +102,14 @@ function IndiOpt2(params){
        })
       const resp2=await resp1.json();
       if(resp2.success){
-        console.log(resp2,id)
           if(resp2.k2){
               setSubmit(resp2.k2);
+              setCheck(resp2.k3==q1.resp)
               let i1=resp2.k3;
-              console.log('Hello',resp2)
               for(let i=0;i<i1.length;++i){
                   p7[i]=parseInt(i1[i]);
               }
           }
-          console.log(p7)
           return p7;
       }
   }
@@ -161,6 +160,20 @@ function IndiOpt2(params){
                   <IndiOpt21 q1={q1} ind={ind} horz={horz} submit={submit} val={val} setVal={setVal}/>
               )
           })}
+              {q1.resp!=' ' && 
+        (check?(
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+</svg>
+
+        ):(
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+<path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+</svg>
+
+        ))
+        
+    }
       </table>
       </>
   )
@@ -169,8 +182,9 @@ function IndiOpt3(params){
   const {q1,submit,id,val,setVal,setSubmit,eventId}=params;
   const [horz,setHorz]=useState([]);
   const [vert,setVert]=useState([]);
+  const [check,setCheck]=useState(false);
   const getQues=async (p7)=>{
-      const resp1=await fetch('http://3.110.223.82:8000/getPart',{
+      const resp1=await fetch('http://localhost:8000/getPart',{
           method:'POST',   
           headers:{
               'Content-Type':'application/json',
@@ -182,6 +196,7 @@ function IndiOpt3(params){
       if(resp2.success){
           if(resp2.k2){
               setSubmit(resp2.k2);
+              setCheck(resp2.k3==q1.resp)
               let i1=resp2.k3.split(':');
               for(let i=0;i<i1.length;++i){
                   for(let j=0;j<i1[i].length;++j){
@@ -245,6 +260,20 @@ function IndiOpt3(params){
                  <IndiOpt31 q1={q1} ind={ind} horz={horz} submit={submit} val={val} setVal={setVal}/>
               )
           })}
+              {q1.resp!=' ' && 
+        (check?(
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+</svg>
+
+        ):(
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+<path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+</svg>
+
+        ))
+        
+    }
       </table>
       </>
   )
@@ -254,7 +283,7 @@ function IndiOpt4(params){
   const {id,val,submit,check,setCheck,ind}=params
   return (
       <div>
-      <input type="radio" name={id} checked={ind==check}   disabled={submit} onChange={(e)=>{
+      <input type="radio" name={id} checked={ind==check}   disabled={true} onChange={(e)=>{
           setCheck(ind) }}  className='mr-2'/>
       <br/>
       <label htmlFor="option">{val}</label>
@@ -299,7 +328,7 @@ function IndiQues(params){
             setVal(k1);
         }
         const getQues=async ()=>{
-            const resp1=await fetch('http://3.110.223.82:8000/getPart',{
+            const resp1=await fetch('http://localhost:8000/getPart',{
                 method:'POST',   
                 headers:{
                     'Content-Type':'application/json',
@@ -311,7 +340,8 @@ function IndiQues(params){
             if(resp2.success){
                 if(resp2.k2){
                     setSubmit(resp2.k2);
-                    setCheck(resp2.k1);
+                    setCheck(q1.resp==resp2.k3);
+                    console.log(q1.resp,resp2.k3)
                     if(q1.type=='dropdown' || q1.type=='descriptive'){
                         setVal1(resp2.k3);
                     }
@@ -341,7 +371,7 @@ function IndiQues(params){
     {
         return (
           <>
-             <input type="radio" name={q1._id} checked={ind==check1} disabled={submit}  className='mr-2'/>
+             <input type="radio" name={q1._id} checked={ind==check1} disabled={true}  className='mr-2'/>
         <label htmlFor="option">{v1}</label>
         <br /></>
         )
@@ -353,7 +383,7 @@ function IndiQues(params){
     })
     }
     {q1.type=='dropdown' && (
-        <select name="dropdown" value={val1} disabled={submit} onChange={(e)=>{setVal1(e.target.value)}} className='outline-none border-none px-4 py-2 rounded-md'>
+        <select name="dropdown" value={val1} disabled={true} onChange={(e)=>{setVal1(e.target.value)}} className='outline-none border-none px-4 py-2 rounded-md'>
         {q1.options.map((v1,ind)=>
     {
         return (
@@ -365,9 +395,15 @@ function IndiQues(params){
     </select>
     )
     }
-    {q1.type=='descriptive'  && (<input value={val1} disabled={submit} onChange={(e)=>{setVal1(e.target.value)}} className='p-2 mx-1 rounded-md bg-white'/>)}
+    {q1.type=='descriptive'  && (<input value={val1} disabled={true} onChange={(e)=>{setVal1(e.target.value)}} className='p-2 mx-1 rounded-md bg-white'/>)}
 
-    {/* {q1.eventId!='660e9851132c16d83a65f910' && submit && 
+        {q1.type=='grid' && <IndiOpt2 id={q1._id} q1={q1} submit={submit} val={val} setVal={setVal} setSubmit={setSubmit} eventId={eventId}/>}
+    {q1.type=='multigrid' && <IndiOpt3 id={q1._id} q1={q1} eventId={eventId} submit={submit} setSubmit={setSubmit} val={val} setVal={setVal}/>}
+    <div className='flex flex-wrap gap-2'>
+    {q1.type=='linear' && q1.options.map((i1,ind)=>{
+        return <IndiOpt4 val={i1} id={q1._id} check={check1} eventId={eventId} setCheck={setCheck1} setSubmit={setSubmit} submit={submit} ind={ind}/>
+    })}</div>
+    {q1.resp!=' ' &&  (q1.type!='grid' && q1.type!='multigrid')&&
         (check?(
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -380,13 +416,7 @@ function IndiQues(params){
 
         ))
         
-    } */}
-        {q1.type=='grid' && <IndiOpt2 id={q1._id} q1={q1} submit={submit} val={val} setVal={setVal} setSubmit={setSubmit} eventId={eventId}/>}
-    {q1.type=='multigrid' && <IndiOpt3 id={q1._id} q1={q1} eventId={eventId} submit={submit} setSubmit={setSubmit} val={val} setVal={setVal}/>}
-    <div className='flex flex-wrap gap-2'>
-    {q1.type=='linear' && q1.options.map((i1,ind)=>{
-        return <IndiOpt4 val={i1} id={q1._id} check={check1} eventId={eventId} setCheck={setCheck1} setSubmit={setSubmit} submit={submit} ind={ind}/>
-    })}</div>
+    }
     {eventId=='660e9851132c16d83a65f910' && (sz==(ind1+1)) && <div className='flex flex-wrap gap-2'>
        {big==val2[0] && <div>
           <div className='text-3xl font-semibold mx-2'>Authoritative</div>
@@ -515,7 +545,7 @@ function Result() {
     const [sz,setSz]=useState(0)
     const locate=useLocation();
     const navigate=useNavigate()
-    const postQues=async (id)=>{const resp1=await fetch('http://3.110.223.82:8000/postQues',{
+    const postQues=async (id)=>{const resp1=await fetch('http://localhost:8000/postQues',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -527,7 +557,7 @@ function Result() {
        if(resp2.success){
         let k5=[];
         for(let i=0;i<resp2.ques.length;++i){
-            const res1=await fetch('http://3.110.223.82:8000/getQues1',{
+            const res1=await fetch('http://localhost:8000/getQues1',{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',
@@ -543,7 +573,7 @@ function Result() {
         setQues(k5);
        }
     }
-    const getAllQues=async()=>{const res=await fetch('http://3.110.223.82:8000/getAllQues',{
+    const getAllQues=async()=>{const res=await fetch('http://localhost:8000/getAllQues',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
@@ -561,7 +591,7 @@ function Result() {
     }
     }
     const getDate = async()=>{
-      const resp=await fetch('http://3.110.223.82:8000/getDate',{
+      const resp=await fetch('http://localhost:8000/getDate',{
         method:'POST',
         headers:{
           'auth-token':localStorage.getItem('token1'),
@@ -579,7 +609,7 @@ function Result() {
       }
     } 
     const handle=async ()=>{
-      const resp=await fetch('http://3.110.223.82:8000/getData1',{
+      const resp=await fetch('http://localhost:8000/getData1',{
           method:'GET',
           headers:{
               'Content-Type':'application/json',

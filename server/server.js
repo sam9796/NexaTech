@@ -15,6 +15,7 @@ const bodyParser = require('body-parser');
 const Question=require('./Model/Question.model.js')
 const Razorpay=require('razorpay');
 const Payment= require("./Model/Payment.model.js");
+const Contact=require('./Model/Contact.model.js')
 const crypto=require('crypto')
 const path=require('path')
 require("dotenv").config();
@@ -71,6 +72,11 @@ mongoose
     key_id: process.env.key_id,
     key_secret: process.env.key_secret
 });
+
+app.post('/saveContact',async (req,res)=>{
+    const {name,mail,description}=req.body
+    await Contact.create({name:name,email:mail,description:description})
+})
 
 app.post('/verifyMail',async (req,res)=>{
     const {firstName,lastName,contact,email}=req.body;
@@ -310,6 +316,11 @@ app.post('/loginParticipant',async (req,res)=>{
     else {
         return res.json({success:false,msg:'this email is not registered'})
     }
+})
+app.post('/getAllEvents1',fetchuser,async (req,res)=>{
+    const {eventId}=req.body
+    const events=await Event.findOne({_id:eventId});
+    return res.json({success:true,events:events,user:req.user.id});
 })
 app.get('/getAllEvents',fetchuser,async (req,res)=>{
     const events=await Event.find();
@@ -560,7 +571,7 @@ app.post('/getEvent1',fetchuser,async (req,res)=>{
     const {eventId}=req.body;
     const e1=await Event.find({_id:eventId});
     if(e1){
-        return res.json({success:true,event:e1[0]})
+        return res.json({success:true,event:e1[0],user:req.user.id})
     }
     else res.json({success:false,msg:'Unable to get the event details'})
 })
