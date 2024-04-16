@@ -155,7 +155,7 @@ function IndiQues(params){
         mqttClient.publish(`${q1.eventId}/${part[i]}/state`,JSON.stringify(q1));}
     }
     const handleGraph=async ()=>{
-        const resp=await fetch('http://3.110.223.82/:8000/getGraph',{
+        const resp=await fetch('http://3.110.223.82:8000/getGraph',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -173,7 +173,7 @@ function IndiQues(params){
         }
     }
     const handleDelete=async (id)=>{
-        const resp=await fetch('http://3.110.223.82/:8000/deleteQues',{
+        const resp=await fetch('http://3.110.223.82:8000/deleteQues',{
             method:'DELETE',
             headers:{
                 'Content-Type':'application/json',
@@ -289,7 +289,7 @@ function IndiEvent() {
     const [id2,setId2]=useState('')
 
     const getAllQuiz=async ()=>{
-        const resp=await fetch('http://3.110.223.82/:8000/getQuizzes',{
+        const resp=await fetch('http://3.110.223.82:8000/getQuizzes',{
             method:'GET',
             headers:{
                 'auth-token':localStorage.getItem('token'),
@@ -306,7 +306,7 @@ function IndiEvent() {
 
 
     const getAll=async ()=>{
-        const resp=await fetch('http://3.110.223.82/:8000/getAllQues',{
+        const resp=await fetch('http://3.110.223.82:8000/getAllQues',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -348,7 +348,7 @@ function IndiEvent() {
         });
         return;
     }
-    const resp=await fetch('http://3.110.223.82/:8000/addQues',{
+    const resp=await fetch('http://3.110.223.82:8000/addQues',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -393,7 +393,7 @@ const handleEditClick=async ()=>{
         });
         return;
     }
-    const resp=await fetch('http://3.110.223.82/:8000/editQues',{
+    const resp=await fetch('http://3.110.223.82:8000/editQues',{
         method:'PATCH',
         headers:{
             'Content-Type':'application/json',
@@ -431,7 +431,7 @@ const handleEditClick=async ()=>{
 }
     
     const handlePost=async (eventId)=>{
-        const resp=await fetch('http://3.110.223.82/:8000/postQues',{
+        const resp=await fetch('http://3.110.223.82:8000/postQues',{
             method:'POST',
             headers:{
                 'auth-token':localStorage.getItem('token'),
@@ -459,7 +459,7 @@ const handleEditClick=async ()=>{
     }
 
     const handle=async ()=>{
-        const resp=await fetch('http://3.110.223.82/:8000/getData2',{
+        const resp=await fetch('http://3.110.223.82:8000/getData2',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -491,7 +491,7 @@ const handleEditClick=async ()=>{
         })
     }
     const handleGetQuiz=async ()=>{
-        const resp=await fetch('http://3.110.223.82/:8000/getQuiz1',{
+        const resp=await fetch('http://3.110.223.82:8000/getQuiz1',{
             method:'POST',
             headers:{
                 'auth-token':localStorage.getItem('token'),
@@ -531,7 +531,7 @@ const handleEditClick=async ()=>{
 </div>
 <p className='mt-5 text-lg'>{event.description}</p>
 <div className='mt-5'></div>
-<QRCodeCanvas value={`http://3.110.223.82/:8000/register?event=${event._id}`}/>
+<QRCodeCanvas value={`http://3.110.223.82:8000/register?event=${event._id}`}/>
 <div className='mt-5'></div>
 <div onClick={()=>{clipBoard()}} className='cursor-pointer inline font-semibold px-4 py-2 bg-[#315EFF] text-white rounded-md mb-10'>Copy QuizId</div>
 {/* {!(event.finished) && (

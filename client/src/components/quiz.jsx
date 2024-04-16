@@ -95,7 +95,7 @@ function IndiOpt2(params){
     const [horz,setHorz]=useState([]);
     const [vert,setVert]=useState([]);
     const getQues=async (p7)=>{
-        const resp1=await fetch('http://3.110.223.82/:8000/getPart',{
+        const resp1=await fetch('http://3.110.223.82:8000/getPart',{
             method:'POST',   
             headers:{
                 'Content-Type':'application/json',
@@ -171,7 +171,7 @@ function IndiOpt3(params){
     const [horz,setHorz]=useState([]);
     const [vert,setVert]=useState([]);
     const getQues=async (p7)=>{
-        const resp1=await fetch('http://3.110.223.82/:8000/getPart',{
+        const resp1=await fetch('http://3.110.223.82:8000/getPart',{
             method:'POST',   
             headers:{
                 'Content-Type':'application/json',
@@ -283,7 +283,7 @@ function IndiQues(params){
             setVal(k1);
         }
         const getQues=async ()=>{
-            const resp1=await fetch('http://3.110.223.82/:8000/getPart',{
+            const resp1=await fetch('http://3.110.223.82:8000/getPart',{
                 method:'POST',   
                 headers:{
                     'Content-Type':'application/json',
@@ -341,7 +341,7 @@ function IndiQues(params){
                 }
             }
         }
-        const resp=await fetch('http://3.110.223.82/:8000/checkques',{
+        const resp=await fetch('http://3.110.223.82:8000/checkques',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -462,7 +462,7 @@ function Quiz(params) {
         }
     }
     const handle1=async (m)=>{
-        const resp1=await fetch('http://3.110.223.82/:8000/postQues',{
+        const resp1=await fetch('http://3.110.223.82:8000/postQues',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -489,7 +489,7 @@ function Quiz(params) {
         return () => { window.onbeforeunload = null };
     }, []);
     const handleClick=async ()=>{
-        const resp1=await fetch('http://3.110.223.82/:8000/checkQues1',{
+        const resp1=await fetch('http://3.110.223.82:8000/checkQues1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -543,7 +543,7 @@ function checkComplete() {
 }
     }
     const handle=async ()=>{
-        const resp=await fetch('http://3.110.223.82/:8000/getData1',{
+        const resp=await fetch('http://3.110.223.82:8000/getData1',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
