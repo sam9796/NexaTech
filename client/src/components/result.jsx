@@ -92,7 +92,7 @@ function IndiOpt2(params){
   const [check,setCheck]=useState(false);
 
   const getQues=async (p7)=>{
-      const resp1=await fetch('http://localhost:8000/getPart',{
+      const resp1=await fetch('http://3.110.223.82/:8000/getPart',{
           method:'POST',   
           headers:{
               'Content-Type':'application/json',
@@ -184,7 +184,7 @@ function IndiOpt3(params){
   const [vert,setVert]=useState([]);
   const [check,setCheck]=useState(false);
   const getQues=async (p7)=>{
-      const resp1=await fetch('http://localhost:8000/getPart',{
+      const resp1=await fetch('http://3.110.223.82/:8000/getPart',{
           method:'POST',   
           headers:{
               'Content-Type':'application/json',
@@ -291,7 +291,7 @@ function IndiOpt4(params){
   )
 }
 function IndiQues(params){
-    const {sz,q1,ind1,eventId,val2,setVal2}=params
+    const {sz,q1,ind1,eventId,val2,setVal2,sz1,setSz1}=params
     const [check1,setCheck1]=useState(-1);
     const [val,setVal]=useState([]);
     const [val1,setVal1]=useState('')
@@ -311,10 +311,12 @@ function IndiQues(params){
       else {
         val2[3]+=(3-check1);
       }
+      ++sz1;
+      setSz1(sz1);
       setVal2(val2);
     }
     useEffect(()=>{
-      if(sz==(ind1+1)){let v1=val2;
+      if(sz==sz1){let v1=val2;
       v1.sort();
       v1.reverse();
       setBig(v1[0]);}
@@ -328,7 +330,7 @@ function IndiQues(params){
             setVal(k1);
         }
         const getQues=async ()=>{
-            const resp1=await fetch('http://localhost:8000/getPart',{
+            const resp1=await fetch('http://3.110.223.82/:8000/getPart',{
                 method:'POST',   
                 headers:{
                     'Content-Type':'application/json',
@@ -357,7 +359,7 @@ function IndiQues(params){
             }
         }
         if(q1.type!='grid' && q1.type!='multigrid') getQues();
-        handle();
+        if(q1.quizId=='661abc1d6b6e63f6537e6eb2')handle();
     },[])
     return (
         <div className='my-5 mx-10'>
@@ -417,7 +419,7 @@ function IndiQues(params){
         ))
         
     }
-    {eventId=='660e9851132c16d83a65f910' && (sz==(ind1+1)) && <div className='flex flex-wrap gap-2'>
+    {q1.quizId=='661abc1d6b6e63f6537e6eb2' && (sz==sz1) && <div className='flex flex-wrap gap-2'>
        {big==val2[0] && <div>
           <div className='text-3xl font-semibold mx-2'>Authoritative</div>
           <table className='mx-2 w-full sm:w-3/4 md:w-1/2'>
@@ -543,37 +545,11 @@ function Result() {
     const [val2,setVal2]=useState([0,0,0,0])
     const [id,setId]=useState('')
     const [sz,setSz]=useState(0)
+    const [sz1,setSz1]=useState(0);
     const locate=useLocation();
     const navigate=useNavigate()
-    const postQues=async (id)=>{const resp1=await fetch('http://localhost:8000/postQues',{
-        method:'POST',
-        headers:{
-            'Content-Type':'application/json',
-            'auth-token':localStorage.getItem('token1')
-        },
-        body:JSON.stringify({eventId:locate.state.eventId,id:id})
-       })
-       const resp2=await resp1.json();
-       if(resp2.success){
-        let k5=[];
-        for(let i=0;i<resp2.ques.length;++i){
-            const res1=await fetch('http://localhost:8000/getQues1',{
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json',
-                    'auth-token':localStorage.getItem('token1')
-                },
-                body:JSON.stringify({quesId:resp2.ques[i]})
-            })
-            const res2=await res1.json();
-            if(res2.success){
-                k5.push(res2.ques);
-            }
-        }
-        setQues(k5);
-       }
-    }
-    const getAllQues=async()=>{const res=await fetch('http://localhost:8000/getAllQues',{
+   
+    const getAllQues=async()=>{const res=await fetch('http://3.110.223.82/:8000/getAllQues',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
@@ -583,15 +559,16 @@ function Result() {
      })
     const res1=await res.json();
     if(res1.success){
-      setSz(res1.ques.length)
-      for(let i=0;i<res1.ques.length;++i){
-        postQues(res1.ques[i]._id);
-        
-      }
+        let l1=0;
+        for(let i=0;i<res1.ques.length;++i){
+            if(res1.ques.quizId=='661abc1d6b6e63f6537e6eb2')++l1;
+        }
+      setSz(l1);
+        setQues(res1.ques);
     }
     }
     const getDate = async()=>{
-      const resp=await fetch('http://localhost:8000/getDate',{
+      const resp=await fetch('http://3.110.223.82/:8000/getDate',{
         method:'POST',
         headers:{
           'auth-token':localStorage.getItem('token1'),
@@ -609,7 +586,7 @@ function Result() {
       }
     } 
     const handle=async ()=>{
-      const resp=await fetch('http://localhost:8000/getData1',{
+      const resp=await fetch('http://3.110.223.82/:8000/getData1',{
           method:'GET',
           headers:{
               'Content-Type':'application/json',
@@ -647,7 +624,7 @@ function Result() {
       <div className='w-full rounded-md bg-[#CCEFFF]'>
       {ques.map((q1,ind1)=>{
         
-        return (  <IndiQues q1={q1} sz={sz} ind1={ind1} eventId={locate.state.eventId} val2={val2} setVal2={setVal2}/> )
+        return (  <IndiQues q1={q1} sz={sz} sz1={sz1} setSz1={setSz1} ind1={ind1} eventId={locate.state.eventId} val2={val2} setVal2={setVal2}/> )
         })}
         {visible && <button onClick={()=>{handleNavigate()}}  className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Enroll</button>}
       </div>

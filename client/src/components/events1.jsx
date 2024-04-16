@@ -19,7 +19,7 @@ function Events1() {
     const [user1,setUser1]=useState('');
     const [id,setId]=useState('')
     const handle=async ()=>{
-        const resp=await fetch('http://localhost:8000/getData1',{
+        const resp=await fetch('http://3.110.223.82/:8000/getData1',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -41,7 +41,7 @@ function Events1() {
         }
     }
     const getAll=async ()=>{
-        const resp=await fetch('http://localhost:8000/getAllEvents',{
+        const resp=await fetch('http://3.110.223.82/:8000/getAllEvents',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -69,7 +69,7 @@ function Events1() {
                     }
                     else {arr.push(true);}
                     let l3=resp1.events[i]._id
-                    const res1=await fetch('http://localhost:8000/isSubmitted',{
+                    const res1=await fetch('http://3.110.223.82/:8000/isSubmitted',{
                         method:'POST',
                         headers:{
                             'Content-Type':'application/json',
@@ -97,7 +97,7 @@ function Events1() {
         }
     }
     const handleAlp=async (event_id)=>{
-        const res1=await fetch('http://localhost:8000/getEvent1',{
+        const res1=await fetch('http://3.110.223.82/:8000/getEvent1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -129,7 +129,7 @@ function Events1() {
         }  
     },[])
     const handleRegister=async (id)=>{
-        const resp=await fetch('http://localhost:8000/registerParticipant',{
+        const resp=await fetch('http://3.110.223.82/:8000/registerParticipant',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',

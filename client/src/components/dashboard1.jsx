@@ -20,7 +20,7 @@ function Dashboard1() {
     const [user1,setUser1]=useState('');
     const [id,setId]=useState('')
     const handle=async ()=>{
-        const resp=await fetch('http://localhost:8000/getData1',{
+        const resp=await fetch('http://3.110.223.82/:8000/getData1',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -43,32 +43,28 @@ function Dashboard1() {
         }
     }
     const getAll=async ()=>{
-        const resp=await fetch('http://localhost:8000/getAllEvents1',{
+        const resp=await fetch('http://3.110.223.82/:8000/getAllEvents1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
                 'auth-token':localStorage.getItem('token1')
             },
-            body:JSON.stringify({eventId:locate.state?locate.state.event:'660d8e9b1302e50191d4658a'})
+            body:JSON.stringify({eventId:locate.state?locate.state.event:'661aaf5f44e2674d247414dc'})
         })
         const resp1=await resp.json();
         if(resp1.success){
-                let p1=[{}]
-                console.log(resp1)
-                p1[0]=(resp1.events)
-                setEvents(p1);
+                setEvents(resp1.events);
                 let arr=[];
                 let f1=[]
-                let n=resp1.events.length;
+                // let n=resp1.events.length;
                 let u1=resp1.user;
                 setUser(u1)
-               
-                    if(resp1.events.participant.indexOf(u1)==-1){
+                    if(resp1.events[0].participant.indexOf(u1)==-1){
                         arr.push(false);
                     }
                     else {arr.push(true);}
-                    let l3=resp1.events._id
-                    const res1=await fetch('http://localhost:8000/isSubmitted',{
+                    let l3=resp1.events[0]._id
+                    const res1=await fetch('http://3.110.223.82/:8000/isSubmitted',{
                         method:'POST',
                         headers:{
                             'Content-Type':'application/json',
@@ -94,7 +90,7 @@ function Dashboard1() {
         }
     }
     const handleAlp=async ()=>{
-        const res1=await fetch('http://localhost:8000/getEvent1',{
+        const res1=await fetch('http://3.110.223.82/:8000/getEvent1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -116,7 +112,7 @@ function Dashboard1() {
     handle();
     },[])
     const handleRegister=async (id)=>{
-        const resp=await fetch('http://localhost:8000/registerParticipant',{
+        const resp=await fetch('http://3.110.223.82/:8000/registerParticipant',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',

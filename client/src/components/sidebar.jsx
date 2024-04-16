@@ -9,6 +9,7 @@ function Sidebar() {
         if(url=='/event' || url=='/indiEvent'){
             setNav([false,true,false,false,false,false,false])
         }
+        if(url=='/quizmain' || url=='/indiQuiz')setNav([false,false,true,false,false,false,false])
     },[])
     const navigate=useNavigate()
     const handleClick=(e,url,ind)=>{
@@ -35,7 +36,7 @@ function Sidebar() {
       </div>
       <div className='flex gap-9'>
         <div className={`${nav[2]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
-      <div className={` cursor-pointer font-semibold ${nav[2]?'text-white bg-[#315EFF]':''}  py-2 px-5 rounded-lg`}>Quiz</div>
+      <div onClick={(e)=>{handleClick(e,'quizmain',2)}}  className={` cursor-pointer font-semibold ${nav[2]?'text-white bg-[#315EFF]':''}  py-2 px-5 rounded-lg`}>Quiz</div>
       </div>
       <div className='flex gap-9'>
         <div className={`${nav[3]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>

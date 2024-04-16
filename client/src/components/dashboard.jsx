@@ -4,12 +4,14 @@ import Sidebar from './sidebar'
 import Bell from '../assets/Icon.png'
 import Flag from '../assets/Flag.png'
 import Man from '../assets/man.png'
+import { toast } from 'react-toastify';
+
 
 function Dashboard() {
   const [visible,setVisible]=useState(false);
   const [id,setId]=useState('')
   const handle=async ()=>{
-    const resp=await fetch('http://localhost:8000/getData2',{
+    const resp=await fetch('http://3.110.223.82/:8000/getData2',{
         method:'GET',
         headers:{
             'Content-Type':'application/json',

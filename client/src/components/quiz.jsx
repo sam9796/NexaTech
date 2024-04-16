@@ -5,12 +5,9 @@ import Bell from '../assets/Icon.png'
 import Flag from '../assets/Flag.png'
 import Man from '../assets/man.png'
 import { useLocation,useNavigate } from 'react-router-dom'
-import mqtt from 'mqtt'
+import { toast } from 'react-toastify';
+import { useGlobalState } from './context'
 
-const mqttClient=mqtt.connect('ws://65.2.179.139:9001/mqtt', {
-  username: 'gwortssh',
-  password: 'F3Ce-SNdObpe',
-})
 function IndiOpt(params){
     const {ind,v1,id,check,setCheck,submit}=params
     return (
@@ -98,7 +95,7 @@ function IndiOpt2(params){
     const [horz,setHorz]=useState([]);
     const [vert,setVert]=useState([]);
     const getQues=async (p7)=>{
-        const resp1=await fetch('http://localhost:8000/getPart',{
+        const resp1=await fetch('http://3.110.223.82/:8000/getPart',{
             method:'POST',   
             headers:{
                 'Content-Type':'application/json',
@@ -174,7 +171,7 @@ function IndiOpt3(params){
     const [horz,setHorz]=useState([]);
     const [vert,setVert]=useState([]);
     const getQues=async (p7)=>{
-        const resp1=await fetch('http://localhost:8000/getPart',{
+        const resp1=await fetch('http://3.110.223.82/:8000/getPart',{
             method:'POST',   
             headers:{
                 'Content-Type':'application/json',
@@ -267,12 +264,17 @@ function IndiOpt4(params){
 }
 
 function IndiQues(params){
-    const {q1,ind1,eventId}=params
+    const {q1,ind1,eventId,timer}=params
     const [check1,setCheck1]=useState(-1);
     const [val,setVal]=useState([]);
     const [val1,setVal1]=useState('')
     const [submit,setSubmit]=useState(false)
+    const { globalState, setGlobalState } = useGlobalState();
     useEffect(()=>{
+        if(timer.length>0){
+            let t1=parseInt(timer);
+            handleTimer(t1);
+        }
         let k1=[]
         if(q1.type=='multiple'){
             for(let i=0;i<q1.options.length;++i){
@@ -281,7 +283,7 @@ function IndiQues(params){
             setVal(k1);
         }
         const getQues=async ()=>{
-            const resp1=await fetch('http://localhost:8000/getPart',{
+            const resp1=await fetch('http://3.110.223.82/:8000/getPart',{
                 method:'POST',   
                 headers:{
                     'Content-Type':'application/json',
@@ -312,11 +314,13 @@ function IndiQues(params){
         }
        if(q1.type!='grid' && q1.type!='multigrid') getQues();
     },[])
+
     const handleSubmit=async ()=>{
         let v1;
         if(q1.type=='multiple' || q1.type=='grid' || q1.type=='multigrid')v1=val;
         else if(q1.type=='single' || q1.type=='linear')v1=check1;
         else v1=val1;
+        console.log(v1,check1)
         if(q1.type=='single' || q1.type=='linear'){
             if(v1==-1){
                 toast.error('Respond to all the questions',{
@@ -337,7 +341,7 @@ function IndiQues(params){
                 }
             }
         }
-        const resp=await fetch('http://localhost:8000/checkques',{
+        const resp=await fetch('http://3.110.223.82/:8000/checkques',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -349,6 +353,34 @@ function IndiQues(params){
         if(resp1.success){
                 setSubmit(true);
         }
+    }
+    const handleTimer=(minutes)=>{
+        let interval;
+        let currentTime = localStorage.getItem('currentTime');
+let targetTime = localStorage.getItem('targetTime');
+if (targetTime == null && currentTime == null) {
+  currentTime = new Date();
+  targetTime = new Date(currentTime.getTime() + (minutes * 60000));
+  localStorage.setItem('currentTime', currentTime);
+  localStorage.setItem('targetTime', targetTime);
+}
+else{
+  currentTime = new Date(currentTime);
+  targetTime = new Date(targetTime);
+}
+
+if(!checkComplete()){
+  interval = setInterval(checkComplete, 1000);
+}
+
+function checkComplete() {
+  if ((currentTime > targetTime)) {
+    clearInterval(interval);
+    handleSubmit();
+  } else {
+    currentTime = new Date();
+  }
+}
     }
     return (
         <div className='my-5 mx-10'>
@@ -410,7 +442,8 @@ function IndiQues(params){
     )
 }
 
-function Quiz() {
+function Quiz(params) {
+    const {id1,q1,time,setVis}=params
     const [ques,setQues]=useState([])
     const [resp,setResp]=useState([])
     const [check,setCheck]=useState([])
@@ -420,8 +453,35 @@ function Quiz() {
     const [clock,setClock]=useState(0)
     const [visible,setVisible]=useState(false);
     const locate=useLocation();
-    const navigate=useNavigate()
+    const navigate=useNavigate();
+    const { globalState, setGlobalState } = useGlobalState();
+    
+    const handle2=()=>{
+        for(let i=0;i<q1.length;++i){
+            handle1(q1[i]);
+        }
+    }
+    const handle1=async (m)=>{
+        const resp1=await fetch('http://3.110.223.82/:8000/postQues',{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'auth-token':localStorage.getItem('token1')
+        },
+        body:JSON.stringify({eventId:locate.state.eventId,id:m._id})
+       })
+       const resp2=await resp1.json();
+    }
+
     useEffect(() => {
+        handle2();
+        setGlobalState(false);
+        setQues(q1)
+        console.log(time)
+        if(time.length>0){
+            let t1=parseInt(time);
+            handleTimer(t1);
+        }
         // Prompt confirmation when reload page is triggered
         window.onbeforeunload = () => { return "" };
             
@@ -429,13 +489,13 @@ function Quiz() {
         return () => { window.onbeforeunload = null };
     }, []);
     const handleClick=async ()=>{
-        const resp1=await fetch('http://localhost:8000/checkQues1',{
+        const resp1=await fetch('http://3.110.223.82/:8000/checkQues1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
                 'auth-token':localStorage.getItem('token1')
             },
-            body:JSON.stringify({eventId:locate.state.eventId})
+            body:JSON.stringify({eventId:id1})
         })
         const resp2=await resp1.json();
         if(resp2.success){
@@ -449,36 +509,11 @@ function Quiz() {
             })
         }
     }
-    const postQues=async (m)=>{const resp1=await fetch('http://localhost:8000/postQues',{
-        method:'POST',
-        headers:{
-            'Content-Type':'application/json',
-            'auth-token':localStorage.getItem('token1')
-        },
-        body:JSON.stringify({eventId:locate.state.eventId,id:m._id})
-       })
-       const resp2=await resp1.json();
-       if(resp2.success){
-        let k5=[];
-        for(let i=0;i<resp2.ques.length;++i){
-            const res1=await fetch('http://localhost:8000/getQues1',{
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json',
-                    'auth-token':localStorage.getItem('token1')
-                },
-                body:JSON.stringify({quesId:resp2.ques[i]})
-            })
-            const res2=await res1.json();
-            if(res2.success){
-                k5.push(res2.ques);
-            }
-        }
-        setQues(k5);
-       }
-    }
+
     const handleTimer=(minutes)=>{
         let interval;
+        localStorage.removeItem('currentTime')
+        localStorage.removeItem('targetTime')
         let currentTime = localStorage.getItem('currentTime');
 let targetTime = localStorage.getItem('targetTime');
 if (targetTime == null && currentTime == null) {
@@ -497,11 +532,10 @@ if(!checkComplete()){
 }
 
 function checkComplete() {
-  if (currentTime > targetTime) {
+  if ( (currentTime > targetTime) || globalState ) {
     clearInterval(interval);
     localStorage.removeItem('currentTime')
     localStorage.removeItem('targetTime')
-    handleClick();
   } else {
     currentTime = new Date();
     setClock(targetTime-currentTime)
@@ -509,7 +543,7 @@ function checkComplete() {
 }
     }
     const handle=async ()=>{
-        const resp=await fetch('http://localhost:8000/getData1',{
+        const resp=await fetch('http://3.110.223.82/:8000/getData1',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -533,42 +567,21 @@ function checkComplete() {
       useEffect(()=>{
         handle();
       },[])
-    useEffect(()=>{
-        mqttClient.on('connect', () => {
-          })
-          mqttClient.subscribe(`${locate.state.eventId}/${user}/state`);
-          mqttClient.subscribe(`${locate.state.eventId}/${user}/timer`)
-          
-   mqttClient.on('message', (topic, message) => {
-       switch (topic) {
-           case `${locate.state.eventId}/${user}/state`:                                                           
-               let m = JSON.parse(message.toString());
-            postQues(m);
-               break;
-            case `${locate.state.eventId}/${user}/timer`:
-                let m1=JSON.parse(message.toString())
-                let m2=parseInt(m1);
-                handleTimer(m2)
-           default:
-       }
-   });
-    })
+      const handleClick1=()=>{
+        setGlobalState(true);
+        setVis(false);
+      }
+    
   return (
     <div>
-    <Navbar1 setVisible={setVisible} visible={visible}/>
-    <div className='flex gap-2 mt-5'>
-    <div className='m-0 p-0 hidden lg:block'>
-      <Sidebar1/>
-      </div>
       <div className='w-full rounded-md bg-[#CCEFFF]'>
         {clock>0 && <div className='m-3'>
             <h1 className='text-3xl font-bold'>Time Left: {Math.floor(clock/60000)}:{(Math.floor((clock/1000)%60)) < 10 ? `0${Math.floor((clock/1000)%60)}` : Math.floor((clock/1000)%60)}</h1>
         </div>}
       {ques.map((q1,ind1)=>{
-        
-        return (  <IndiQues q1={q1} ind1={ind1} eventId={locate.state.eventId}/> )
+        return (  <IndiQues q1={q1} ind1={ind1} eventId={id1} timer={time}/> )
         })}
-        <button onClick={()=>{handleClick()}} className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Submit</button>
+     <button onClick={()=>{handleClick1()}} className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Submit</button>
       </div>
       <div className={`mx-auto text-center  p-0 ${visible?'hidden':'block'} absolute px-5 rounded-lg bg-white right-0 lg:hidden`}>
       <div className='flex flex-col gap-5 items-center my-2'>
@@ -588,7 +601,6 @@ function checkComplete() {
         </div>
       <Sidebar1/>
       </div>
-    </div>
   </div>
   )
 }

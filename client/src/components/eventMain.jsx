@@ -4,15 +4,14 @@ import Sidebar1 from './sidebar1'
 import Bell from '../assets/Icon.png'
 import Flag from '../assets/Flag.png'
 import Man from '../assets/man.png'
+import { toast } from 'react-toastify';
 import { useLocation,useNavigate } from 'react-router-dom'
 import Welcome from '../assets/welcome.png'
 
 import mqtt from 'mqtt'
+import Quiz from './quiz'
 
-const mqttClient=mqtt.connect('ws://65.2.179.139:9001/mqtt', {
-  username: 'gwortssh',
-  password: 'F3Ce-SNdObpe',
-})
+
 function IndiOpt(params){
     const {ind,v1,id,check,setCheck,submit}=params
     return (
@@ -100,7 +99,7 @@ function IndiOpt2(params){
     const [horz,setHorz]=useState([]);
     const [vert,setVert]=useState([]);
     const getQues=async (p7)=>{
-        const resp1=await fetch('http://localhost:8000/getPart',{
+        const resp1=await fetch('http://3.110.223.82/:8000/getPart',{
             method:'POST',   
             headers:{
                 'Content-Type':'application/json',
@@ -176,7 +175,7 @@ function IndiOpt3(params){
     const [horz,setHorz]=useState([]);
     const [vert,setVert]=useState([]);
     const getQues=async (p7)=>{
-        const resp1=await fetch('http://localhost:8000/getPart',{
+        const resp1=await fetch('http://3.110.223.82/:8000/getPart',{
             method:'POST',   
             headers:{
                 'Content-Type':'application/json',
@@ -283,7 +282,7 @@ function IndiQues(params){
             setVal(k1);
         }
         const getQues=async ()=>{
-            const resp1=await fetch('http://localhost:8000/getPart',{
+            const resp1=await fetch('http://3.110.223.82/:8000/getPart',{
                 method:'POST',   
                 headers:{
                     'Content-Type':'application/json',
@@ -339,7 +338,7 @@ function IndiQues(params){
                 }
             }
         }
-        const resp=await fetch('http://localhost:8000/checkques',{
+        const resp=await fetch('http://3.110.223.82/:8000/checkques',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -423,6 +422,10 @@ function EventMain() {
     const [vis,setVis]=useState(false);
     const [vis1,setVis1]=useState(false);
     const [chat,setChat]=useState('');
+    const [h1,setH1]=useState(false);
+    const [quiz,setQuiz]=useState('')
+    const [ques2,setQues2]=useState([])
+    const [timer,setTimer]=useState('')
     const locate=useLocation();
     const navigate=useNavigate()
     useEffect(() => {
@@ -449,7 +452,7 @@ function EventMain() {
     // }, []);
 
     const handleClick=async ()=>{
-        const resp1=await fetch('http://localhost:8000/checkQues1',{
+        const resp1=await fetch('http://3.110.223.82/:8000/checkQues1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -469,7 +472,7 @@ function EventMain() {
             })
         }
     }
-    const postQues=async (m)=>{const resp1=await fetch('http://localhost:8000/postQues',{
+    const postQues=async (m)=>{const resp1=await fetch('http://3.110.223.82/:8000/postQues',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -481,7 +484,7 @@ function EventMain() {
        if(resp2.success){
         let k5=[];
         for(let i=0;i<resp2.ques.length;++i){
-            const res1=await fetch('http://localhost:8000/getQues1',{
+            const res1=await fetch('http://3.110.223.82/:8000/getQues1',{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',
@@ -498,7 +501,7 @@ function EventMain() {
        }
     }
     const handle=async ()=>{
-        const resp=await fetch('http://localhost:8000/getData1',{
+        const resp=await fetch('http://3.110.223.82/:8000/getData1',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -522,11 +525,16 @@ function EventMain() {
 
     useEffect(()=>{
         handle();
+        const mqttClient=mqtt.connect('ws://65.2.179.139:9001/mqtt', {
+  username: 'gwortssh',
+  password: 'F3Ce-SNdObpe',
+})
         mqttClient.on('connect', () => {
           })
-         
+          mqttClient.setMaxListeners(15);
           mqttClient.subscribe(`${locate.state.eventId}/${locate.state.user}/state`);
           mqttClient.subscribe(`${locate.state.eventId}/${locate.state.user}/inst`);
+          mqttClient.subscribe(`${locate.state.eventId}/${locate.state.user}/quiz`);
    mqttClient.on('message', (topic, message) => {
     
        switch (topic) {
@@ -540,6 +548,14 @@ function EventMain() {
              setChat(m1);
              setVis1(true);
              break;
+             case `${locate.state.eventId}/${locate.state.user}/quiz`:
+                let m4=JSON.parse(message.toString());
+                setQues2(m4.ques)
+                setQuiz(m4.quiz);
+                console.log(m4.timer)
+                setTimer(m4.timer)
+                setH1(true)
+                setVis1(true)
            default:
        }
    });
@@ -561,12 +577,13 @@ function EventMain() {
                 <img src={Welcome} alt="" className=''/>
             </div>
         </div>
-      {ques.map((q1,ind1)=>{
+      {!h1 && ques.map((q1,ind1)=>{
         return (  <IndiQues q1={q1} ind1={ind1} eventId={locate.state.eventId}/> )
         })}
         <div  className={`${chat.length?'block':'hidden'} text-xl mx-8 px-4 py-2 my-4 rounded-md bg-white font-semibold`}>
         {chat}
       </div>
+      {h1 && <Quiz id1={locate.state.eventId} q1={ques2} time={timer} setVis={setH1}/>}
       <button onClick={()=>{handleClick()}} className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Leave Event</button>
       </div>
       <div className={`mx-auto text-center  p-0 ${visible?'hidden':'block'} absolute px-5 rounded-lg bg-white right-0 lg:hidden`}>
