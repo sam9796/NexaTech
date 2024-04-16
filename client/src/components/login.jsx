@@ -23,7 +23,7 @@ function Login() {
       })
       return;
     }
-    const resp=await fetch('http://3.110.223.82:8000/login',{
+    const resp=await fetch('http://3.110.223.82/:8000/login',{
       method:'POST',
       headers:{
         'Content-Type':'application/json'

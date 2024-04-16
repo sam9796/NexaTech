@@ -33,7 +33,7 @@ function Register() {
         });
         return;
     }
-    const resp=await fetch('http://3.110.223.82:8000/verifyMail',{
+    const resp=await fetch('http://3.110.223.82/:8000/verifyMail',{
         method:'POST',
         headers:{
             'Content-Type':'application/json'
@@ -70,7 +70,7 @@ function Register() {
             })
             return;
         }
-        const resp=await fetch('http://3.110.223.82:8000/verifyMail1',{
+        const resp=await fetch('http://3.110.223.82/:8000/verifyMail1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json'
@@ -114,7 +114,7 @@ function Register() {
             })
             return;
         }
-        const resp=await fetch('http://3.110.223.82:8000/register',{
+        const resp=await fetch('http://3.110.223.82/:8000/register',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json'
