@@ -16,10 +16,6 @@ import Flag from '../assets/Flag.png'
 import Man from '../assets/man.png'
 Chart.register(CategoryScale);
 
-const mqttClient=mqtt.connect('ws://65.2.179.139:9001/mqtt', {
-  username: 'gwortssh',
-  password: 'F3Ce-SNdObpe',
-})
 function IndiOpt(params){
     const {v1,ind,id,val,setVal,def}=params
     let [opt,setOpt]=useState(0);
@@ -150,6 +146,10 @@ function IndiQues(params){
     const [valChart,setvalChart]=useState('')
     
     const handlePublish=(q1)=>{
+    const mqttClient=mqtt.connect('ws://65.2.179.139:9001/mqtt', {
+  username: 'gwortssh',
+  password: 'F3Ce-SNdObpe',
+    })
         let n=part.length
         for(let i=0;i<n;++i){
         mqttClient.publish(`${q1.eventId}/${part[i]}/state`,JSON.stringify(q1));}
@@ -479,6 +479,10 @@ const handleEditClick=async ()=>{
     },[])
     
     const handleSend=()=>{
+        const mqttClient=mqtt.connect('ws://65.2.179.139:9001/mqtt', {
+  username: 'gwortssh',
+  password: 'F3Ce-SNdObpe',
+})
         let part=event.participant
         for(let i=0;i<part.length;++i){
             mqttClient.publish(`${event._id}/${part[i]}/inst`,JSON.stringify(chat));
@@ -502,6 +506,10 @@ const handleEditClick=async ()=>{
         const resp1=await resp.json();
         if(resp1.success){
             let part=event.participant
+            const mqttClient=mqtt.connect('ws://65.2.179.139:9001/mqtt', {
+  username: 'gwortssh',
+  password: 'F3Ce-SNdObpe',
+})
             for(let i=0;i<part.length;++i){
                 mqttClient.publish(`${event._id}/${part[i]}/quiz`,JSON.stringify({quiz:qvalue,ques:resp1.ques,timer:resp1.timer}));
             } 
