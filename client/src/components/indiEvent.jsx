@@ -16,9 +16,9 @@ import Flag from '../assets/Flag.png'
 import Man from '../assets/man.png'
 Chart.register(CategoryScale);
 
-const mqttClient=mqtt.connect('ws://65.2.179.139:9001/mqtt', {
-  username: 'gwortssh',
-  password: 'F3Ce-SNdObpe',
+const mqttClient=mqtt.connect('ws://13.201.227.152:9001/mqtt', {
+  username: 'username',
+  password: 'Shubham@#$%^Jha#$%^',
 })
 function IndiOpt(params){
     const {v1,ind,id,val,setVal,def}=params

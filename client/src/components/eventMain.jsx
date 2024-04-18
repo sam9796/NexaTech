@@ -525,9 +525,9 @@ function EventMain() {
 
     useEffect(()=>{
         handle();
-        const mqttClient=mqtt.connect('ws://65.2.179.139:9001/mqtt', {
-  username: 'gwortssh',
-  password: 'F3Ce-SNdObpe',
+        const mqttClient=mqtt.connect('ws://13.201.227.152:9001/mqtt', {
+  username: 'username',
+  password: 'Shubham@#$%^Jha#$%^',
 })
         mqttClient.on('connect', () => {
           })

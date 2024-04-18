@@ -16,29 +16,10 @@ import Flag from '../assets/Flag.png'
 import Man from '../assets/man.png'
 Chart.register(CategoryScale);
 
-const mqttClient=mqtt.connect('ws://65.2.179.139:9001/mqtt', {
-  username: 'gwortssh',
-  password: 'F3Ce-SNdObpe',
-})
 function IndiOpt(params){
     const {v1,ind,id,val,setVal,def}=params
     let [opt,setOpt]=useState(0);
-    useEffect(()=>{
-        mqttClient.subscribe(`${id}/${ind}`);
-   mqttClient.on('message', (topic, message) => {
-       switch (topic) {
-           case `${id}/${ind}`:                                                         
-               let m = parseInt(JSON.parse(message.toString()).val);   
-               opt+=m;
-               setOpt(opt)
-               val[ind]=opt;
-               setVal(val);
-               break;
-           default:
-       }
-   });
-   
-    },[])
+    
     return (<div className='flex gap-2'><div className='my-2 p-2 mx-1 rounded-md bg-white'>{v1}</div>
     <div className='my-auto'>{def?(def):(opt)}</div>
     </div>)
@@ -164,11 +145,6 @@ function IndiQues(params){
     const [visible,setVisible]=useState('hidden')
     const [valChart,setvalChart]=useState('')
     
-    const handlePublish=(q1)=>{
-        let n=part.length
-        for(let i=0;i<n;++i){
-        mqttClient.publish(`${q1.eventId}/${part[i]}/state`,JSON.stringify(q1));}
-    }
     const handleGraph=async ()=>{
         const resp=await fetch('http://3.110.223.82:8000/getGraph',{
             method:'POST',
