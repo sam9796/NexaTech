@@ -23,7 +23,22 @@ const mqttClient=mqtt.connect('ws://65.2.179.139:9001/mqtt', {
 function IndiOpt(params){
     const {v1,ind,id,val,setVal,def}=params
     let [opt,setOpt]=useState(0);
-    
+    useEffect(()=>{
+        mqttClient.subscribe(`${id}/${ind}`);
+   mqttClient.on('message', (topic, message) => {
+       switch (topic) {
+           case `${id}/${ind}`:                                                         
+               let m = parseInt(JSON.parse(message.toString()).val);   
+               opt+=m;
+               setOpt(opt)
+               val[ind]=opt;
+               setVal(val);
+               break;
+           default:
+       }
+   });
+   
+    },[])
     return (<div className='flex gap-2'><div className='my-2 p-2 mx-1 rounded-md bg-white'>{v1}</div>
     <div className='my-auto'>{def?(def):(opt)}</div>
     </div>)
@@ -206,9 +221,8 @@ function IndiQues(params){
         setOption(l1);
         setId(q1._id);
         setAns(q1.resp)
-            setId2(q1.eventId);
+            setId2(q1.quizId);
     }
-    
     return (
         <>
         <div className='mt-4'>Q{ind+1}</div>
@@ -225,20 +239,20 @@ function IndiQues(params){
             </div>
             </div>
         {(q1.type!='grid' && q1.type!='multigrid') && q1.options.map((v1,ind)=>
-        {return <IndiOpt v1={v1} ind={ind} id={q1._id} val={val} setVal={setVal} def={q1.count[q1.type=='descriptive'?0:ind]}/>})}
+        {return <IndiOpt v1={v1} ind={ind} id={q1._id} val={val} setVal={setVal} def={[0]}/>})}
         { (q1.type=='grid' || q1.type=='multigrid') && <IndiOpt3 q1={q1}/>}
             <div className='flex gap-4 flex-wrap md:flex-nowrap'>
             {/* <div className='mt-2'>Correct.{" "+q1.correct}</div>
             <div>Incorrect.{" "+q1.incorrect}</div> */}
-            {
+            {/* {
             //    <button className='mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Stop</button>
-            <button onClick={()=>{handlePublish(q1)}} className='mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Post</button>}
-            <button className='mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'
+            <button onClick={()=>{handlePublish(q1)}} className='mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Post</button>} */}
+            {/* <button className='mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'
             onClick={()=>{
                 if(visible=='hidden')setVisible('visible')
                 else setVisible('hidden')
-            }}>{visible=='visible'?'Hide':'Show'} Graph</button>
-            <div className='mt-auto'>
+            }}>{visible=='visible'?'Hide':'Show'} Graph</button> */}
+            {/* <div className='mt-auto'>
                 <select name="chart" id="chart" className='py-2 px-4 rounded-md outline-none' value={valChart}
                 onChange={(e)=>{setvalChart(e.target.value);}}>
                     <option value="none">None</option>
@@ -246,7 +260,7 @@ function IndiQues(params){
                     <option value="bar">Bar Chart</option>
                     <option value="line">Line Chart</option>
                 </select>
-            </div>
+            </div> */}
             </div>
             {(q1.type!='grid' && q1.type!='multigrid') && <div className={`${visible}`}>
             {valChart=='bar' && <MyChart chartData={{labels:q1.options,datasets:[{
@@ -268,45 +282,26 @@ function IndiQues(params){
     )
 }
 
-function IndiEvent() {
+function AssessMain() {
     const l1=useLocation();
     const [event,setEvent]=useState({})
     const [ques,setQues]=useState([])
     const [addQues,setAddQues]=useState(false)
-    const [edit,setEdit]=useState(false)
-    const [visible,setVisible]=useState(false)
-    const [id1,setId1]=useState('')
-    const [quiz,setQuiz]=useState([])
-    const navigate=useNavigate()
-    const [chat,setChat]=useState('')
-    const [timer,setTimer]=useState('')
-    const [qvalue,setQvalue]=useState('')
     const [type,setType]=useState('')
     const [desc,setDesc]=useState('')
     const [option,setOption]=useState('')
+    const [edit,setEdit]=useState(false)
     const [id,setId]=useState('')
     const [response,setResponse]=useState('')
+    const [visible,setVisible]=useState(false)
+    const [voption,setVoption]=useState('')
+    const [id1,setId1]=useState('')
     const [id2,setId2]=useState('')
-
-    const getAllQuiz=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getQuizzes',{
-            method:'GET',
-            headers:{
-                'auth-token':localStorage.getItem('token'),
-                'Content-Type':'application/json'
-            }
-        })
-        const resp1=await resp.json();
-        if(resp1.success){
-            setQuiz(resp1.quiz)
-        }
-    }
-    
-
+    const navigate=useNavigate()
 
 
     const getAll=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getAllQues',{
+        const resp=await fetch('http://3.110.223.82:8000/getAllQues1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -316,7 +311,12 @@ function IndiEvent() {
         }) 
         const resp1=await resp.json();
         if(resp1.success){
-            setQues(resp1.ques)
+            if(!Array.isArray(resp1.ques)){
+                let p1=[{}]
+                p1[0]=(resp1.ques)
+                setQues(p1);
+            }
+            else  setQues(resp1.ques);
         }
         else {
             toast.error('Unable to load questions',{
@@ -328,126 +328,94 @@ function IndiEvent() {
     }
     useEffect(()=>{
         setEvent(l1.state)
-        getAllQuiz();
-    },[])
-    useEffect(()=>{getAll();},[ques])
-
-    useEffect(()=>{
-        mqttClient.on('connect', () => {
-          })}
-   ,[])
+        getAll();
+    },[ques])
     
-   const handleClick=async ()=>{
-    const l1=option.split(',');
-    if(desc.length==0 || ((type=='single' || type=='multiple' || type=='dropdown') && l1.length<=1) || response.length==0){
-       
-        toast.error('Please enter all the details',{
-            autoClose:4000,
-            pauseOnHover:true,
-            closeOnClick:true
-        });
-        return;
-    }
-    const resp=await fetch('http://3.110.223.82:8000/addQues',{
-        method:'POST',
-        headers:{
-            'Content-Type':'application/json',
-            'auth-token':localStorage.getItem('token')
-        },
-        body:JSON.stringify({
-            quizId:'',
-            eventId:event._id,
-            description:desc,
-            options:l1,
-            type:type,
-            response:response
-        })
-    })
-    const resp1=await resp.json();
-    if(resp1.success){
-        toast.success('Question added successfully',{
-            autoClose:4000,
-            pauseOnHover:true,
-            closeOnClick:true
-        })
-        setType('');setOption('');setDesc('');
-        navigate('/event');
-    }
-    else {
-        toast.error(resp1.msg,{
-            autoClose:4000,
-            pauseOnHover:true,
-            closeOnClick:true
-        })
-    }
-}
-
-
-const handleEditClick=async ()=>{
-    const l1=option.split(',');
-    if(id2.length==0 || desc.length==0 || ((type=='single' || type=='multiple' || type=='dropdown') && l1.length<=1) || response.length==0){
-        toast.error('Please enter all the details',{
-            autoClose:4000,
-            pauseOnHover:true,
-            closeOnClick:true
-        });
-        return;
-    }
-    const resp=await fetch('http://3.110.223.82:8000/editQues',{
-        method:'PATCH',
-        headers:{
-            'Content-Type':'application/json',
-            'auth-token':localStorage.getItem('token')
-        },
-        body:JSON.stringify({
-            id:id,
-            description:desc,
-            options:l1,
-            type:type,
-            response:response,
-            quizId:'',
-            eventId:id2
-        })
-    })
-    const resp1=await resp.json();
-    if(resp1.success){
-        toast.success('Question edited successfully',{
-            autoClose:4000,
-            pauseOnHover:true,
-            closeOnClick:true
-        })
-        setId('');
-        setEdit(false);
-        setType('');setOption('');setDesc('');setResponse('');
-        navigate('/event');
-    }
-    else {
-        toast.error(resp1.msg,{
-            autoClose:4000,
-            pauseOnHover:true,
-            closeOnClick:true
-        })
-    }
-}
-    
-    const handlePost=async (eventId)=>{
-        const resp=await fetch('http://3.110.223.82:8000/postQues',{
+    const handleClick=async ()=>{
+        const l1=option.split(',');
+        if(desc.length==0 || ((type=='single' || type=='multiple' || type=='dropdown') && l1.length<=1) || response.length==0){
+           
+            toast.error('Please enter all the details',{
+                autoClose:4000,
+                pauseOnHover:true,
+                closeOnClick:true
+            });
+            return;
+        }
+        const resp=await fetch('http://3.110.223.82:8000/addQues',{
             method:'POST',
             headers:{
-                'auth-token':localStorage.getItem('token'),
-                'Content-Type':'application/json'
+                'Content-Type':'application/json',
+                'auth-token':localStorage.getItem('token')
             },
             body:JSON.stringify({
-                eventId:eventId,
+                eventId:'',
+                quizId:event._id,
+                description:desc,
+                options:l1,
+                type:type,
+                response:response
             })
         })
         const resp1=await resp.json();
         if(resp1.success){
-            toast.success('Question Posted Successfully',{
+            toast.success('Question added successfully',{
                 autoClose:4000,
                 pauseOnHover:true,
                 closeOnClick:true
             })
+            setType('');setOption('');setDesc('');
+            setVoption('');
+            navigate('/assess');
+        }
+        else {
+            toast.error(resp1.msg,{
+                autoClose:4000,
+                pauseOnHover:true,
+                closeOnClick:true
+            })
+        }
+    }
+  
+    
+    const handleEditClick=async ()=>{
+        const l1=option.split(',');
+        if(id2.length==0 || desc.length==0 || ((type=='single' || type=='multiple' || type=='dropdown') && l1.length<=1) || response.length==0){
+            toast.error('Please enter all the details',{
+                autoClose:4000,
+                pauseOnHover:true,
+                closeOnClick:true
+            });
+            return;
+        }
+        const resp=await fetch('http://3.110.223.82:8000/editQues',{
+            method:'PATCH',
+            headers:{
+                'Content-Type':'application/json',
+                'auth-token':localStorage.getItem('token')
+            },
+            body:JSON.stringify({
+                id:id,
+                description:desc,
+                options:l1,
+                type:type,
+                response:response,
+                quizId:id2,
+                eventId:''
+            })
+        })
+        const resp1=await resp.json();
+        if(resp1.success){
+            toast.success('Question edited successfully',{
+                autoClose:4000,
+                pauseOnHover:true,
+                closeOnClick:true
+            })
+            setId('');
+            setEdit(false);
+            setType('');setOption('');setDesc('');setResponse('');
+            setVoption('');
+            navigate('/assess');
         }
         else {
             toast.error(resp1.msg,{
@@ -477,150 +445,95 @@ const handleEditClick=async ()=>{
     useEffect(()=>{
         handle();
     },[])
-    
-    const handleSend=()=>{
-        let part=event.participant
-        for(let i=0;i<part.length;++i){
-            console.log(part[i])
-            mqttClient.publish(`${event._id}/${part[i]}/inst`,JSON.stringify(chat));
-        }
-        setChat('');
-        toast.success('Sent Successfully',{
-            autoClose:4000,
-            pauseOnHover:true,
-            closeOnClick:true
-        })
-    }
-    const handleGetQuiz=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getQuiz1',{
-            method:'POST',
-            headers:{
-                'auth-token':localStorage.getItem('token'),
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify({id:event._id,quiz:qvalue})
-        })
-        const resp1=await resp.json();
-        if(resp1.success){
-            let part=event.participant
-            for(let i=0;i<part.length;++i){
-                console.log(part[i])
-                mqttClient.publish(`${event._id}/${part[i]}/quiz`,JSON.stringify({quiz:qvalue,ques:resp1.ques,timer:resp1.timer}));
-            } 
-        }
-    }
     const clipBoard=()=>{
         navigator.clipboard.writeText(event._id);
 
   // Alert the copied text
   alert("Copied the EventId");
     }
+    
   return (
-    <>
-<div>
-<Navbar visible={visible} setVisible={setVisible}/>
-<div className='flex gap-2 mt-5'>
-<div className='m-0 p-0 hidden lg:block'>
-  <Sidebar/>
-  </div>
-  <div className='w-full mx-auto  rounded-md bg-[#CCEFFF]'>
-      <div className='w-5/6 sm:w-3/4 md:w-1/2 my-5 mx-auto'>
-  <div className='text-4xl font-bold mt-3'>{event.eventName}</div>
-<img src={cover} alt="" className='mt-4 rounded-xl'/>
-<div className='mt-1 flex flex-row justify-around'>
-  <div className='text-md sm:text-lg md:text-xl font-semibold text-gray-500'>{event.college+' '},{' '+event.place}</div>
-  <div className='text-md sm:text-lg md:text-xl font-semibold text-gray-500'>{event.date+' '}{event.time}</div>
-</div>
-<p className='mt-5 text-lg'>{event.description}</p>
-<div className='mt-5'></div>
-<QRCodeCanvas value={`http://3.110.223.82:8000/register?event=${event._id}`}/>
-<div className='mt-5'></div>
-<div onClick={()=>{clipBoard()}} className='cursor-pointer inline font-semibold px-4 py-2 bg-[#315EFF] text-white rounded-md mb-10'>Copy QuizId</div>
-{/* {!(event.finished) && (
-  <>
-  { stop?(
-  <button onClick={()=>{handleStop(event._id)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Stop Quiz</button>
-):
-  (<button onClick={()=>{handleQuiz(event._id,event.date,event.time)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Start Quiz</button>)}</>) } */}
-  { (addQues || edit) ? (<div className='mt-5'>
-      <select className='outline-none py-2 px-4 rounded-md' name="ques" id="ques" onChange={(e)=>{setType(e.target.value)}}>
-          <option value='none'>None</option>
-          <option value="grid">Multiple Choice Grid</option>
-          <option value="multigrid">Checkbox Grid</option>
-          <option value="linear">Linear Scale</option>
-          <option value='single'>Single Choice</option>
-          <option value='multiple'>Multiple Choice</option>
-          <option value='dropdown'>Dropdown</option>
-          <option value='descriptive'>Descriptive</option>
-      </select>
-      <div className='text-lg font-medium mt-3'>Write Question</div>
-      <textarea type="text" value={desc} onChange={(e)=>{setDesc(e.target.value)}} rows-4 className='outline-none border-none py-2 rounded-md px-2 w-full' ></textarea>
-      <div className='text-lg font-medium mt-3'>Write Answers</div>
-      <input type="text" className='outline-none border-none py-2 rounded-md px-2 w-full' value={response} onChange={(e)=>{setResponse(e.target.value)}} placeholder='Write Correct Answers'/>
-      {(type==='single'||type==='multiple'||type==='dropdown' || type=='linear' || type=='grid' || type=='multigrid') && 
-      <>
-      <div className='text-lg font-medium mt-3'>Write Options</div>
-      <input type="text" className='outline-none border-none py-2 rounded-md px-2 w-full' value={option} onChange={(e)=>{setOption(e.target.value)}} placeholder='Write Options Separated By Comma'/>
-      </>
-      }
-      {addQues && <button onClick={()=>{handleClick()}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Save Question</button>}
-      {edit && 
-      <>
-      <div className='text-lg font-medium mt-3'>EventId</div>
-      <input type="text" className='outline-none border-none py-2 rounded-md px-2 w-full' value={id2} onChange={(e)=>{setId2(e.target.value)}} placeholder='Write Options Separated By Comma'/>   
-      <button onClick={()=>{handleEditClick()}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Save Question</button>
-      </>
-      }
-  </div>):
-  (
-      <>
-  {ques.map((q1,ind)=>{
-      return (  
-      q1.quizId=='' && <IndiQues q1={q1} ind={ind} setId2={setId2} setAns={setResponse} part={event.participant} setDesc={setDesc} setOption={setOption} setEdit={setEdit} setType={setType}setId={setId}/>
-      )
-  })}
-  <br/>
-  <button onClick={()=>{setAddQues(true)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Add Question</button>
-  </>)}
-  <br />
-        <select name="quiz" id="quiz" className='outline-none py-2 px-4 rounded-md mt-5' value={qvalue} onChange={(e)=>{setQvalue(e.target.value)}}>
-            <option value="0">None</option>
-            {quiz.map((l1)=>{
-                return (
-                    <option value={l1._id}>{l1.name}</option>
-                )
-            })}
-        </select>
-        <br />
-        <button onClick={()=>{if(qvalue!='0')handleGetQuiz()}} className=' mt-5 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Get Quiz</button>
-        <div className='text-lg font-medium mt-10'>Write Instructions</div>
-        <textarea type="text" value={chat} onChange={(e)=>{setChat(e.target.value)}} rows-4 className='outline-none border-none py-2 rounded-md px-2 w-full' ></textarea>
-        <button onClick={()=>{handleSend()}} className=' mt-5 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Send</button>
-  </div>
-  </div>
-  <div className={`border-2 mx-auto text-center  p-0 ${visible?'hidden':'block'} absolute px-5 rounded-lg bg-white right-0 lg:hidden`}>
-<div className='flex flex-col gap-5 items-center my-2'>
-  <img src={Bell} alt="" />
-  <div className='flex gap-1'>
-      <img src={Flag} alt="" className='gap-1'/>
-      <select name="lang" id="lang" className='outline-none'>
-      <option value="eng">English</option>
-      <option value="frc">French</option>
-      </select>
-  </div>
-  <div className='flex gap-1'>
-  <img src={Man} alt="" />
-      <div className='text-md font-semibold my-auto'>{id1}</div>
-  
-  </div>
-  <div>Admin</div>
-  </div>
-  <Sidebar/>
-  </div>
-</div>
-</div>
-</>
+    <div>
+      <Navbar visible={visible} setVisible={setVisible}/>
+      <div className='flex gap-2 mt-5'>
+      <div className='m-0 p-0 hidden lg:block'>
+        <Sidebar/>
+        </div>
+        <div className='w-full mx-auto  rounded-md bg-[#CCEFFF]'>
+            <div className='w-5/6 sm:w-3/4 md:w-1/2 my-5 mx-auto'>
+        <div className='text-4xl font-bold my-3'>{event.name}</div>
+      <div onClick={()=>{clipBoard()}} className='cursor-pointer inline font-semibold px-4 py-2 bg-[#315EFF] text-white rounded-md mb-10'>Copy AssessId</div>
+      {/* {!(event.finished) && (
+        <>
+        { stop?(
+        <button onClick={()=>{handleStop(event._id)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Stop Quiz</button>
+      ):
+        (<button onClick={()=>{handleQuiz(event._id,event.date,event.time)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Start Quiz</button>)}</>) } */}
+        { (addQues || edit) ? (<div className='mt-5'>
+            <select className='outline-none py-2 px-4 rounded-md' name="ques" id="ques" onChange={(e)=>{setType(e.target.value)}}>
+                <option value='none'>None</option>
+                <option value="grid">Multiple Choice Grid</option>
+                <option value="multigrid">Checkbox Grid</option>
+                <option value="linear">Linear Scale</option>
+                <option value='single'>Single Choice</option>
+                <option value='multiple'>Multiple Choice</option>
+                <option value='dropdown'>Dropdown</option>
+                <option value='descriptive'>Descriptive</option>
+            </select>
+            <div className='text-lg font-medium mt-3'>Write Question</div>
+            <textarea type="text" value={desc} onChange={(e)=>{setDesc(e.target.value)}} rows-4 className='outline-none border-none py-2 rounded-md px-2 w-full' ></textarea>
+            <div className='text-lg font-medium mt-3'>Write Answers</div>
+            <input type="text" className='outline-none border-none py-2 rounded-md px-2 w-full' value={response} onChange={(e)=>{setResponse(e.target.value)}} placeholder='Write Correct Answers'/>
+            {(type==='single'||type==='multiple'||type==='dropdown' || type=='linear' || type=='grid' || type=='multigrid') && 
+            <>
+            <div className='text-lg font-medium mt-3'>Write Options</div>
+            <input type="text" className='outline-none border-none py-2 rounded-md px-2 w-full' value={option} onChange={(e)=>{setOption(e.target.value)}} placeholder='Write Options Separated By Comma'/>
+            </>
+            }
+            {addQues && <button onClick={()=>{handleClick()}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Save Question</button>}
+            {edit && 
+            <>
+            <div className='text-lg font-medium mt-3'>QuizId</div>
+            <input type="text" className='outline-none border-none py-2 rounded-md px-2 w-full' value={id2} onChange={(e)=>{setId2(e.target.value)}} placeholder='Write Options Separated By Comma'/>   
+            <button onClick={()=>{handleEditClick()}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Save Question</button>
+            </>
+            }
+        </div>):
+        (
+            <>
+        {ques.map((q1,ind)=>{
+            return (  
+            <IndiQues q1={q1} ind={ind} setId2={setId2} setAns={setResponse} part={event.participant} setDesc={setDesc} setOption={setOption} setEdit={setEdit} setType={setType}setId={setId}/>
+            )
+        })}
+        <br/>
+        <button onClick={()=>{setAddQues(true)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Add Question</button>
+        </>)}
+        </div>
+        </div>
+        <div className={`border-2 mx-auto text-center  p-0 ${visible?'hidden':'block'} absolute px-5 rounded-lg bg-white right-0 lg:hidden`}>
+      <div className='flex flex-col gap-5 items-center my-2'>
+        <img src={Bell} alt="" />
+        <div className='flex gap-1'>
+            <img src={Flag} alt="" className='gap-1'/>
+            <select name="lang" id="lang" className='outline-none'>
+            <option value="eng">English</option>
+            <option value="frc">French</option>
+            </select>
+        </div>
+        <div className='flex gap-1'>
+        <img src={Man} alt="" />
+            <div className='text-md font-semibold my-auto'>{id1}</div>
+        
+        </div>
+        <div>Admin</div>
+        </div>
+        <Sidebar/>
+        </div>
+      </div>
+    </div>
   )
 }
 
-export default IndiEvent
+export default AssessMain
+

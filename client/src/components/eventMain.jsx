@@ -478,7 +478,7 @@ function EventMain() {
             'Content-Type':'application/json',
             'auth-token':localStorage.getItem('token1')
         },
-        body:JSON.stringify({eventId:locate.state.eventId,id:m._id})
+        body:JSON.stringify({eventId:locate.state.eventId,id:[m._id]})
        })
        const resp2=await resp1.json();
        if(resp2.success){
@@ -550,6 +550,7 @@ function EventMain() {
              break;
              case `${locate.state.eventId}/${locate.state.user}/quiz`:
                 let m4=JSON.parse(message.toString());
+                console.log(m4)
                 setQues2(m4.ques)
                 setQuiz(m4.quiz);
                 console.log(m4.timer)
@@ -559,7 +560,7 @@ function EventMain() {
            default:
        }
    });
-    },[])
+    })
   return (
     <div>
     <Navbar1 setVisible={setVisible} visible={visible}/>

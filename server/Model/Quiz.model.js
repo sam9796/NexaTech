@@ -7,6 +7,9 @@ const eventSchema=mongoose.Schema({
     },
     timer:{
         type:String
+    },
+    quiz:{
+        type:Boolean
     }
     
 })

@@ -37,7 +37,7 @@ function QuizMain() {
         }
     }
     const getData=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getQuizzes',{
+        const resp=await fetch('http://3.110.223.82:8000/getQuizzes2',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',

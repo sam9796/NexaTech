@@ -72,7 +72,7 @@ app.get('/indiQuiz', (req, res) => {
     res.sendFile(path.join(buildPath, 'index.html'));
   });
 
-mongoose
+const mongoClient=mongoose
   .connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log("Mongodb Connected");
@@ -306,6 +306,17 @@ app.post('/getAllQues1',fetchuser,async (req,res)=>{
     let l1=await Question.find({quizId:id});
     return res.json({success:true,ques:l1})
 })
+app.post('/getAllQues2',fetchuser,async (req,res)=>{
+    const {id}=req.body
+    let l1=await Event.findOne({_id:id});
+    let l2=[];
+    for(let i=0;i<l1.quizzes.length;++i){
+        let l3=await Question.find({quizId:l1.quizzes[i]});
+        for(let j=0;j<l3.length;++j)l2.push(l3[j]);
+    }
+    // console.log(l2)
+    return res.json({success:true,ques:l2})
+})
 app.delete('/deleteQues',fetchuser,async (req,res)=>{
     const {id}=req.body
     const l1=await Question.findByIdAndDelete(id);
@@ -380,25 +391,29 @@ app.post('/postQues',fetchuser,async (req,res)=>{
     let k2=k1.events;
     let k3=[]
     let k4=false;
+    for(let k=0;k<id.length;++k){
+        await Question.findByIdAndUpdate(id[k],{eventId:eventId})
     for(let i=0;i<k2.length;++i){
         if(k2[i].eventId==eventId){
-            if(k2[i].quesId.indexOf(id)==-1)
-            {k2[i].quesId.push(id); k2[i].quesCheck.push(false);k2[i].options.push({finished:false,selected:'-1'})}
+            if(k2[i].quesId.indexOf(id[k])==-1)
+            {k2[i].quesId.push(id[k]); k2[i].quesCheck.push(false);k2[i].options.push({finished:false,selected:'-1'})}
                 k3=k2[i].quesId;
                 k4=true;
-            break;
+        }
+    }}
+    if(!k4){
+        k2.push({eventId:eventId,quesId:[id[0]],quesCheck:[false],options:[{selected:'-1',finished:false}]})
+        for(let k=1;k<id.length;++k){
+            k2[0].quesId.push(id[k]); k2[0].quesCheck.push(false);k2[0].options.push({finished:false,selected:'-1'})
         }
     }
-    if(!k4){
-        k2.push({eventId:eventId,quesId:[id],quesCheck:[false],options:[{selected:'-1',finished:false}]})
-    }
+    await Participant.findOneAndUpdate({email:user},{events:k2})
     let k5=[];
     for(let i=0;i<k3.length;++i){
         let l2=await Question.findOne({_id:k3[i]});
         if(l2.quizId=='')k5.push(k3[i]);
     }
-    await Participant.findOneAndUpdate({email:user},{events:k2})
-    if(k3.length==0)return res.json({success:true,ques:[id]})
+    if(k5.length==0)return res.json({success:true,ques:[id]})
     else return res.json({success:true,ques:k5})
 })
 app.post('/getQues1',fetchuser,async (req,res)=>{
@@ -406,6 +421,7 @@ app.post('/getQues1',fetchuser,async (req,res)=>{
     let e2=await Question.findOne({_id:quesId});
     return res.json({success:true,ques:e2});
 })
+
 app.post('/checkQues',fetchuser,async (req,res)=>{
     const {ques,resp}=req.body;
     const id=req.user.id;
@@ -563,7 +579,6 @@ app.post('/checkQues',fetchuser,async (req,res)=>{
             await Question.findOneAndUpdate({_id:ques._id},{count:t3})
             t1+=(resp);
         }
-    
     let part=await Participant.findOne({email:id})
     let i1=part.events;
     for(let i=0;i<i1.length;++i){
@@ -571,13 +586,23 @@ app.post('/checkQues',fetchuser,async (req,res)=>{
             
             for(let j=0;j<i1[i].quesId.length;++j){
                 if(i1[i].quesId[j]==ques._id)
-                i1[i].quesCheck[j]=(arr[0]);
+                {
+                
+                    i1[i].quesCheck[j]=(arr[0]);
             i1[i].options[j]=({finished:true,selected:t1})}
         }
+        }
 
-    }   
-    await Participant.findOneAndUpdate({email:id},{events:i1});
-    return res.json({success:true,check:arr[0]});
+    }
+   
+    try {
+        
+        await Participant.findByIdAndUpdate(part._id,{events:i1});
+    return res.json({success:true});
+}
+    catch(error){
+        return res.json({success:false});
+    }
 })
 app.post('/isSubmitted',fetchuser,async(req,res)=>{
     const {eventId}=req.body;
@@ -706,9 +731,22 @@ app.get('/getQuizzes',fetchuser,async (req,res)=>{
     const l1=await Quiz.find();
     return res.json({success:true,quiz:l1})
 })
+app.get('/getQuizzes2',fetchuser,async (req,res)=>{
+    const l1=await Quiz.find({quiz:true});
+    return res.json({success:true,quiz:l1})
+})
+app.get('/getQuizzes1',fetchuser,async (req,res)=>{
+    const l1=await Quiz.find({quiz:false});
+    return res.json({success:true,quiz:l1})
+})
 app.post('/saveQuiz',fetchuser,async (req,res)=>{
     const {event,timer}=req.body;
-    await Quiz.create({name:event,timer:timer});
+    await Quiz.create({name:event,timer:timer,quiz:true});
+    return res.json({success:true})
+})
+app.post('/saveQuiz1',fetchuser,async (req,res)=>{
+    const {event,timer}=req.body;
+    await Quiz.create({name:event,timer:timer,quiz:false});
     return res.json({success:true})
 })
 app.patch('/editQuiz',fetchuser,async (req,res)=>{

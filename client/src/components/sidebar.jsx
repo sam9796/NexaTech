@@ -10,6 +10,7 @@ function Sidebar() {
             setNav([false,true,false,false,false,false,false])
         }
         if(url=='/quizmain' || url=='/indiQuiz')setNav([false,false,true,false,false,false,false])
+        if(url=='/assess' || url=='/indiAssess')setNav([false,false,false,false,false,true,false])
     },[])
     const navigate=useNavigate()
     const handleClick=(e,url,ind)=>{
@@ -48,30 +49,30 @@ function Sidebar() {
       </div>
       <div className='flex gap-9'>
         <div className={`${nav[5]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
-      <div className={`cursor-pointer font-semibold  ${nav[5]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Assessment</div>
+      <div onClick={(e)=>{handleClick(e,'assess',5)}} className={`cursor-pointer font-semibold  ${nav[5]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Assessment</div>
       </div>
       <hr/>
       <div className='pl-5 text-[#7398b8] font-medium mt-1'>PAGES</div>
       <div className='flex gap-9'>
-        <div className={`${nav[5]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
-      <div className={`cursor-pointer font-semibold  ${nav[5]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Product</div>
+        <div className={`${nav[3]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
+      <div className={`cursor-pointer font-semibold  ${nav[3]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Product</div>
       </div>
       <div className='flex gap-9'>
-        <div className={`${nav[5]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
-      <div className={`cursor-pointer font-semibold  ${nav[5]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Product</div>
+        <div className={`${nav[3]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
+      <div className={`cursor-pointer font-semibold  ${nav[3]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Product</div>
       </div>
       <div className='flex gap-9'>
-        <div className={`${nav[5]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
-      <div className={`cursor-pointer font-semibold  ${nav[5]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Product</div>
+        <div className={`${nav[3]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
+      <div className={`cursor-pointer font-semibold  ${nav[3]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Product</div>
       </div>
       <hr />
       <div className='flex gap-9'>
-        <div className={`${nav[5]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
-      <div className={`cursor-pointer font-semibold  ${nav[5]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Settings</div>
+        <div className={`${nav[3]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
+      <div className={`cursor-pointer font-semibold  ${nav[3]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Settings</div>
       </div>
       <div className='flex gap-9'>
-        <div className={`${nav[5]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
-      <div onClick={(e)=>{handleLogout(e)}} className={`cursor-pointer font-semibold  ${nav[5]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Log Out</div>
+        <div className={`${nav[3]?'bg-[#315EFF]':''} hidden lg:block w-1 h-full`}></div>
+      <div onClick={(e)=>{handleLogout(e)}} className={`cursor-pointer font-semibold  ${nav[3]?'text-white bg-[#315EFF]':''} py-2 px-5 rounded-lg`}>Log Out</div>
       </div>
 
     </div>

@@ -6,9 +6,8 @@ const GlobalContext = createContext();
 // Define a provider component
 export const GlobalProvider = ({ children }) => {
   const [globalState, setGlobalState] = useState(false);
-
   return (
-    <GlobalContext.Provider value={{ globalState, setGlobalState }}>
+    <GlobalContext.Provider value={{ globalState, setGlobalState}}>
       {children}
     </GlobalContext.Provider>
   );

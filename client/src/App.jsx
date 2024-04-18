@@ -17,6 +17,8 @@ import EventMain from './components/eventMain';
 import QuizMain from './components/quizMain';
 import QuizIndi from './components/quizIndi';
 import { GlobalProvider } from './components/context';
+import Assess from './components/assess';
+import AssessMain from './components/assessMain';
 
 function App() {
 
@@ -39,6 +41,8 @@ function App() {
       <Route exact path='/eventmain' element={<EventMain/>}/>
       <Route exact path='/quizmain' element={<QuizMain/>}/>
       <Route exact path='/indiQuiz' element={<QuizIndi/>}/>
+      <Route exact path='/assess' element={<Assess/>}/>
+      <Route exact path='/indiAssess' element={<AssessMain/>}/>
      </Routes>
      </BrowserRouter>
       </GlobalProvider>

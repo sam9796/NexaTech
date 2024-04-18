@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react'
+import React,{useState,useEffect,useRef} from 'react'
 import Navbar1 from './navbar2'
 import Sidebar1 from './sidebar1'
 import Bell from '../assets/Icon.png'
@@ -12,7 +12,7 @@ function IndiOpt(params){
     const {ind,v1,id,check,setCheck,submit}=params
     return (
         <>
-        <input type="radio" name={id} checked={ind==check}  value={`${ind}`} disabled={submit} onChange={(e)=>{
+        <input type="radio" name={id} checked={check==ind}  value={`${ind}`} disabled={submit} onChange={(e)=>{
             setCheck(ind) }}  className='mr-2'/>
         <label htmlFor="option">{v1}</label>
         <br />
@@ -269,58 +269,21 @@ function IndiQues(params){
     const [val,setVal]=useState([]);
     const [val1,setVal1]=useState('')
     const [submit,setSubmit]=useState(false)
-    const { globalState, setGlobalState } = useGlobalState();
+    const buttonRef = useRef(null);
     useEffect(()=>{
-        if(timer.length>0){
-            let t1=parseInt(timer);
-            handleTimer(t1);
-        }
         let k1=[]
         if(q1.type=='multiple'){
             for(let i=0;i<q1.options.length;++i){
                 k1.push(false);
             }
-            setVal(k1);
-        }
-        const getQues=async ()=>{
-            const resp1=await fetch('http://3.110.223.82:8000/getPart',{
-                method:'POST',   
-                headers:{
-                    'Content-Type':'application/json',
-                    'auth-token':localStorage.getItem('token1')
-                },
-                body:JSON.stringify({eventId:eventId,id:q1._id})        
-             })
-            const resp2=await resp1.json();
-            if(resp2.success){
-                if(resp2.k2){
-                    setSubmit(resp2.k2);
-                    if(q1.type=='dropdown' || q1.type=='descriptive'){
-                        setVal1(resp2.k3);
-                    }
-                    else {
-                       if(q1.type=='multiple') for(let j=0;j<resp2.k3.length;++j){
-                            let k16=parseInt(resp2.k3[j])
-                            k1[k16]=true;
-                            setVal(k1);
-                        }
-                        else if(q1.type=='single' || q1.type=='linear') setCheck1(parseInt(resp2.k3))
-                        else if(q1.type=='dropdown' || q1.type=='descriptive'){
-                    setVal(resp2.k3);
-                    }
-                    }
-                }
-            }
-        }
-       if(q1.type!='grid' && q1.type!='multigrid') getQues();
-    },[])
+            setVal(k1);}
+        },[])
 
     const handleSubmit=async ()=>{
         let v1;
         if(q1.type=='multiple' || q1.type=='grid' || q1.type=='multigrid')v1=val;
         else if(q1.type=='single' || q1.type=='linear')v1=check1;
         else v1=val1;
-        console.log(v1,check1)
         if(q1.type=='single' || q1.type=='linear'){
             if(v1==-1){
                 toast.error('Respond to all the questions',{
@@ -351,37 +314,46 @@ function IndiQues(params){
         })
         const resp1=await resp.json();
         if(resp1.success){
-                setSubmit(true);
         }
     }
-    const handleTimer=(minutes)=>{
-        let interval;
-        let currentTime = localStorage.getItem('currentTime');
-let targetTime = localStorage.getItem('targetTime');
-if (targetTime == null && currentTime == null) {
-  currentTime = new Date();
-  targetTime = new Date(currentTime.getTime() + (minutes * 60000));
-  localStorage.setItem('currentTime', currentTime);
-  localStorage.setItem('targetTime', targetTime);
-}
-else{
-  currentTime = new Date(currentTime);
-  targetTime = new Date(targetTime);
-}
-
-if(!checkComplete()){
-  interval = setInterval(checkComplete, 1000);
-}
-
-function checkComplete() {
-  if ((currentTime > targetTime)) {
-    clearInterval(interval);
-    handleSubmit();
-  } else {
-    currentTime = new Date();
-  }
-}
+    const handleSubmit1=async ()=>{
+        let v1;
+        console.log(val,check1,val1)
+        if(q1.type=='multiple' || q1.type=='grid' || q1.type=='multigrid')v1=val;
+        else if(q1.type=='single' || q1.type=='linear')v1=check1;
+        else v1=val1;
+        if(q1.type=='single' || q1.type=='linear'){
+            if(v1==-1){
+                toast.error('Respond to all the questions',{
+                    autoClose:4000,
+                    pauseOnHover:true,
+                    closeOnClick:true
+                })
+            }
+        }
+        if(q1.type=='grid'){
+            for(let i in v1){
+                if(i==-1){
+                    toast.error('Respond to all the questions',{
+                        autoClose:4000,
+                        pauseOnHover:true,
+                        closeOnClick:true
+                    })
+                }
+            }
+        }
+        const resp=await fetch('http://3.110.223.82:8000/checkques1',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'auth-token':localStorage.getItem('token1')
+            },
+            body:JSON.stringify({ques:q1,resp:v1})
+        })
+        const resp1=await resp.json();
+        
     }
+
     return (
         <div className='my-5 mx-10'>
     <div className='mt-4'>Q{ind1+1}</div>
@@ -437,7 +409,7 @@ function checkComplete() {
         ))
         
     } */}
-    {!submit && <button onClick={()=>{handleSubmit()}} className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>POST</button>}
+    {!submit && <button onClick={()=>{handleSubmit()}} className=' px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Save</button>}
     </div>
     )
 }
@@ -445,21 +417,19 @@ function checkComplete() {
 function Quiz(params) {
     const {id1,q1,time,setVis}=params
     const [ques,setQues]=useState([])
-    const [resp,setResp]=useState([])
-    const [check,setCheck]=useState([])
-    const [submit,setSubmit]=useState(false)
-    const [id,setId]=useState('')
     const [user,setUser]=useState('')
     const [clock,setClock]=useState(0)
-    const [visible,setVisible]=useState(false);
+    const [current,setCurrent]=useState(1)
+    const [total,setTotal]=useState(0)
     const locate=useLocation();
     const navigate=useNavigate();
     const { globalState, setGlobalState } = useGlobalState();
     
     const handle2=()=>{
-        for(let i=0;i<q1.length;++i){
-            handle1(q1[i]);
-        }
+        let q4=[]
+         for(let i=0;i<q1.length;++i)q4.push(q1[i]._id)
+           handle1(q4);
+           
     }
     const handle1=async (m)=>{
         const resp1=await fetch('http://3.110.223.82:8000/postQues',{
@@ -468,16 +438,16 @@ function Quiz(params) {
             'Content-Type':'application/json',
             'auth-token':localStorage.getItem('token1')
         },
-        body:JSON.stringify({eventId:locate.state.eventId,id:m._id})
+        body:JSON.stringify({eventId:id1,id:m})
        })
        const resp2=await resp1.json();
+       return resp2.success;
     }
 
     useEffect(() => {
+        setTotal(q1.length)
         handle2();
-        setGlobalState(false);
         setQues(q1)
-        console.log(time)
         if(time.length>0){
             let t1=parseInt(time);
             handleTimer(t1);
@@ -532,7 +502,7 @@ if(!checkComplete()){
 }
 
 function checkComplete() {
-  if ( (currentTime > targetTime) || globalState ) {
+  if ( (currentTime > targetTime) || globalState) {
     clearInterval(interval);
     localStorage.removeItem('currentTime')
     localStorage.removeItem('targetTime')
@@ -568,8 +538,9 @@ function checkComplete() {
         handle();
       },[])
       const handleClick1=()=>{
-        setGlobalState(true);
-        setVis(false);
+        setVis(false)
+        localStorage.removeItem('currentTime')
+        localStorage.removeItem('targetTime')
       }
     
   return (
@@ -578,28 +549,12 @@ function checkComplete() {
         {clock>0 && <div className='m-3'>
             <h1 className='text-3xl font-bold'>Time Left: {Math.floor(clock/60000)}:{(Math.floor((clock/1000)%60)) < 10 ? `0${Math.floor((clock/1000)%60)}` : Math.floor((clock/1000)%60)}</h1>
         </div>}
-      {ques.map((q1,ind1)=>{
-        return (  <IndiQues q1={q1} ind1={ind1} eventId={id1} timer={time}/> )
-        })}
+       <IndiQues q1={ques.length?ques[current-1]:''} ind1={current-1} eventId={id1} timer={time}/>
+    <div className='w-full flex justify-between'>
+    <button onClick={()=>{setCurrent(current-1)}} disabled={current==1} className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Prev</button>
+    <button onClick={()=>{setCurrent(current+1)}} disabled={current==total} className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Next</button>  
+    </div>
      <button onClick={()=>{handleClick1()}} className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Submit</button>
-      </div>
-      <div className={`mx-auto text-center  p-0 ${visible?'hidden':'block'} absolute px-5 rounded-lg bg-white right-0 lg:hidden`}>
-      <div className='flex flex-col gap-5 items-center my-2'>
-        <img src={Bell} alt="" />
-        <div className='flex gap-1'>
-            <img src={Flag} alt="" className='gap-1'/>
-            <select name="lang" id="lang" className='outline-none'>
-            <option value="eng">English</option>
-            <option value="frc">French</option>
-            </select>
-        </div>
-        <div className='flex gap-1'>
-        <img src={Man} alt="" />
-            <div className='text-md font-semibold my-auto'>{id}</div>
-        
-        </div>
-        </div>
-      <Sidebar1/>
       </div>
   </div>
   )
