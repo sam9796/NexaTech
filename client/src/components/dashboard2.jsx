@@ -11,10 +11,10 @@ import { useNavigate } from 'react-router-dom'
 function Dashboard2() {
     const [id,setId]=useState('')
     const [user,setUser]=useState('')
-    const [visible,setVisible]=useState(false);
+    const [visible,setVisible]=useState(true);
     const navigate=useNavigate();
     const handle=async ()=>{
-        const resp=await fetch('http://localhost:8000/getData1',{
+        const resp=await fetch('http://3.110.223.82:8000/getData1',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',

@@ -11,7 +11,7 @@ function Navbar1({visible,setVisible}) {
     const navigate=useNavigate();
     useEffect(()=>{
         const handle=async ()=>{
-            const resp=await fetch('http://localhost:8000/getData1',{
+            const resp=await fetch('http://3.110.223.82:8000/getData1',{
                 method:'GET',
                 headers:{
                     'Content-Type':'application/json',
@@ -36,7 +36,7 @@ function Navbar1({visible,setVisible}) {
         else navigate('/login1')
     },[])
   return (
-    <div className='flex w-full items-center mt-5 pl-5'>
+    <div className='flex w-full items-center mt-5 pl-5 z-30'>
       <div>
         <img src={Logo} alt="" className='w-1/2'/>
       </div>
