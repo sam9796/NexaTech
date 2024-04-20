@@ -32,7 +32,7 @@ function events() {
     setImageUrl(url);
     };
     const handle=async ()=>{
-        const resp=await fetch('http://localhost:8000/getData2',{
+        const resp=await fetch('http://3.110.223.82:8000/getData2',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -48,7 +48,7 @@ function events() {
         }
     }
     const getData=async ()=>{
-        const resp=await fetch('http://localhost:8000/getEvents',{
+        const resp=await fetch('http://3.110.223.82:8000/getEvents',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -100,7 +100,7 @@ function events() {
         })
         return;
        }
-       const resp=await fetch('http://localhost:8000/saveEvent',{
+       const resp=await fetch('http://3.110.223.82:8000/saveEvent',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -132,7 +132,7 @@ function events() {
        }
     }
     const handleDelete=async (id)=>{
-        const resp=await fetch('http://localhost:8000/deleteEvent',{
+        const resp=await fetch('http://3.110.223.82:8000/deleteEvent',{
             method:'DELETE',
             headers:{
                 'Content-Type':'application/json',
@@ -171,7 +171,7 @@ function events() {
             })
             return;
            }
-           const resp=await fetch('http://localhost:8000/editEvent',{
+           const resp=await fetch('http://3.110.223.82:8000/editEvent',{
             method:'PATCH',
             headers:{
                 'Content-Type':'application/json',
@@ -294,8 +294,8 @@ function events() {
 </svg>
                       </div>
                       <div className='flex gap-2'>
-                      <a onClick={(e)=>{handleNavigate(e,e1)}} className='mt-3 text-sm cursor-pointer' style={{textDecoration:'underline'}}>Read</a>
-                      <a onClick={(e)=>{handleNavigate1(e,e1)}} className='mt-3 text-sm cursor-pointer' style={{textDecoration:'underline'}}>Write</a>
+                      <a onClick={(e)=>{handleNavigate(e,e1)}} className='mt-3 text-sm cursor-pointer' style={{textDecoration:'underline'}}>Post</a>
+                      <a onClick={(e)=>{handleNavigate1(e,e1)}} className='mt-3 text-sm cursor-pointer' style={{textDecoration:'underline'}}>Add</a>
                       </div>
                     </div>
 
