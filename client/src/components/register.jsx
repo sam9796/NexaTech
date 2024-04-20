@@ -96,9 +96,11 @@ function Register() {
         closeOnClick:true
             })
         }
+        return resp1.success;
     }
     const register=async ()=>{
-        if(!verify2){
+        const l1=verifyOTP1()
+        if(!l1){
             toast.error('Please verfiy contact first',{
                 closeOnClick:true,
             autoClose:4000,
@@ -129,8 +131,9 @@ function Register() {
         const resp1=await resp.json()
         if(resp1.success){
             localStorage.setItem('token1',resp1.token)
+            localStorage.setItem('eventId',event)
             setFirst('');setSecond('');setMail('');setContact('');setCheck(false);setVerify1(false);setVerify2(false);setOtp1('');setOtp2('')
-            navigate('/dashboard1',{state:{event:event}})
+            navigate(`/dashboard1`,{state:{event:event}})
         }
         if(resp1.success){
             toast.success(resp1.msg,{
@@ -165,7 +168,6 @@ function Register() {
         <input type="text" value={otp2} onChange={(e)=>{setOtp2(e.target.value)}} className='w-full py-2 px-3 text-md outline-none border border-[#315EFF] rounded-lg placeholder:text-sm' placeholder='Enter OTP received on email'/>
         <div className='flex gap-2 mt-2'>
             <button onClick={()=>{sendOTP1()}} className='py-2 px-4 font-semibold text-white bg-[#315EFF] rounded-lg'>Send OTP</button>
-            <button onClick={()=>verifyOTP1()} className='py-2 px-4 font-semibold text-white bg-[#315EFF] rounded-lg'>Verfiy OTP</button>
         </div>
         </div>
         <div className='w-1/2 mx-auto flex gap-2 mt-2'>

@@ -15,8 +15,10 @@ const bodyParser = require('body-parser');
 const Question=require('./Model/Question.model.js')
 const Razorpay=require('razorpay');
 const Payment= require("./Model/Payment.model.js");
+const Contact=require('./Model/Contact.model.js')
 const crypto=require('crypto')
 const path=require('path')
+const Quiz=require('./Model/Quiz.model.js')
 require("dotenv").config();
 
 app.use(cors());
@@ -57,8 +59,20 @@ app.get('/register', (req, res) => {
 app.get('/quiz', (req, res) => {
     res.sendFile(path.join(buildPath, 'index.html'));
   });
+app.get('/event1', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/eventmain', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/quizmain', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/indiQuiz', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
 
-mongoose
+const mongoClient=mongoose
   .connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log("Mongodb Connected");
@@ -71,6 +85,11 @@ mongoose
     key_id: process.env.key_id,
     key_secret: process.env.key_secret
 });
+
+app.post('/saveContact',async (req,res)=>{
+    const {name,mail,description}=req.body
+    await Contact.create({name:name,email:mail,description:description})
+})
 
 app.post('/verifyMail',async (req,res)=>{
     const {firstName,lastName,contact,email}=req.body;
@@ -271,16 +290,38 @@ app.patch('/editEvent',fetchuser,async (req,res)=>{
     
 })
 app.post('/addQues',fetchuser,async(req,res)=>{
-    const {eventId,description,options,type,response}=req.body
+    const {eventId,quizId,description,options,type,response}=req.body
     await Question.create({
-        options:options,type:type,eventId:eventId,description:description,resp:response,correct:0,incorrect:0
+        options:options,type:type,eventId:eventId,quizId:quizId,description:description,resp:response
     })
     return res.json({success:true})
 })
 app.post('/getAllQues',fetchuser,async (req,res)=>{
     const {id}=req.body
-    const l1=await Question.find({eventId:id})
-    if(l1)return res.json({success:true,ques:l1})
+    let l1=await Question.find({eventId:id});
+    let l2=await Event.findOne({_id:id})
+    let l3=[];
+    for(let i=0;i<(l2?l2.quizzes.length:0);++i)
+        { let l4=await Quiz.findOne({_id:l2.quizzes[i]});
+            l3.push(l4.name)
+        }
+    return res.json({success:true,ques:l1,quizzes:l3})
+})
+app.post('/getAllQues1',fetchuser,async (req,res)=>{
+    const {id}=req.body;
+    let l1=await Question.find({quizId:id});
+    return res.json({success:true,ques:l1})
+})
+app.post('/getAllQues2',fetchuser,async (req,res)=>{
+    const {id}=req.body
+    let l1=await Event.findOne({_id:id});
+    let l2=await Question.find({eventId:id,quizId:''});
+    for(let i=0;i<l1.quizzes.length;++i){
+        let l3=await Question.find({quizId:l1.quizzes[i]});
+        for(let j=0;j<l3.length;++j)l2.push(l3[j]);
+    }
+    // console.log(l2)
+    return res.json({success:true,ques:l2})
 })
 app.delete('/deleteQues',fetchuser,async (req,res)=>{
     const {id}=req.body
@@ -288,10 +329,10 @@ app.delete('/deleteQues',fetchuser,async (req,res)=>{
     return res.json({success:true})
 })
 app.patch('/editQues',fetchuser,async (req,res)=>{
-    const {id,description,options,type,response,eventId}=req.body;
+    const {id,description,options,type,response,quizId,eventId}=req.body;
     await Question.findByIdAndUpdate(id,{
-        eventId:eventId,
-        description:description,options:options,type:type,resp:response
+        quizId:quizId,
+        description:description,eventId:eventId,options:options,type:type,resp:response
     })
     return res.json({success:true})
 })
@@ -311,9 +352,23 @@ app.post('/loginParticipant',async (req,res)=>{
         return res.json({success:false,msg:'this email is not registered'})
     }
 })
+app.post('/getAllEvents1',fetchuser,async (req,res)=>{
+    const {eventId}=req.body
+    const events=await Event.find({_id:eventId});
+    return res.json({success:true,events:events,user:req.user.id});
+})
 app.get('/getAllEvents',fetchuser,async (req,res)=>{
     const events=await Event.find();
     return res.json({success:true,events:events,user:req.user.id});
+})
+app.get('/getAllEvents2',fetchuser,async (req,res)=>{
+    const events=await Event.find();
+    const user=req.user.id
+    let l1=[];
+    for(let i=0;i<events.length;++i){
+        if(events[i].participant.indexOf(user)!=-1){l1.push(events[i])}
+    }
+    return res.json({success:true,events:l1,user:req.user.id});
 })
 app.post('/getPart',fetchuser,async (req,res)=>{
     const {eventId,id}=req.body;
@@ -338,9 +393,11 @@ app.post('/getPart',fetchuser,async (req,res)=>{
 })
 app.post('/registerParticipant',fetchuser,async (req,res)=>{
     const {id}=req.body;
+    if(!id)return res.json({success:false})
+    const user=req.user.id
     let e1=await Event.find({_id:id})
     let l1=e1[0].participant;
-    l1.push(req.user.id);
+    l1.push(user);
     await Event.findByIdAndUpdate(id,{participant:l1})
     return res.json({success:true});
 })
@@ -351,27 +408,37 @@ app.post('/postQues',fetchuser,async (req,res)=>{
     let k2=k1.events;
     let k3=[]
     let k4=false;
+    for(let k=0;k<id.length;++k){
+        await Question.findByIdAndUpdate(id[k],{eventId:eventId})
     for(let i=0;i<k2.length;++i){
         if(k2[i].eventId==eventId){
-            if(k2[i].quesId.indexOf(id)==-1)
-            {k2[i].quesId.push(id);}
+            if(k2[i].quesId.indexOf(id[k])==-1)
+            {k2[i].quesId.push(id[k]); k2[i].quesCheck.push(false);k2[i].options.push({finished:false,selected:'-1'})}
                 k3=k2[i].quesId;
                 k4=true;
-            break;
+        }
+    }}
+    if(!k4){
+        k2.push({eventId:eventId,quesId:[id[0]],quesCheck:[false],options:[{selected:'-1',finished:false}]})
+        for(let k=1;k<id.length;++k){
+            k2[0].quesId.push(id[k]); k2[0].quesCheck.push(false);k2[0].options.push({finished:false,selected:'-1'})
         }
     }
-    if(!k4){
-        k2.push({eventId:eventId,quesId:[id]})
-    }
     await Participant.findOneAndUpdate({email:user},{events:k2})
-    if(k3.length==0)return res.json({success:true,ques:[id]})
-    else return res.json({success:true,ques:k3})
+    let k5=[];
+    for(let i=0;i<k3.length;++i){
+        let l2=await Question.findOne({_id:k3[i]});
+        if(l2.quizId=='')k5.push(k3[i]);
+    }
+    if(k5.length==0)return res.json({success:true,ques:[id]})
+    else return res.json({success:true,ques:k5})
 })
 app.post('/getQues1',fetchuser,async (req,res)=>{
     const {quesId}=req.body;
     let e2=await Question.findOne({_id:quesId});
     return res.json({success:true,ques:e2});
 })
+
 app.post('/checkQues',fetchuser,async (req,res)=>{
     const {ques,resp}=req.body;
     const id=req.user.id;
@@ -529,17 +596,30 @@ app.post('/checkQues',fetchuser,async (req,res)=>{
             await Question.findOneAndUpdate({_id:ques._id},{count:t3})
             t1+=(resp);
         }
-    
     let part=await Participant.findOne({email:id})
     let i1=part.events;
     for(let i=0;i<i1.length;++i){
         if(i1[i].eventId==ques.eventId){
-            i1[i].quesCheck.push(arr[0]);
-            i1[i].options.push({finished:true,selected:t1})
+            
+            for(let j=0;j<i1[i].quesId.length;++j){
+                if(i1[i].quesId[j]==ques._id)
+                {
+                
+                    i1[i].quesCheck[j]=(arr[0]);
+            i1[i].options[j]=({finished:true,selected:t1})}
         }
-    }   
-    await Participant.findOneAndUpdate({email:id},{events:i1});
-    return res.json({success:true,check:arr[0]});
+        }
+
+    }
+   
+    try {
+        
+        await Participant.findByIdAndUpdate(part._id,{events:i1});
+    return res.json({success:true});
+}
+    catch(error){
+        return res.json({success:false});
+    }
 })
 app.post('/isSubmitted',fetchuser,async(req,res)=>{
     const {eventId}=req.body;
@@ -558,9 +638,10 @@ app.post('/isSubmitted',fetchuser,async(req,res)=>{
 })
 app.post('/getEvent1',fetchuser,async (req,res)=>{
     const {eventId}=req.body;
+    if(!eventId)return res.json({success:false,msg:'Unable to get the event details'})
     const e1=await Event.find({_id:eventId});
     if(e1){
-        return res.json({success:true,event:e1[0]})
+        return res.json({success:true,event:e1[0],user:req.user.id})
     }
     else res.json({success:false,msg:'Unable to get the event details'})
 })
@@ -628,7 +709,7 @@ app.post('/api/verification',async (req,res)=>{
       razorpay_signature,
     });
 
-   res.redirect('http://localhost:5173/dashboard1')
+   res.redirect('http://3.110.223.82:8000/dashboard1')
   } else {
    return res.status(400).json({
       success: false,
@@ -648,6 +729,53 @@ app.post('/getDate',fetchuser,async (req,res)=>{
         }
     }
     return res.json({success:true,date:p1});
+})
+app.post('/getQuiz1',fetchuser,async (req,res)=>{
+    const {id,quiz}=req.body
+    let l1=await Event.findOne({_id:id});
+    let l2=await Quiz.findOne({_id:quiz})
+    if(l1.quizzes.indexOf((quiz))==-1){
+        l1.quizzes.push(quiz);
+    }
+    let l3=await Question.find({quizId:quiz})
+    for(let i=0;i<l3.length;++i){
+        await Question.findByIdAndUpdate(l3[0]._id,{eventId:id});
+    }
+    await Event.findByIdAndUpdate(id,{quizzes:l1.quizzes})
+    
+    return res.json({success:true,ques:l3,timer:l2.timer,quiz:l2.name})
+})
+app.get('/getQuizzes',fetchuser,async (req,res)=>{
+    const l1=await Quiz.find();
+    return res.json({success:true,quiz:l1})
+})
+app.get('/getQuizzes2',fetchuser,async (req,res)=>{
+    const l1=await Quiz.find({quiz:true});
+    return res.json({success:true,quiz:l1})
+})
+app.get('/getQuizzes1',fetchuser,async (req,res)=>{
+    const l1=await Quiz.find({quiz:false});
+    return res.json({success:true,quiz:l1})
+})
+app.post('/saveQuiz',fetchuser,async (req,res)=>{
+    const {event,timer}=req.body;
+    await Quiz.create({name:event,timer:timer,quiz:true});
+    return res.json({success:true})
+})
+app.post('/saveQuiz1',fetchuser,async (req,res)=>{
+    const {event,timer}=req.body;
+    await Quiz.create({name:event,timer:timer,quiz:false});
+    return res.json({success:true})
+})
+app.patch('/editQuiz',fetchuser,async (req,res)=>{
+    const {id,name,timer}=req.body;
+    await Quiz.findByIdAndUpdate(id,{name:name,timer:timer})
+    return res.json({success:true})
+})
+app.delete('/deleteQuiz',fetchuser,async (req,res)=>{
+    const {id}=req.body;
+    await Quiz.findByIdAndDelete(id);
+    return res.json({success:true})
 })
 app.listen(8000,()=>{
     console.log('server listening on port 8000')

@@ -36,7 +36,7 @@ function Navbar1({visible,setVisible}) {
         else navigate('/login1')
     },[])
   return (
-    <div className='flex w-full items-center mt-5 pl-5'>
+    <div className='flex w-full items-center mt-5 pl-5 z-30'>
       <div>
         <img src={Logo} alt="" className='w-1/2'/>
       </div>

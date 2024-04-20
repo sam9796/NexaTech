@@ -38,6 +38,9 @@ const eventSchema=mongoose.Schema({
     },
     finished:{
         type:Boolean
+    },
+    quizzes:{
+        type:[String]
     }
 })
 

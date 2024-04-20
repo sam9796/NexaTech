@@ -8,7 +8,7 @@ import Flag from '../assets/Flag.png'
 import Man from '../assets/man.png'
 
 function enrol() {
-  const [visible,setVisible]=useState(false);
+  const [visible,setVisible]=useState(true);
   const [id,setId]=useState('');
   const locate=useLocation();
   const navigate=useNavigate();

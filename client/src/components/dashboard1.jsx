@@ -1,12 +1,13 @@
 import React,{useState,useEffect} from 'react'
 import Navbar1 from './navbar1'
 import Sidebar1 from './sidebar1'
-import Cover from '../assets/cover.jpg'
 import { toast } from 'react-toastify';
 import Bell from '../assets/Icon.png'
 import Flag from '../assets/Flag.png'
 import Man from '../assets/man.png'
+import '../css/header.css'
 import { useNavigate,useLocation } from 'react-router-dom';
+import '../css/button.css'
 
 function Dashboard1() {
     const [events,setEvents]=useState([])
@@ -15,7 +16,7 @@ function Dashboard1() {
     const [user,setUser]=useState([])
     const navigate=useNavigate();
     const locate=useLocation()
-    const [visible,setVisible]=useState(false);
+    const [visible,setVisible]=useState(true);
     const [user1,setUser1]=useState('');
     const [id,setId]=useState('')
     const handle=async ()=>{
@@ -41,35 +42,28 @@ function Dashboard1() {
             navigate('/login1')
         }
     }
-    const getAll=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getAllEvents',{
-            method:'GET',
+    const getAll=async (param1)=>{
+        const resp=await fetch('http://3.110.223.82:8000/getAllEvents1',{
+            method:'POST',
             headers:{
                 'Content-Type':'application/json',
                 'auth-token':localStorage.getItem('token1')
-            }
+            },
+            body:JSON.stringify({eventId:param1})
         })
         const resp1=await resp.json();
         if(resp1.success){
-            if(!Array.isArray(resp1.events)){
-                let p1=[{}]
-                p1[0]=(resp1.events)
-                setEvents(p1);
-                setRegister([false])
-            }
-            else {
-                setEvents(resp1.events)
+                setEvents(resp1.events);
                 let arr=[];
                 let f1=[]
-                let n=resp1.events.length;
+                // let n=resp1.events.length;
                 let u1=resp1.user;
                 setUser(u1)
-                for(let i=0;i<n;++i){
-                    if(resp1.events[i].participant.indexOf(u1)==-1){
+                    if(resp1.events[0].participant.indexOf(u1)==-1){
                         arr.push(false);
                     }
                     else {arr.push(true);}
-                    let l3=resp1.events[i]._id
+                    let l3=resp1.events[0]._id
                     const res1=await fetch('http://3.110.223.82:8000/isSubmitted',{
                         method:'POST',
                         headers:{
@@ -84,10 +78,8 @@ function Dashboard1() {
                     if(res2.success){
                         f1.push(res2.finish);
                     }
-                }
                 setFinish(f1);
                 setRegister(arr);
-            }
         }
         else {
             toast.error('Unable to load events',{
@@ -97,29 +89,28 @@ function Dashboard1() {
             })
         }
     }
-    const handleAlp=async ()=>{
+    const handleAlp=async (param1)=>{
         const res1=await fetch('http://3.110.223.82:8000/getEvent1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
                 'auth-token':localStorage.getItem('token1')
             },
-            body:JSON.stringify({eventId:locate.state.event})
+            body:JSON.stringify({eventId:param1})
         })
         const res2=await res1.json();
-        if(res2.success){
-            handleQuiz(res2.event.date,res2.event.time,locate.state.event)
-        }
+        
     }
     useEffect(()=>{
-        if(locate.state){
-            handleRegister(locate.state.event);
-            handleAlp();
-        }  
-    getAll();
-    handle();
+        const l1=localStorage.getItem('eventId')
+        if(l1){
+        handleRegister(l1);
+         handleAlp(l1);
+    getAll(l1);
+    handle();}
     },[])
     const handleRegister=async (id)=>{
+        console.log(id)
         const resp=await fetch('http://3.110.223.82:8000/registerParticipant',{
             method:'POST',
             headers:{
@@ -130,14 +121,10 @@ function Dashboard1() {
                 })
         const resp1=await resp.json();
         if(resp1.success){
-            toast.success('Registered Successfully',{
-                autoClose:4000,
-                pauseOnHover:true,
-                closeOnClick:true
-            })
+           
         }
         else {
-            toast.success(resp1.msg,{
+            toast.error(resp1.msg,{
                 autoClose:4000,
                 pauseOnHover:true,
                 closeOnClick:true
@@ -176,7 +163,7 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
     return;
 }
     else {
-      navigate('/quiz',{state:{eventId:id,user:user1}});
+      navigate('/eventmain',{state:{eventId:id,user:user1}});
        return;
     }
     }
@@ -190,41 +177,86 @@ if(l1!=date || (l1==date && compare(t1,t2,t3,t4))){
         <div className='m-0 p-0 hidden lg:block'>
       <Sidebar1/>
       </div>
-      <div className='w-full rounded-md bg-[#CCEFFF] lg:mr-3 py-5'>
-        <div className='flex flex-wrap'>
-      {events.map((e1,ind)=>{
+      <div className='w-full rounded-md bg-[#CCEFFF] lg:mr-3 z-0'>
+      <header id="site-header" className="my-auto site-header valign-center"> 
+        <div className="intro">
+    <div className=' py-[25vh]'>
+            <h2 className='text-xl sm:text-3xl font-semibold'>{events.length?events[0].date:''} / {events.length?events[0].college:''}</h2>
+            
+            <h1 className='text-[#315EFF] text-3xl sm:text-5xl font-bold'>{events.length?events[0].eventName:''}</h1>
+            
+            <p className='text-xl sm:text-3xl font-semibold'>First &amp; Largest Event To Find A Leader In You</p>
+        
+                {events.map((e1,ind)=>{
                 return (
-                    <div className="bg-white responsive-cell-block wk-desk-3 wk-ipadp-3 wk-tab-6 wk-mobile-12 card-container rounded-xl">
-                    <div className="card rounded-xl">
-                      <div className="team-image-wrapper">
-                        <img className="team-member-image h-full" src={Cover}/>
-                      </div>
-                      <p className="text-blk name">
-                        {e1.eventName}
-                      </p>
-                      <p className="text-blk feature-text mb-1">
-                        {e1.college}
-                      </p>
-                      <p className="text-blk feature-text">
-                        {e1.date+' '} at {' '+e1.time}
-                      </p>
+                    <div className='h-16 mt-2'>
                      {finish[ind]?(
-                        <button onClick={()=>{handleResult(e1._id)}} className='px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>See Result</button>
+                        <>
+                        {/* <button  className='px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>See Result</button> */}
+                        
+                        <button className="blob-btn" onClick={()=>{handleResult(e1._id)}}>
+                          See Result
+                          <span className="blob-btn__inner">
+                            <span className="blob-btn__blobs">
+                              <span className="blob-btn__blob"></span>
+                              <span className="blob-btn__blob"></span>
+                              <span className="blob-btn__blob"></span>
+                              <span className="blob-btn__blob"></span>
+                            </span>
+                          </span>
+                        </button>
+                        <br/>
+                      
+                      <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                        <defs>
+                          <filter id="goo">
+                            <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10"></feGaussianBlur>
+                            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 21 -7" result="goo"></feColorMatrix>
+                            <feBlend in2="goo" in="SourceGraphic" result="mix"></feBlend>
+                          </filter>
+                        </defs>
+                      </svg>
+                      </>
                      ): (
                         <>
                         {
-                        register[ind] ? (
-                            <button  onClick={()=>{handleQuiz(e1.date,e1.time,e1._id)}} className='px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Take Quiz</button>
-                        ):(
-                            <button  onClick={()=>{handleRegister(e1._id)}} className='px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Register</button>
-                        )
+                            <>
+                            {/* <button   className='px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Take Quiz</button> */}
+                           
+                        <button className="blob-btn" onClick={()=>{handleQuiz(e1.date,e1.time,e1._id)}}>
+                          Enter Event
+                          <span className="blob-btn__inner">
+                            <span className="blob-btn__blobs">
+                              <span className="blob-btn__blob"></span>
+                              <span className="blob-btn__blob"></span>
+                              <span className="blob-btn__blob"></span>
+                              <span className="blob-btn__blob"></span>
+                            </span>
+                          </span>
+                        </button>
+                        <br/>
+                      
+                      <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                        <defs>
+                          <filter id="goo">
+                            <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10"></feGaussianBlur>
+                            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 21 -7" result="goo"></feColorMatrix>
+                            <feBlend in2="goo" in="SourceGraphic" result="mix"></feBlend>
+                          </filter>
+                        </defs>
+                      </svg>
+                            </>
                       }
                       </>
                       )}
                     </div>
-                  </div>
                 )
             })}
+                      </div>
+
+            </div>
+    </header>
+        <div className='flex flex-wrap'>
             </div>
       </div>
       <div className={`mx-auto text-center  p-0 ${visible?'hidden':'block'} absolute px-5 rounded-lg bg-white right-0 lg:hidden`}>

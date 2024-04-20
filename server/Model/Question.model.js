@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
 
+
+
 const quesSchema=mongoose.Schema({
+    quizId:{
+        type:String,
+    },
     eventId:{
         type:String,
-        required:true
     },
     options:{
         type:[String],
