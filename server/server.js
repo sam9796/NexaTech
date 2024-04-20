@@ -28,49 +28,49 @@ const buildPath = path.join(__dirname, "../client/dist");
 
 //serving the static files which is our build here and specifying all the paths here where are there on the website
 
-// app.use(express.static(buildPath));
-// app.get('/login1', (req, res) => {
-//     res.sendFile(path.join(buildPath, 'index.html'));
-//   });
-// app.get('/login', (req, res) => {
-//     res.sendFile(path.join(buildPath, 'index.html'));
-//   });
-// app.get('/dashboard', (req, res) => {
-//     res.sendFile(path.join(buildPath, 'index.html'));
-//   });
-// app.get('/dashboard1', (req, res) => {
-//     res.sendFile(path.join(buildPath, 'index.html'));
-//   });
-// app.get('/event', (req, res) => {
-//     res.sendFile(path.join(buildPath, 'index.html'));
-//   });
-// app.get('/indiEvent', (req, res) => {
-//     res.sendFile(path.join(buildPath, 'index.html'));
-//   });
-// app.get('/result', (req, res) => {
-//     res.sendFile(path.join(buildPath, 'index.html'));
-//   });
-// app.get('/enroll', (req, res) => {
-//     res.sendFile(path.join(buildPath, 'index.html'));
-//   });
-// app.get('/register', (req, res) => {
-//     res.sendFile(path.join(buildPath, 'index.html'));
-//   });
-// app.get('/quiz', (req, res) => {
-//     res.sendFile(path.join(buildPath, 'index.html'));
-//   });
-// app.get('/event1', (req, res) => {
-//     res.sendFile(path.join(buildPath, 'index.html'));
-//   });
-// app.get('/eventmain', (req, res) => {
-//     res.sendFile(path.join(buildPath, 'index.html'));
-//   });
-// app.get('/quizmain', (req, res) => {
-//     res.sendFile(path.join(buildPath, 'index.html'));
-//   });
-// app.get('/indiQuiz', (req, res) => {
-//     res.sendFile(path.join(buildPath, 'index.html'));
-//   });
+app.use(express.static(buildPath));
+app.get('/login1', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/dashboard1', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/event', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/indiEvent', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/result', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/enroll', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/register', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/quiz', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/event1', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/eventmain', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/quizmain', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+app.get('/indiQuiz', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
 
 const mongoClient=mongoose
   .connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })

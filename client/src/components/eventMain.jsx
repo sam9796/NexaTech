@@ -456,7 +456,7 @@ function EventMain() {
                 'Content-Type':'application/json',
                 'auth-token':localStorage.getItem('token1')
             },
-            body:JSON.stringify({eventId:locate.state.eventId})
+            body:JSON.stringify({eventId:localStorage.getItem('eventId')})
         })
         const resp2=await resp1.json();
         if(resp2.success){
@@ -476,7 +476,7 @@ function EventMain() {
             'Content-Type':'application/json',
             'auth-token':localStorage.getItem('token1')
         },
-        body:JSON.stringify({eventId:locate.state.eventId,id:[m._id]})
+        body:JSON.stringify({eventId:localStorage.getItem('eventId'),id:[m._id]})
        })
        const resp2=await resp1.json();
        if(resp2.success){
@@ -530,23 +530,23 @@ function EventMain() {
         mqttClient.on('connect', () => {
           })
           mqttClient.setMaxListeners(15);
-          mqttClient.subscribe(`${locate.state.eventId}/${locate.state.user}/state`);
-          mqttClient.subscribe(`${locate.state.eventId}/${locate.state.user}/inst`);
-          mqttClient.subscribe(`${locate.state.eventId}/${locate.state.user}/quiz`);
+          mqttClient.subscribe(`${localStorage.getItem('eventId')}/${locate.state.user}/state`);
+          mqttClient.subscribe(`${localStorage.getItem('eventId')}/${locate.state.user}/inst`);
+          mqttClient.subscribe(`${localStorage.getItem('eventId')}/${locate.state.user}/quiz`);
    mqttClient.on('message', (topic, message) => {
     
        switch (topic) {
-           case `${locate.state.eventId}/${locate.state.user}/state`:                                                           
+           case `${localStorage.getItem('eventId')}/${locate.state.user}/state`:                                                           
                let m = JSON.parse(message.toString());
             postQues(m);
             setVis1(true);
                break;
-            case `${locate.state.eventId}/${locate.state.user}/inst`:
+            case `${localStorage.getItem('eventId')}/${locate.state.user}/inst`:
              let m1=JSON.parse(message.toString());
              setChat(m1);
              setVis1(true);
              break;
-             case `${locate.state.eventId}/${locate.state.user}/quiz`:
+             case `${localStorage.getItem('eventId')}/${locate.state.user}/quiz`:
                 let m4=JSON.parse(message.toString());
                 console.log(m4)
                 setQues2(m4.ques)
@@ -577,12 +577,12 @@ function EventMain() {
             </div>
         </div>
       {!h1 && ques.map((q1,ind1)=>{
-        return (  <IndiQues q1={q1} ind1={ind1} eventId={locate.state.eventId}/> )
+        return (  <IndiQues q1={q1} ind1={ind1} eventId={localStorage.getItem('eventId')}/> )
         })}
         <div  className={`${chat.length?'block':'hidden'} text-xl mx-8 px-4 py-2 my-4 rounded-md bg-white font-semibold`}>
         {chat}
       </div>
-      {h1 && <Quiz id1={locate.state.eventId} q1={ques2} time={timer} setVis={setH1}/>}
+      {h1 && <Quiz id1={localStorage.getItem('eventId')} q1={ques2} time={timer} setVis={setH1}/>}
       <button onClick={()=>{handleClick()}} className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Leave Event</button>
       </div>
       <div className={`mx-auto text-center  p-0 ${visible?'hidden':'block'} absolute px-5 rounded-lg bg-white right-0 lg:hidden`}>
