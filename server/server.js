@@ -28,49 +28,49 @@ const buildPath = path.join(__dirname, "../client/dist");
 
 //serving the static files which is our build here and specifying all the paths here where are there on the website
 
-app.use(express.static(buildPath));
-app.get('/login1', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-app.get('/dashboard1', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-app.get('/event', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-app.get('/indiEvent', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-app.get('/result', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-app.get('/enroll', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-app.get('/register', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-app.get('/quiz', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-app.get('/event1', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-app.get('/eventmain', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-app.get('/quizmain', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-app.get('/indiQuiz', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
+// app.use(express.static(buildPath));
+// app.get('/login1', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/login', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/dashboard', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/dashboard1', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/event', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/indiEvent', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/result', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/enroll', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/register', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/quiz', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/event1', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/eventmain', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/quizmain', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// app.get('/indiQuiz', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
 
 const mongoClient=mongoose
   .connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -299,7 +299,13 @@ app.post('/addQues',fetchuser,async(req,res)=>{
 app.post('/getAllQues',fetchuser,async (req,res)=>{
     const {id}=req.body
     let l1=await Question.find({eventId:id});
-    return res.json({success:true,ques:l1})
+    let l2=await Event.findOne({_id:id})
+    let l3=[];
+    for(let i=0;i<(l2?l2.quizzes.length:0);++i)
+        { let l4=await Quiz.findOne({_id:l2.quizzes[i]});
+            l3.push(l4.name)
+        }
+    return res.json({success:true,ques:l1,quizzes:l3})
 })
 app.post('/getAllQues1',fetchuser,async (req,res)=>{
     const {id}=req.body;
@@ -309,7 +315,7 @@ app.post('/getAllQues1',fetchuser,async (req,res)=>{
 app.post('/getAllQues2',fetchuser,async (req,res)=>{
     const {id}=req.body
     let l1=await Event.findOne({_id:id});
-    let l2=[];
+    let l2=await Question.find({eventId:id,quizId:''});
     for(let i=0;i<l1.quizzes.length;++i){
         let l3=await Question.find({quizId:l1.quizzes[i]});
         for(let j=0;j<l3.length;++j)l2.push(l3[j]);
@@ -355,6 +361,15 @@ app.get('/getAllEvents',fetchuser,async (req,res)=>{
     const events=await Event.find();
     return res.json({success:true,events:events,user:req.user.id});
 })
+app.get('/getAllEvents2',fetchuser,async (req,res)=>{
+    const events=await Event.find();
+    const user=req.user.id
+    let l1=[];
+    for(let i=0;i<events.length;++i){
+        if(events[i].participant.indexOf(user)!=-1){l1.push(events[i])}
+    }
+    return res.json({success:true,events:l1,user:req.user.id});
+})
 app.post('/getPart',fetchuser,async (req,res)=>{
     const {eventId,id}=req.body;
     const user=req.user.id;
@@ -378,9 +393,11 @@ app.post('/getPart',fetchuser,async (req,res)=>{
 })
 app.post('/registerParticipant',fetchuser,async (req,res)=>{
     const {id}=req.body;
+    if(!id)return res.json({success:false})
+    const user=req.user.id
     let e1=await Event.find({_id:id})
     let l1=e1[0].participant;
-    l1.push(req.user.id);
+    l1.push(user);
     await Event.findByIdAndUpdate(id,{participant:l1})
     return res.json({success:true});
 })
@@ -621,6 +638,7 @@ app.post('/isSubmitted',fetchuser,async(req,res)=>{
 })
 app.post('/getEvent1',fetchuser,async (req,res)=>{
     const {eventId}=req.body;
+    if(!eventId)return res.json({success:false,msg:'Unable to get the event details'})
     const e1=await Event.find({_id:eventId});
     if(e1){
         return res.json({success:true,event:e1[0],user:req.user.id})
@@ -725,7 +743,7 @@ app.post('/getQuiz1',fetchuser,async (req,res)=>{
     }
     await Event.findByIdAndUpdate(id,{quizzes:l1.quizzes})
     
-    return res.json({success:true,ques:l3,timer:l2.timer})
+    return res.json({success:true,ques:l3,timer:l2.timer,quiz:l2.name})
 })
 app.get('/getQuizzes',fetchuser,async (req,res)=>{
     const l1=await Quiz.find();

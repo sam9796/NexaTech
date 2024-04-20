@@ -16,9 +16,9 @@ import Flag from '../assets/Flag.png'
 import Man from '../assets/man.png'
 Chart.register(CategoryScale);
 
-const mqttClient=mqtt.connect('ws://13.201.227.152:9001/mqtt', {
-  username: 'username',
-  password: 'Shubham@#$%^Jha#$%^',
+const mqttClient=mqtt.connect('ws://65.2.179.139:9001/mqtt', {
+  username: 'gwortssh',
+  password: 'F3Ce-SNdObpe',
 })
 function IndiOpt(params){
     const {v1,ind,id,val,setVal,def}=params
@@ -155,7 +155,7 @@ function IndiQues(params){
         mqttClient.publish(`${q1.eventId}/${part[i]}/state`,JSON.stringify(q1));}
     }
     const handleGraph=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getGraph',{
+        const resp=await fetch('http://localhost:8000/getGraph',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -173,7 +173,7 @@ function IndiQues(params){
         }
     }
     const handleDelete=async (id)=>{
-        const resp=await fetch('http://3.110.223.82:8000/deleteQues',{
+        const resp=await fetch('http://localhost:8000/deleteQues',{
             method:'DELETE',
             headers:{
                 'Content-Type':'application/json',
@@ -215,14 +215,14 @@ function IndiQues(params){
         <div className='mt-1 rounded-md px-4 py-2 bg-white mb-4 flex justify-between'>
             <div>
             {q1.description}</div>
-            <div className='flex gap-2'>
+            {/* <div className='flex gap-2'>
             <svg onClick={()=>{handleDelete(q1._id)}} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="cursor-pointer w-6 h-6">
 <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
 </svg>
                     <svg onClick={()=>{handleEdit(q1)}} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="cursor-pointer w-6 h-6">
 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
 </svg>
-            </div>
+            </div> */}
             </div>
         {(q1.type!='grid' && q1.type!='multigrid') && q1.options.map((v1,ind)=>
         {return <IndiOpt v1={v1} ind={ind} id={q1._id} val={val} setVal={setVal} def={q1.count[q1.type=='descriptive'?0:ind]}/>})}
@@ -277,6 +277,7 @@ function IndiEvent() {
     const [visible,setVisible]=useState(false)
     const [id1,setId1]=useState('')
     const [quiz,setQuiz]=useState([])
+    const [quizSent,setQuizSent]=useState([])
     const navigate=useNavigate()
     const [chat,setChat]=useState('')
     const [timer,setTimer]=useState('')
@@ -289,7 +290,7 @@ function IndiEvent() {
     const [id2,setId2]=useState('')
 
     const getAllQuiz=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getQuizzes',{
+        const resp=await fetch('http://localhost:8000/getQuizzes',{
             method:'GET',
             headers:{
                 'auth-token':localStorage.getItem('token'),
@@ -306,7 +307,7 @@ function IndiEvent() {
 
 
     const getAll=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getAllQues',{
+        const resp=await fetch('http://localhost:8000/getAllQues',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -317,6 +318,7 @@ function IndiEvent() {
         const resp1=await resp.json();
         if(resp1.success){
             setQues(resp1.ques)
+            setQuizSent(resp1.quizzes)
         }
         else {
             toast.error('Unable to load questions',{
@@ -348,7 +350,7 @@ function IndiEvent() {
         });
         return;
     }
-    const resp=await fetch('http://3.110.223.82:8000/addQues',{
+    const resp=await fetch('http://localhost:8000/addQues',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -393,7 +395,7 @@ const handleEditClick=async ()=>{
         });
         return;
     }
-    const resp=await fetch('http://3.110.223.82:8000/editQues',{
+    const resp=await fetch('http://localhost:8000/editQues',{
         method:'PATCH',
         headers:{
             'Content-Type':'application/json',
@@ -431,7 +433,7 @@ const handleEditClick=async ()=>{
 }
     
     const handlePost=async (eventId)=>{
-        const resp=await fetch('http://3.110.223.82:8000/postQues',{
+        const resp=await fetch('http://localhost:8000/postQues',{
             method:'POST',
             headers:{
                 'auth-token':localStorage.getItem('token'),
@@ -459,7 +461,7 @@ const handleEditClick=async ()=>{
     }
 
     const handle=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getData2',{
+        const resp=await fetch('http://localhost:8000/getData2',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -492,7 +494,7 @@ const handleEditClick=async ()=>{
         })
     }
     const handleGetQuiz=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getQuiz1',{
+        const resp=await fetch('http://localhost:8000/getQuiz1',{
             method:'POST',
             headers:{
                 'auth-token':localStorage.getItem('token'),
@@ -507,6 +509,15 @@ const handleEditClick=async ()=>{
                 console.log(part[i])
                 mqttClient.publish(`${event._id}/${part[i]}/quiz`,JSON.stringify({quiz:qvalue,ques:resp1.ques,timer:resp1.timer}));
             } 
+            setQuizSent(resp1.quiz)
+            toast.success('Quiz Sent Successfully',{
+                autoClose:4000,
+                pauseOnHover:true,
+                closeOnClick:true
+            })
+            let l4=quizSent
+          l4.push(resp1.quiz)
+          setQuizSent(l4)
         }
     }
     const clipBoard=()=>{
@@ -533,16 +544,24 @@ const handleEditClick=async ()=>{
 </div>
 <p className='mt-5 text-lg'>{event.description}</p>
 <div className='mt-5'></div>
-<QRCodeCanvas value={`http://3.110.223.82:8000/register?event=${event._id}`}/>
-<div className='mt-5'></div>
-<div onClick={()=>{clipBoard()}} className='cursor-pointer inline font-semibold px-4 py-2 bg-[#315EFF] text-white rounded-md mb-10'>Copy QuizId</div>
+<QRCodeCanvas value={`http://localhost:5173/register?event=${event._id}`}/>
+<div className='mt-5'>Quiz List</div>
+
+{quizSent.map((q1,ind)=>{
+      return (  
+         <div className='px-4 py-2 my-2 rounded-md bg-white'>
+            {ind+1}.{' '+q1}
+         </div>
+      )
+  })}
+{/* <div onClick={()=>{clipBoard()}} className='cursor-pointer inline font-semibold px-4 py-2 bg-[#315EFF] text-white rounded-md mb-10'>Copy QuizId</div> */}
 {/* {!(event.finished) && (
   <>
   { stop?(
   <button onClick={()=>{handleStop(event._id)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Stop Quiz</button>
 ):
   (<button onClick={()=>{handleQuiz(event._id,event.date,event.time)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Start Quiz</button>)}</>) } */}
-  { (addQues || edit) ? (<div className='mt-5'>
+  {/* { (addQues || edit) ? (<div className='mt-5'>
       <select className='outline-none py-2 px-4 rounded-md' name="ques" id="ques" onChange={(e)=>{setType(e.target.value)}}>
           <option value='none'>None</option>
           <option value="grid">Multiple Choice Grid</option>
@@ -573,15 +592,15 @@ const handleEditClick=async ()=>{
       }
   </div>):
   (
-      <>
+      <> */}
   {ques.map((q1,ind)=>{
       return (  
       q1.quizId=='' && <IndiQues q1={q1} ind={ind} setId2={setId2} setAns={setResponse} part={event.participant} setDesc={setDesc} setOption={setOption} setEdit={setEdit} setType={setType}setId={setId}/>
       )
   })}
-  <br/>
+  {/* <br/>
   <button onClick={()=>{setAddQues(true)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Add Question</button>
-  </>)}
+  </>)} */}
   <br />
         <select name="quiz" id="quiz" className='outline-none py-2 px-4 rounded-md mt-5' value={qvalue} onChange={(e)=>{setQvalue(e.target.value)}}>
             <option value="0">None</option>

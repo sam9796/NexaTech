@@ -92,7 +92,7 @@ function IndiOpt2(params){
   const [check,setCheck]=useState(false);
 
   const getQues=async (p7)=>{
-      const resp1=await fetch('http://3.110.223.82:8000/getPart',{
+      const resp1=await fetch('http://localhost:8000/getPart',{
           method:'POST',   
           headers:{
               'Content-Type':'application/json',
@@ -184,7 +184,7 @@ function IndiOpt3(params){
   const [vert,setVert]=useState([]);
   const [check,setCheck]=useState(false);
   const getQues=async (p7)=>{
-      const resp1=await fetch('http://3.110.223.82:8000/getPart',{
+      const resp1=await fetch('http://localhost:8000/getPart',{
           method:'POST',   
           headers:{
               'Content-Type':'application/json',
@@ -330,7 +330,7 @@ function IndiQues(params){
             setVal(k1);
         }
         const getQues=async ()=>{
-            const resp1=await fetch('http://3.110.223.82:8000/getPart',{
+            const resp1=await fetch('http://localhost:8000/getPart',{
                 method:'POST',   
                 headers:{
                     'Content-Type':'application/json',
@@ -549,7 +549,7 @@ function Result() {
     const locate=useLocation();
     const navigate=useNavigate()
    
-    const getAllQues=async()=>{const res=await fetch('http://3.110.223.82:8000/getAllQues2',{
+    const getAllQues=async()=>{const res=await fetch('http://localhost:8000/getAllQues2',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
@@ -568,7 +568,7 @@ function Result() {
     }
     }
     const getDate = async()=>{
-      const resp=await fetch('http://3.110.223.82:8000/getDate',{
+      const resp=await fetch('http://localhost:8000/getDate',{
         method:'POST',
         headers:{
           'auth-token':localStorage.getItem('token1'),
@@ -586,7 +586,7 @@ function Result() {
       }
     } 
     const handle=async ()=>{
-      const resp=await fetch('http://3.110.223.82:8000/getData1',{
+      const resp=await fetch('http://localhost:8000/getData1',{
           method:'GET',
           headers:{
               'Content-Type':'application/json',

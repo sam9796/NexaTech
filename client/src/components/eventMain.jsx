@@ -99,7 +99,7 @@ function IndiOpt2(params){
     const [horz,setHorz]=useState([]);
     const [vert,setVert]=useState([]);
     const getQues=async (p7)=>{
-        const resp1=await fetch('http://3.110.223.82:8000/getPart',{
+        const resp1=await fetch('http://localhost:8000/getPart',{
             method:'POST',   
             headers:{
                 'Content-Type':'application/json',
@@ -175,7 +175,7 @@ function IndiOpt3(params){
     const [horz,setHorz]=useState([]);
     const [vert,setVert]=useState([]);
     const getQues=async (p7)=>{
-        const resp1=await fetch('http://3.110.223.82:8000/getPart',{
+        const resp1=await fetch('http://localhost:8000/getPart',{
             method:'POST',   
             headers:{
                 'Content-Type':'application/json',
@@ -282,7 +282,7 @@ function IndiQues(params){
             setVal(k1);
         }
         const getQues=async ()=>{
-            const resp1=await fetch('http://3.110.223.82:8000/getPart',{
+            const resp1=await fetch('http://localhost:8000/getPart',{
                 method:'POST',   
                 headers:{
                     'Content-Type':'application/json',
@@ -338,7 +338,7 @@ function IndiQues(params){
                 }
             }
         }
-        const resp=await fetch('http://3.110.223.82:8000/checkques',{
+        const resp=await fetch('http://localhost:8000/checkques',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -436,9 +436,7 @@ function EventMain() {
         return () => { window.onbeforeunload = null };
     }, []);
         
-        useEffect(()=>{
-            setTimeout(()=>{setVis(true)},3000)
-        },[])
+       
     // useEffect(() => {
         
     //     const intervalId = setInterval(() => {
@@ -452,7 +450,7 @@ function EventMain() {
     // }, []);
 
     const handleClick=async ()=>{
-        const resp1=await fetch('http://3.110.223.82:8000/checkQues1',{
+        const resp1=await fetch('http://localhost:8000/checkQues1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -462,7 +460,7 @@ function EventMain() {
         })
         const resp2=await resp1.json();
         if(resp2.success){
-            navigate('/dashboard1')
+            navigate('/dashboard2')
         }
         else {
             toast.error('Unable to submit',{
@@ -472,7 +470,7 @@ function EventMain() {
             })
         }
     }
-    const postQues=async (m)=>{const resp1=await fetch('http://3.110.223.82:8000/postQues',{
+    const postQues=async (m)=>{const resp1=await fetch('http://localhost:8000/postQues',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -484,7 +482,7 @@ function EventMain() {
        if(resp2.success){
         let k5=[];
         for(let i=0;i<resp2.ques.length;++i){
-            const res1=await fetch('http://3.110.223.82:8000/getQues1',{
+            const res1=await fetch('http://localhost:8000/getQues1',{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',
@@ -501,7 +499,7 @@ function EventMain() {
        }
     }
     const handle=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getData1',{
+        const resp=await fetch('http://localhost:8000/getData1',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -525,9 +523,9 @@ function EventMain() {
 
     useEffect(()=>{
         handle();
-        const mqttClient=mqtt.connect('ws://13.201.227.152:9001/mqtt', {
-  username: 'username',
-  password: 'Shubham@#$%^Jha#$%^',
+        const mqttClient=mqtt.connect('ws://65.2.179.139:9001/mqtt', {
+  username: 'gwortssh',
+  password: 'F3Ce-SNdObpe',
 })
         mqttClient.on('connect', () => {
           })

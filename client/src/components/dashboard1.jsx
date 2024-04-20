@@ -20,7 +20,7 @@ function Dashboard1() {
     const [user1,setUser1]=useState('');
     const [id,setId]=useState('')
     const handle=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getData1',{
+        const resp=await fetch('http://localhost:8000/getData1',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -42,14 +42,14 @@ function Dashboard1() {
             navigate('/login1')
         }
     }
-    const getAll=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getAllEvents1',{
+    const getAll=async (param1)=>{
+        const resp=await fetch('http://localhost:8000/getAllEvents1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
                 'auth-token':localStorage.getItem('token1')
             },
-            body:JSON.stringify({eventId:locate.state?locate.state.event:'661aaf5f44e2674d247414dc'})
+            body:JSON.stringify({eventId:param1})
         })
         const resp1=await resp.json();
         if(resp1.success){
@@ -64,7 +64,7 @@ function Dashboard1() {
                     }
                     else {arr.push(true);}
                     let l3=resp1.events[0]._id
-                    const res1=await fetch('http://3.110.223.82:8000/isSubmitted',{
+                    const res1=await fetch('http://localhost:8000/isSubmitted',{
                         method:'POST',
                         headers:{
                             'Content-Type':'application/json',
@@ -89,30 +89,29 @@ function Dashboard1() {
             })
         }
     }
-    const handleAlp=async ()=>{
-        const res1=await fetch('http://3.110.223.82:8000/getEvent1',{
+    const handleAlp=async (param1)=>{
+        const res1=await fetch('http://localhost:8000/getEvent1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
                 'auth-token':localStorage.getItem('token1')
             },
-            body:JSON.stringify({eventId:locate.state.event})
+            body:JSON.stringify({eventId:param1})
         })
         const res2=await res1.json();
-        if(res2.success){
-            handleQuiz(res2.event.date,res2.event.time,locate.state.event)
-        }
+        
     }
     useEffect(()=>{
-        if(locate.state){
-            handleRegister(locate.state.event);
-            handleAlp();
-        }  
-    getAll();
-    handle();
+        const l1=localStorage.getItem('eventId')
+        if(l1){
+        handleRegister(l1);
+         handleAlp(l1);
+    getAll(l1);
+    handle();}
     },[])
     const handleRegister=async (id)=>{
-        const resp=await fetch('http://3.110.223.82:8000/registerParticipant',{
+        console.log(id)
+        const resp=await fetch('http://localhost:8000/registerParticipant',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -122,14 +121,10 @@ function Dashboard1() {
                 })
         const resp1=await resp.json();
         if(resp1.success){
-            toast.success('Registered Successfully',{
-                autoClose:4000,
-                pauseOnHover:true,
-                closeOnClick:true
-            })
+           
         }
         else {
-            toast.success(resp1.msg,{
+            toast.error(resp1.msg,{
                 autoClose:4000,
                 pauseOnHover:true,
                 closeOnClick:true
