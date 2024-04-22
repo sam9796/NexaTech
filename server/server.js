@@ -301,11 +301,13 @@ app.post('/getAllQues',fetchuser,async (req,res)=>{
     let l1=await Question.find({eventId:id});
     let l2=await Event.findOne({_id:id})
     let l3=[];
+    let l5=[];
     for(let i=0;i<(l2?l2.quizzes.length:0);++i)
         { let l4=await Quiz.findOne({_id:l2.quizzes[i]});
-            l3.push(l4.name)
+            if(l4?l4.quiz:true)l3.push(l4?l4:{name:''})
+            else l5.push(l4)
         }
-    return res.json({success:true,ques:l1,quizzes:l3})
+    return res.json({success:true,ques:l1,quizzes:l3,assess:l5})
 })
 app.post('/getAllQues1',fetchuser,async (req,res)=>{
     const {id}=req.body;
@@ -598,7 +600,7 @@ app.post('/checkQues',fetchuser,async (req,res)=>{
         }
     let part=await Participant.findOne({email:id})
     let i1=part.events;
-    for(let i=0;i<i1.length;++i){
+    for(let i=0;i<part?i1.length:0;++i){
         if(i1[i].eventId==ques.eventId){
             
             for(let j=0;j<i1[i].quesId.length;++j){
@@ -627,7 +629,7 @@ app.post('/isSubmitted',fetchuser,async(req,res)=>{
     const l1=await Participant.findOne({email:id})
     let k3=false;
     let k4=[];
-    for(let i=0;i<l1.events.length;++i){
+    for(let i=0;i<l1?l1.events.length:0;++i){
         if(l1.events[i].eventId==eventId){
             k3=l1.events[i].finshed;
             k4=l1.events[i].quesCheck;
@@ -743,11 +745,17 @@ app.post('/getQuiz1',fetchuser,async (req,res)=>{
     }
     await Event.findByIdAndUpdate(id,{quizzes:l1.quizzes})
     
-    return res.json({success:true,ques:l3,timer:l2.timer,quiz:l2.name})
+    return res.json({success:true,ques:l3,timer:l2.timer,quiz:l2.name,isit:l2.quiz})
 })
 app.get('/getQuizzes',fetchuser,async (req,res)=>{
     const l1=await Quiz.find();
-    return res.json({success:true,quiz:l1})
+    let l2=[];
+    let l3=[];
+    for(let i=0;i<(l1.length);++i){
+        if(l1[i].quiz)l2.push(l1[i]);
+        else l3.push(l1[i])
+    }
+    return res.json({success:true,quiz:l2,assess:l3})
 })
 app.get('/getQuizzes2',fetchuser,async (req,res)=>{
     const l1=await Quiz.find({quiz:true});
@@ -759,17 +767,17 @@ app.get('/getQuizzes1',fetchuser,async (req,res)=>{
 })
 app.post('/saveQuiz',fetchuser,async (req,res)=>{
     const {event,timer}=req.body;
-    await Quiz.create({name:event,timer:timer,quiz:true});
+    await Quiz.create({name:event,timer:timer,quiz:true,description:''});
     return res.json({success:true})
 })
 app.post('/saveQuiz1',fetchuser,async (req,res)=>{
-    const {event,timer}=req.body;
-    await Quiz.create({name:event,timer:timer,quiz:false});
+    const {event,timer,description}=req.body;
+    await Quiz.create({name:event,timer:timer,quiz:false,description:description});
     return res.json({success:true})
 })
 app.patch('/editQuiz',fetchuser,async (req,res)=>{
-    const {id,name,timer}=req.body;
-    await Quiz.findByIdAndUpdate(id,{name:name,timer:timer})
+    const {id,name,timer,description}=req.body;
+    await Quiz.findByIdAndUpdate(id,{name:name,timer:timer,description:description})
     return res.json({success:true})
 })
 app.delete('/deleteQuiz',fetchuser,async (req,res)=>{

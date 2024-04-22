@@ -148,6 +148,7 @@ function QuizMain() {
                 id:id,
                 name:event,
                 timer:timer,
+                description:''
             })
            })
            const resp1=await resp.json();

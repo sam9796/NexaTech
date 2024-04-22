@@ -6,7 +6,7 @@ function Sidebar() {
     const locate=useLocation();
     const url=locate.pathname
     useEffect(()=>{
-        if(url=='/event' || url=='/indiEvent'){
+        if(url=='/event' || url=='/indiEvent' || url=='/write'){
             setNav([false,true,false,false,false,false,false])
         }
         if(url=='/quizmain' || url=='/indiQuiz')setNav([false,false,true,false,false,false,false])

@@ -277,7 +277,9 @@ function Write() {
     const [visible,setVisible]=useState(true)
     const [id1,setId1]=useState('')
     const [quiz,setQuiz]=useState([])
+    const [assess,setAssess]=useState([])
     const [quizSent,setQuizSent]=useState([])
+    const [assessSent,setAssessSent]=useState([])
     const navigate=useNavigate()
     const [chat,setChat]=useState('')
     const [timer,setTimer]=useState('')
@@ -300,6 +302,7 @@ function Write() {
         const resp1=await resp.json();
         if(resp1.success){
             setQuiz(resp1.quiz)
+            setAssess(resp1.assess)
         }
     }
     
@@ -318,6 +321,8 @@ function Write() {
         const resp1=await resp.json();
         if(resp1.success){
             setQues(resp1.ques)
+            setQuizSent(resp1.quizzes)
+            setAssessSent(resp1.assess)
         }
         else {
             toast.error('Unable to load questions',{
@@ -333,10 +338,6 @@ function Write() {
     },[])
     useEffect(()=>{getAll();},[ques])
 
-    useEffect(()=>{
-        mqttClient.on('connect', () => {
-          })}
-   ,[])
     
    const handleClick=async ()=>{
     const l1=option.split(',');
@@ -503,16 +504,27 @@ const handleEditClick=async ()=>{
         })
         const resp1=await resp.json();
         if(resp1.success){
-            let part=event.participant
-            for(let i=0;i<part.length;++i){
-                console.log(part[i])
-                mqttClient.publish(`${event._id}/${part[i]}/quiz`,JSON.stringify({quiz:qvalue,ques:resp1.ques,timer:resp1.timer}));
-            } 
-            toast.success('Quiz Sent Successfully',{
-                autoClose:4000,
-                pauseOnHover:true,
-                closeOnClick:true
-            })
+           if(resp1.isit){ 
+            let l4=quizSent
+          l4.push(resp1.quiz)
+          setQuizSent(l4)
+          toast.success('Quiz Added Successfully',{
+            autoClose:4000,
+            pauseOnHover:true,
+            closeOnClick:true
+        })
+        }
+           else {
+            let l4=assessSent
+          l4.push(resp1.quiz)
+          setAssessSent(l4)
+          toast.success('Asseessment Added Successfully',{
+            autoClose:4000,
+            pauseOnHover:true,
+            closeOnClick:true
+        })
+        }
+          
         }
     }
     const clipBoard=()=>{
@@ -542,6 +554,24 @@ const handleEditClick=async ()=>{
 <QRCodeCanvas value={`http://3.110.223.82:8000/register?event=${event._id}`}/>
 <div className='mt-5'></div> */}
 <div onClick={()=>{clipBoard()}} className='cursor-pointer inline font-semibold px-4 py-2 bg-[#315EFF] text-white rounded-md mb-10'>Copy QuizId</div>
+<div className='mt-5'>Quiz List</div>
+
+{quizSent.map((q1,ind)=>{
+      return (  
+         <div className='px-4 py-2 my-2 rounded-md bg-white'>
+            {ind+1}.{' '+q1.name}
+         </div>
+      )
+  })}
+<div className='mt-5'>Assessment List</div>
+
+{assessSent.map((q1,ind)=>{
+      return (  
+         <div className='px-4 py-2 my-2 rounded-md bg-white'>
+            {ind+1}.{' '+q1.name}
+         </div>
+      )
+  })}
 {/* {!(event.finished) && (
   <>
   { stop?(
@@ -589,6 +619,27 @@ const handleEditClick=async ()=>{
   <button onClick={()=>{setAddQues(true)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Add Question</button>
   </>)}
   <br />
+  <select name="quiz" id="quiz" className='outline-none py-2 px-4 rounded-md mt-5' value={qvalue} onChange={(e)=>{setQvalue(e.target.value)}}>
+            <option value="0">None</option>
+            {quiz.map((l1)=>{
+                return (
+                    <option value={l1._id}>{l1.name}</option>
+                )
+            })}
+        </select>
+        <br />
+        <button onClick={()=>{if(qvalue!='0')handleGetQuiz()}} className=' mt-5 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Get Quiz</button>
+        <br/>
+  <select name="quiz" id="quiz" className='outline-none py-2 px-4 rounded-md mt-5' value={qvalue} onChange={(e)=>{setQvalue(e.target.value)}}>
+            <option value="0">None</option>
+            {assess.map((l1)=>{
+                return (
+                    <option value={l1._id}>{l1.name}</option>
+                )
+            })}
+        </select>
+        <br />
+        <button onClick={()=>{if(qvalue!='0')handleGetQuiz()}} className=' mt-5 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Get Assessment</button>
         {/* <select name="quiz" id="quiz" className='outline-none py-2 px-4 rounded-md mt-5' value={qvalue} onChange={(e)=>{setQvalue(e.target.value)}}>
             <option value="0">None</option>
             {quiz.map((l1)=>{

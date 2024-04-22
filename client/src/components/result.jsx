@@ -298,6 +298,7 @@ function IndiQues(params){
     const [submit,setSubmit]=useState(false)
     const [check,setCheck]=useState(false)
     const [big,setBig]=useState(0);
+    const [sz2,setSz2]=useState(0)
 
     const handle=()=>{
       if(ind1==3 || ind1==5 || ind1==11 || ind1==13){
@@ -311,12 +312,10 @@ function IndiQues(params){
       else {
         val2[3]+=(3-check1);
       }
-      ++sz1;
-      setSz1(sz1);
       setVal2(val2);
     }
     useEffect(()=>{
-      if(sz==sz1){let v1=val2;
+      if(q1._id=='662628a8381cac3272fdb5b9'){let v1=val2;
       v1.sort();
       v1.reverse();
       setBig(v1[0]);}
@@ -343,7 +342,6 @@ function IndiQues(params){
                 if(resp2.k2){
                     setSubmit(resp2.k2);
                     setCheck(q1.resp==resp2.k3);
-                    console.log(q1.resp,resp2.k3)
                     if(q1.type=='dropdown' || q1.type=='descriptive'){
                         setVal1(resp2.k3);
                     }
@@ -359,7 +357,7 @@ function IndiQues(params){
             }
         }
         if(q1.type!='grid' && q1.type!='multigrid') getQues();
-        if(q1.quizId=='661abc1d6b6e63f6537e6eb2')handle();
+        if(q1.quizId=='661fbb6a9c7edc620ed0f90d')handle();
     },[])
     return (
         <div className='my-5 mx-10'>
@@ -419,7 +417,7 @@ function IndiQues(params){
         ))
         
     }
-    {q1.quizId=='661abc1d6b6e63f6537e6eb2' && (sz==sz1) && <div className='flex flex-wrap gap-2'>
+    {q1.quizId=='661fbb6a9c7edc620ed0f90d' && q1._id=='662628a8381cac3272fdb5b9' && (<div className='flex flex-wrap gap-2'>
        {big==val2[0] && <div>
           <div className='text-3xl font-semibold mx-2'>Authoritative</div>
           <table className='mx-2 w-full sm:w-3/4 md:w-1/2'>
@@ -531,7 +529,7 @@ urgent situations.</td>
             </tr>
           </table>
           </div>}
-      </div>}
+      </div>)}
     </div>
     )
 }
@@ -561,7 +559,7 @@ function Result() {
     if(res1.success){
         let l1=0;
         for(let i=0;i<res1.ques.length;++i){
-            if(res1.ques.quizId=='661abc1d6b6e63f6537e6eb2')++l1;
+            if(res1.ques[i].quizId=='661fbb6a9c7edc620ed0f90d'){l1+=1;}
         }
       setSz(l1);
         setQues(res1.ques);
