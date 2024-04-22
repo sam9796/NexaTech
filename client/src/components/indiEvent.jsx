@@ -232,7 +232,7 @@ function IndiQues(params){
             <div>Incorrect.{" "+q1.incorrect}</div> */}
             {
             //    <button className='mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Stop</button>
-            <button onClick={()=>{handlePublish(q1)}} className='mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Post</button>}
+            <button onClick={()=>{handlePublish(q1)}} className='mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Send</button>}
             <button className='mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'
             onClick={()=>{
                 if(visible=='hidden')setVisible('visible')
@@ -276,12 +276,10 @@ function IndiEvent() {
     const [edit,setEdit]=useState(false)
     const [visible,setVisible]=useState(true)
     const [id1,setId1]=useState('')
-    const [quiz,setQuiz]=useState([])
     const [quizSent,setQuizSent]=useState([])
+    const [assessSent,setAssessSent]=useState([])
     const navigate=useNavigate()
     const [chat,setChat]=useState('')
-    const [timer,setTimer]=useState('')
-    const [qvalue,setQvalue]=useState('')
     const [type,setType]=useState('')
     const [desc,setDesc]=useState('')
     const [option,setOption]=useState('')
@@ -289,19 +287,6 @@ function IndiEvent() {
     const [response,setResponse]=useState('')
     const [id2,setId2]=useState('')
 
-    const getAllQuiz=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getQuizzes',{
-            method:'GET',
-            headers:{
-                'auth-token':localStorage.getItem('token'),
-                'Content-Type':'application/json'
-            }
-        })
-        const resp1=await resp.json();
-        if(resp1.success){
-            setQuiz(resp1.quiz)
-        }
-    }
     
 
 
@@ -319,6 +304,8 @@ function IndiEvent() {
         if(resp1.success){
             setQues(resp1.ques)
             setQuizSent(resp1.quizzes)
+            setAssessSent(resp1.assess)
+
         }
         else {
             toast.error('Unable to load questions',{
@@ -330,7 +317,6 @@ function IndiEvent() {
     }
     useEffect(()=>{
         setEvent(l1.state)
-        getAllQuiz();
     },[])
     useEffect(()=>{getAll();},[ques])
 
@@ -493,31 +479,27 @@ const handleEditClick=async ()=>{
             closeOnClick:true
         })
     }
-    const handleGetQuiz=async ()=>{
+    const handleGetQuiz=async (q1)=>{
+        console.log(q1)
         const resp=await fetch('http://3.110.223.82:8000/getQuiz1',{
             method:'POST',
             headers:{
                 'auth-token':localStorage.getItem('token'),
                 'Content-Type':'application/json'
             },
-            body:JSON.stringify({id:event._id,quiz:qvalue})
+            body:JSON.stringify({id:event._id,quiz:q1})
         })
         const resp1=await resp.json();
         if(resp1.success){
             let part=event.participant
             for(let i=0;i<part.length;++i){
-                console.log(part[i])
-                mqttClient.publish(`${event._id}/${part[i]}/quiz`,JSON.stringify({quiz:qvalue,ques:resp1.ques,timer:resp1.timer}));
-            } 
-            setQuizSent(resp1.quiz)
+                mqttClient.publish(`${event._id}/${part[i]}/quiz`,JSON.stringify({quiz:q1,ques:resp1.ques,timer:resp1.timer}));
+            }
             toast.success('Quiz Sent Successfully',{
                 autoClose:4000,
                 pauseOnHover:true,
                 closeOnClick:true
             })
-            let l4=quizSent
-          l4.push(resp1.quiz)
-          setQuizSent(l4)
         }
     }
     const clipBoard=()=>{
@@ -545,13 +527,28 @@ const handleEditClick=async ()=>{
 <p className='mt-5 text-lg'>{event.description}</p>
 <div className='mt-5'></div>
 <QRCodeCanvas value={`http://3.110.223.82:8000/register?event=${event._id}`}/>
-<div className='mt-5'>Quiz List</div>
+{quizSent.length? (<div className='mt-5'>Quiz List</div>):('')}
 
 {quizSent.map((q1,ind)=>{
       return (  
-         <div className='px-4 py-2 my-2 rounded-md bg-white'>
-            {ind+1}.{' '+q1}
+        <>
+        <div className='px-4 py-2 mt-3 mb-1 rounded-md bg-white'>
+           {ind+1}.{' '+q1.name}
+        </div>
+        <button onClick={()=>{handleGetQuiz(q1._id)}} className=' mt-2 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Send</button>
+        </> 
+      )
+  })}
+{assessSent.length? (<div className='mt-5'>Assessment List</div>):('')}
+
+{assessSent.map((q1,ind)=>{
+      return ( 
+        <>
+         <div className='px-4 py-2 mt-3 mb-1 rounded-md bg-white'>
+            {ind+1}.{' '+q1.name}
          </div>
+         <button onClick={()=>{handleGetQuiz(q1._id)}} className=' mt-2 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Send</button>
+         </> 
       )
   })}
 {/* <div onClick={()=>{clipBoard()}} className='cursor-pointer inline font-semibold px-4 py-2 bg-[#315EFF] text-white rounded-md mb-10'>Copy QuizId</div> */}
@@ -602,16 +599,6 @@ const handleEditClick=async ()=>{
   <button onClick={()=>{setAddQues(true)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Add Question</button>
   </>)} */}
   <br />
-        <select name="quiz" id="quiz" className='outline-none py-2 px-4 rounded-md mt-5' value={qvalue} onChange={(e)=>{setQvalue(e.target.value)}}>
-            <option value="0">None</option>
-            {quiz.map((l1)=>{
-                return (
-                    <option value={l1._id}>{l1.name}</option>
-                )
-            })}
-        </select>
-        <br />
-        <button onClick={()=>{if(qvalue!='0')handleGetQuiz()}} className=' mt-5 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Get Quiz</button>
         <div className='text-lg font-medium mt-10'>Write Instructions</div>
         <textarea type="text" value={chat} onChange={(e)=>{setChat(e.target.value)}} rows-4 className='outline-none border-none py-2 rounded-md px-2 w-full' ></textarea>
         <button onClick={()=>{handleSend()}} className=' mt-5 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Send</button>

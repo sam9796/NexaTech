@@ -470,10 +470,11 @@ if(!checkComplete()){
 }
 
 function checkComplete() {
-  if ( (currentTime > targetTime) || globalState) {
+  if ( (currentTime > targetTime)) {
     clearInterval(interval);
     localStorage.removeItem('currentTime')
     localStorage.removeItem('targetTime')
+    handleClick1();
   } else {
     currentTime = new Date();
     setClock(targetTime-currentTime)

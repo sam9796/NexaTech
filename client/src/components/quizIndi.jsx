@@ -21,9 +21,8 @@ function IndiOpt(params){
     const {v1,ind,id,val,setVal,def}=params
     let [opt,setOpt]=useState(0);
     
-    return (<div className='flex gap-2'><div className='my-2 p-2 mx-1 rounded-md bg-white'>{v1}</div>
-    <div className='my-auto'>{def?(def):(opt)}</div>
-    </div>)
+    return (<div className='my-2 p-2 mx-1 rounded-md bg-white'>{v1}</div>
+    )
 }
 
 function IndiOpt3(params){

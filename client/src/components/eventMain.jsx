@@ -406,7 +406,7 @@ function IndiQues(params){
         ))
         
     } */}
-    {!submit && <button onClick={()=>{handleSubmit()}} className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>POST</button>}
+    {!submit && <button onClick={()=>{handleSubmit()}} className='px-6 py-2 mx-10 my-5 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Save</button>}
     </div>
     )
 }

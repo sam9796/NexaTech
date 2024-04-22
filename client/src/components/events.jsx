@@ -294,8 +294,8 @@ function events() {
 </svg>
                       </div>
                       <div className='flex gap-2'>
-                      <a onClick={(e)=>{handleNavigate(e,e1)}} className='mt-3 text-sm cursor-pointer' style={{textDecoration:'underline'}}>Read</a>
-                      <a onClick={(e)=>{handleNavigate1(e,e1)}} className='mt-3 text-sm cursor-pointer' style={{textDecoration:'underline'}}>Write</a>
+                      <a onClick={(e)=>{handleNavigate(e,e1)}} className='mt-3 text-sm cursor-pointer' style={{textDecoration:'underline'}}>Start</a>
+                      <a onClick={(e)=>{handleNavigate1(e,e1)}} className='mt-3 text-sm cursor-pointer' style={{textDecoration:'underline'}}>Edit</a>
                       </div>
                     </div>
 
