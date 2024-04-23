@@ -23,11 +23,11 @@ function Dashboard() {
         setId(resp1.user);
     }
     else {
-        toast.error(resp1.msg,{
-            autoClose:4000,
-            pauseOnHover:true,
-            closeOnClick:true
-        })
+        // toast.error(resp1.msg,{
+        //     autoClose:4000,
+        //     pauseOnHover:true,
+        //     closeOnClick:true
+        // })
     }
 }
   useEffect(()=>{
