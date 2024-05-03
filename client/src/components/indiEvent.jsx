@@ -155,7 +155,7 @@ function IndiQues(params){
         mqttClient.publish(`${q1.eventId}/${part[i]}/state`,JSON.stringify(q1));}
     }
     const handleGraph=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getGraph',{
+        const resp=await fetch('http://13.232.129.172:8000/getGraph',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -173,7 +173,7 @@ function IndiQues(params){
         }
     }
     const handleDelete=async (id)=>{
-        const resp=await fetch('http://3.110.223.82:8000/deleteQues',{
+        const resp=await fetch('http://13.232.129.172:8000/deleteQues',{
             method:'DELETE',
             headers:{
                 'Content-Type':'application/json',
@@ -292,7 +292,7 @@ function IndiEvent() {
 
 
     const getAll=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getAllQues',{
+        const resp=await fetch('http://13.232.129.172:8000/getAllQues',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -336,7 +336,7 @@ function IndiEvent() {
         });
         return;
     }
-    const resp=await fetch('http://3.110.223.82:8000/addQues',{
+    const resp=await fetch('http://13.232.129.172:8000/addQues',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -381,7 +381,7 @@ const handleEditClick=async ()=>{
         });
         return;
     }
-    const resp=await fetch('http://3.110.223.82:8000/editQues',{
+    const resp=await fetch('http://13.232.129.172:8000/editQues',{
         method:'PATCH',
         headers:{
             'Content-Type':'application/json',
@@ -419,7 +419,7 @@ const handleEditClick=async ()=>{
 }
     
     const handlePost=async (eventId)=>{
-        const resp=await fetch('http://3.110.223.82:8000/postQues',{
+        const resp=await fetch('http://13.232.129.172:8000/postQues',{
             method:'POST',
             headers:{
                 'auth-token':localStorage.getItem('token'),
@@ -447,7 +447,7 @@ const handleEditClick=async ()=>{
     }
 
     const handle=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getData2',{
+        const resp=await fetch('http://13.232.129.172:8000/getData2',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -481,7 +481,7 @@ const handleEditClick=async ()=>{
     }
     const handleGetQuiz=async (q1)=>{
         console.log(q1)
-        const resp=await fetch('http://3.110.223.82:8000/getQuiz1',{
+        const resp=await fetch('http://13.232.129.172:8000/getQuiz1',{
             method:'POST',
             headers:{
                 'auth-token':localStorage.getItem('token'),
@@ -526,7 +526,7 @@ const handleEditClick=async ()=>{
 </div>
 <p className='mt-5 text-lg'>{event.description}</p>
 <div className='mt-5'></div>
-<QRCodeCanvas value={`http://3.110.223.82:8000/register?event=${event._id}`}/>
+<QRCodeCanvas value={`http://13.232.129.172:8000/register?event=${event._id}`}/>
 {quizSent.length? (<div className='mt-5'>Quiz List</div>):('')}
 
 {quizSent.map((q1,ind)=>{

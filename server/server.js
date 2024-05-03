@@ -744,7 +744,7 @@ app.post('/api/verification',async (req,res)=>{
       razorpay_signature,
     });
 
-   res.redirect('http://3.110.223.82:8000/dashboard1')
+   res.redirect('http://13.232.129.172:8000/dashboard1')
   } else {
    return res.status(400).json({
       success: false,
