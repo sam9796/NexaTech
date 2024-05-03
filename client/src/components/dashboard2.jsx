@@ -14,7 +14,7 @@ function Dashboard2() {
     const [visible,setVisible]=useState(true);
     const navigate=useNavigate();
     const handle=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getData1',{
+        const resp=await fetch('http://13.232.129.172:8000/getData1',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',

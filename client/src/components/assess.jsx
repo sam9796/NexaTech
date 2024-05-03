@@ -22,7 +22,7 @@ function Assess() {
     const navigate=useNavigate()
    
     const handle=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getData2',{
+        const resp=await fetch('http://13.232.129.172:8000/getData2',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -38,7 +38,7 @@ function Assess() {
         }
     }
     const getData=async ()=>{
-        const resp=await fetch('http://3.110.223.82:8000/getQuizzes1',{
+        const resp=await fetch('http://13.232.129.172:8000/getQuizzes1',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -72,7 +72,7 @@ function Assess() {
         })
         return;
        }
-       const resp=await fetch('http://3.110.223.82:8000/saveQuiz1',{
+       const resp=await fetch('http://13.232.129.172:8000/saveQuiz1',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -100,7 +100,7 @@ function Assess() {
        }
     }
     const handleDelete=async (id)=>{
-        const resp=await fetch('http://3.110.223.82:8000/deleteQuiz',{
+        const resp=await fetch('http://13.232.129.172:8000/deleteQuiz',{
             method:'DELETE',
             headers:{
                 'Content-Type':'application/json',
@@ -141,7 +141,7 @@ function Assess() {
             })
             return;
            }
-           const resp=await fetch('http://3.110.223.82:8000/editQuiz',{
+           const resp=await fetch('http://13.232.129.172:8000/editQuiz',{
             method:'PATCH',
             headers:{
                 'Content-Type':'application/json',
