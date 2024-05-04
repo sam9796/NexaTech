@@ -305,19 +305,19 @@ app.post('/getAllQues',fetchuser,async (req,res)=>{
     let l2=await Event.findOne({_id:id})
     let l3=[];
     let l5=[];
-    if(l2){for(let i=0;i<(l2?l2.quizzes.length:0);++i)
+    if(l2){for(let i=0;i<(l2.quizzes.length);++i)
         { let l4=await Quiz.findOne({_id:l2.quizzes[i]});
             if(l4?l4.quiz:true)l3.push(l4?l4:{name:''})
             else l5.push(l4)
         }
     return res.json({success:true,ques:l1,quizzes:l3,assess:l5})}
-    res.json({success:false})
+    else return res.json({success:false})
 })
 app.post('/getAllQues1',fetchuser,async (req,res)=>{
     const {id}=req.body;
     let l1=await Question.find({quizId:id});
-    if(l1)return res.json({success:true,ques:l1})
-    res.json({success:false})
+    if(l1){return res.json({success:true,ques:l1})}
+    else {return res.json({success:false})}
 })
 app.post('/getAllQues2',fetchuser,async (req,res)=>{
     const {id}=req.body
@@ -329,7 +329,7 @@ app.post('/getAllQues2',fetchuser,async (req,res)=>{
     }
     // console.log(l2)
     return res.json({success:true,ques:l2})}
-    res.json({success:false})
+    else {return res.json({success:false})}
 })
 app.delete('/deleteQues',fetchuser,async (req,res)=>{
     const {id}=req.body
@@ -367,12 +367,12 @@ app.post('/getAllEvents1',fetchuser,async (req,res)=>{
     const {eventId}=req.body
     const events=await Event.find({_id:eventId});
     if(events)return res.json({success:true,events:events,user:req.user.id});
-    res.json({success:false})
+    else {return res.json({success:false})}
 })
 app.get('/getAllEvents',fetchuser,async (req,res)=>{
     const events=await Event.find();
     if(events)return res.json({success:true,events:events,user:req.user.id});
-    res.json({success:false})
+    else {return res.json({success:false})}
 })
 app.get('/getAllEvents2',fetchuser,async (req,res)=>{
     const events=await Event.find();
@@ -382,7 +382,7 @@ app.get('/getAllEvents2',fetchuser,async (req,res)=>{
         if(events[i].participant.indexOf(user)!=-1){l1.push(events[i])}
     }
     return res.json({success:true,events:l1,user:req.user.id});}
-    res.json({success:false})
+    else {return res.json({success:false})}
 })
 app.post('/getPart',fetchuser,async (req,res)=>{
     const {eventId,id}=req.body;
@@ -404,7 +404,7 @@ app.post('/getPart',fetchuser,async (req,res)=>{
         }
     }
     return res.json({success:true,k1:k1,k2:k2,k3:k3}); }
-    res.json({success:false})
+    else {return res.json({success:false})}
 })
 app.post('/registerParticipant',fetchuser,async (req,res)=>{
     const {id}=req.body;
@@ -416,7 +416,7 @@ app.post('/registerParticipant',fetchuser,async (req,res)=>{
     try{await Event.findByIdAndUpdate(id,{participant:l1})}
     catch(error){res.json({success:false})}
     return res.json({success:true});}
-    res.json({success:false})
+    else {return res.json({success:false})}
 })
 app.post('/postQues',fetchuser,async (req,res)=>{
     const {eventId,id}=req.body;
@@ -453,7 +453,7 @@ app.post('/postQues',fetchuser,async (req,res)=>{
     }
     if(k5.length==0)return res.json({success:true,ques:[id]})
     else return res.json({success:true,ques:k5})}
-    res.json({success:false})
+    else {return res.json({success:false})}
 })
 app.post('/getQues1',fetchuser,async (req,res)=>{
     const {quesId}=req.body;
@@ -629,7 +629,8 @@ app.post('/checkQues',fetchuser,async (req,res)=>{
         }
     let part=await Participant.findOne({email:id})
     let i1=part.events;
-    if(part){for(let i=0;i<part?i1.length:0;++i){
+    if(part){
+        for(let i=0;i<(i1.length);++i){
         if(i1[i].eventId==ques.eventId){
             
             for(let j=0;j<i1[i].quesId.length;++j){
@@ -644,7 +645,6 @@ app.post('/checkQues',fetchuser,async (req,res)=>{
     }}
    
     try {
-        
         await Participant.findByIdAndUpdate(part._id,{events:i1});
     return res.json({success:true});
 }
@@ -658,7 +658,8 @@ app.post('/isSubmitted',fetchuser,async(req,res)=>{
     const l1=await Participant.findOne({email:id})
     let k3=false;
     let k4=[];
-    if(l1){for(let i=0;i<l1?l1.events.length:0;++i){
+    if(l1){for(let i=0;i<l1.events.length;++i){
+        
         if(l1.events[i].eventId==eventId){
             k3=l1.events[i].finshed;
             k4=l1.events[i].quesCheck;
@@ -666,7 +667,7 @@ app.post('/isSubmitted',fetchuser,async(req,res)=>{
         }
     }
     return res.json({success:true,finish:k3,ques:k4})}
-    return res.json({success:false})
+    else return res.json({success:false})
 })
 app.post('/getEvent1',fetchuser,async (req,res)=>{
     const {eventId}=req.body;
@@ -675,7 +676,7 @@ app.post('/getEvent1',fetchuser,async (req,res)=>{
     if(e1){
         return res.json({success:true,event:e1[0],user:req.user.id})
     }
-    else res.json({success:false,msg:'Unable to get the event details'})
+    else return res.json({success:false,msg:'Unable to get the event details'})
 })
 app.post('/getGraph',fetchuser,async (req,res)=>{
     const {id,val}=req.body;
@@ -693,13 +694,14 @@ app.post('/checkQues1',fetchuser,async (req,res)=>{
             const d1=new Date();
             const dateAfter7Days = new Date(d1.getTime() + (7 * 24 * 60 * 60 * 1000));
             p1.events[i].lastDate=dateAfter7Days;
-            try{await Participant.findOneAndUpdate({email:user},p1);}
+            try{
+                await Participant.findOneAndUpdate({email:user},p1);}
             catch(error){res.json({success:false})}
             break;
         }
     }
     return res.json({success:true});}
-    return res.json({success:false})
+    else return res.json({success:false})
 })
 app.get('/api/get_key',fetchuser,(req,res)=>{
     const user=req.user.id
@@ -764,7 +766,7 @@ app.post('/getDate',fetchuser,async (req,res)=>{
         }
     
     return res.json({success:true,date:p1});}
-    return res.json({success:false})
+    else return res.json({success:false})
 })
 app.post('/getQuiz1',fetchuser,async (req,res)=>{
     const {id,quiz}=req.body
@@ -782,7 +784,7 @@ app.post('/getQuiz1',fetchuser,async (req,res)=>{
     catch(error){res.json({success:false})}
     
     return res.json({success:true,ques:l3,timer:l2.timer,quiz:l2.name,isit:l2.quiz})}
-    return res.json({success:false})
+    else return res.json({success:false})
 })
 app.get('/getQuizzes',fetchuser,async (req,res)=>{
     const l1=await Quiz.find();
@@ -793,7 +795,7 @@ app.get('/getQuizzes',fetchuser,async (req,res)=>{
         else l3.push(l1[i])
     }
     return res.json({success:true,quiz:l2,assess:l3})}
-    return res.json({success:false})
+    else return res.json({success:false})
 })
 app.get('/getQuizzes2',fetchuser,async (req,res)=>{
     const l1=await Quiz.find({quiz:true});
@@ -849,7 +851,7 @@ app.post('/deleteQuizList',fetchuser,async (req,res)=>{
         }
         return res.json({success:true})
     }
-    return res.json({success:false})
+    else return res.json({success:false})
 })
 app.listen(8000,()=>{
     console.log('server listening on port 8000')

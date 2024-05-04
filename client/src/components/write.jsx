@@ -316,7 +316,7 @@ function Write() {
                 'Content-Type':'application/json',
                 'auth-token':localStorage.getItem('token')
             },
-            body:JSON.stringify({id:event._id})
+            body:JSON.stringify({id:l1.state._id})
         }) 
         const resp1=await resp.json();
         if(resp1.success){
@@ -358,7 +358,7 @@ function Write() {
         },
         body:JSON.stringify({
             quizId:'',
-            eventId:event._id,
+            eventId:l1.state._id,
             description:desc,
             options:l1,
             type:type,
@@ -484,7 +484,7 @@ const handleEditClick=async ()=>{
         let part=event.participant
         for(let i=0;i<part.length;++i){
             console.log(part[i])
-            mqttClient.publish(`${event._id}/${part[i]}/inst`,JSON.stringify(chat));
+            mqttClient.publish(`${l1.state._id}/${part[i]}/inst`,JSON.stringify(chat));
         }
         setChat('');
         toast.success('Sent Successfully',{
@@ -500,7 +500,7 @@ const handleEditClick=async ()=>{
                 'auth-token':localStorage.getItem('token'),
                 'Content-Type':'application/json'
             },
-            body:JSON.stringify({id:event._id,quiz:qvalue})
+            body:JSON.stringify({id:l1.state._id,quiz:qvalue})
         })
         const resp1=await resp.json();
         if(resp1.success){
@@ -528,7 +528,7 @@ const handleEditClick=async ()=>{
         }
     }
     const clipBoard=()=>{
-        navigator.clipboard.writeText(event._id);
+        navigator.clipboard.writeText(l1.state._id);
 
   // Alert the copied text
   alert("Copied the EventId");
@@ -540,7 +540,7 @@ const handleEditClick=async ()=>{
                 'auth-token':localStorage.getItem('token'),
                 'Content-Type':'application/json'
             },
-            body:JSON.stringify({eventId:event._id,id:id})
+            body:JSON.stringify({eventId:l1.state._id,id:id})
         })
         const resp1=await resp.json();
         if(resp1.success){
@@ -565,7 +565,7 @@ const handleEditClick=async ()=>{
 </div>
 <p className='mt-5 text-lg'>{event.description}</p>
 <div className='mt-5'></div>
-<QRCodeCanvas value={`http://13.232.129.172:8000/register?event=${event._id}`}/>
+<QRCodeCanvas value={`http://13.232.129.172:8000/register?event=${l1.state._id}`}/>
 <div className='mt-5'></div> */}
 <div onClick={()=>{clipBoard()}} className='cursor-pointer inline font-semibold px-4 py-2 bg-[#315EFF] text-white rounded-md mb-10'>Copy QuizId</div>
 <div className='mt-5'>Quiz List</div>
@@ -603,9 +603,9 @@ const handleEditClick=async ()=>{
 {/* {!(event.finished) && (
   <>
   { stop?(
-  <button onClick={()=>{handleStop(event._id)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Stop Quiz</button>
+  <button onClick={()=>{handleStop(l1.state._id)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Stop Quiz</button>
 ):
-  (<button onClick={()=>{handleQuiz(event._id,event.date,event.time)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Start Quiz</button>)}</>) } */}
+  (<button onClick={()=>{handleQuiz(l1.state._id,event.date,event.time)}} className=' mt-10 px-6 py-2 text-white text-lg font-semibold bg-[#315EFF] rounded-lg'>Start Quiz</button>)}</>) } */}
   { (addQues || edit) ? (<div className='mt-5'>
       <select className='outline-none py-2 px-4 rounded-md' name="ques" id="ques" onChange={(e)=>{setType(e.target.value)}}>
           <option value='none'>None</option>

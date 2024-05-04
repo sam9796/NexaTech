@@ -298,7 +298,7 @@ function IndiEvent() {
                 'Content-Type':'application/json',
                 'auth-token':localStorage.getItem('token')
             },
-            body:JSON.stringify({id:event._id})
+            body:JSON.stringify({id:l1.state._id})
         }) 
         const resp1=await resp.json();
         if(resp1.success){
@@ -324,127 +324,6 @@ function IndiEvent() {
         mqttClient.on('connect', () => {
           })}
    ,[])
-    
-   const handleClick=async ()=>{
-    const l1=option.split(',');
-    if(desc.length==0 || ((type=='single' || type=='multiple' || type=='dropdown') && l1.length<=1) || response.length==0){
-       
-        toast.error('Please enter all the details',{
-            autoClose:4000,
-            pauseOnHover:true,
-            closeOnClick:true
-        });
-        return;
-    }
-    const resp=await fetch('http://13.232.129.172:8000/addQues',{
-        method:'POST',
-        headers:{
-            'Content-Type':'application/json',
-            'auth-token':localStorage.getItem('token')
-        },
-        body:JSON.stringify({
-            quizId:'',
-            eventId:event._id,
-            description:desc,
-            options:l1,
-            type:type,
-            response:response
-        })
-    })
-    const resp1=await resp.json();
-    if(resp1.success){
-        toast.success('Question added successfully',{
-            autoClose:4000,
-            pauseOnHover:true,
-            closeOnClick:true
-        })
-        setType('');setOption('');setDesc('');
-        navigate('/event');
-    }
-    else {
-        toast.error(resp1.msg,{
-            autoClose:4000,
-            pauseOnHover:true,
-            closeOnClick:true
-        })
-    }
-}
-
-
-const handleEditClick=async ()=>{
-    const l1=option.split(',');
-    if(id2.length==0 || desc.length==0 || ((type=='single' || type=='multiple' || type=='dropdown') && l1.length<=1) || response.length==0){
-        toast.error('Please enter all the details',{
-            autoClose:4000,
-            pauseOnHover:true,
-            closeOnClick:true
-        });
-        return;
-    }
-    const resp=await fetch('http://13.232.129.172:8000/editQues',{
-        method:'PATCH',
-        headers:{
-            'Content-Type':'application/json',
-            'auth-token':localStorage.getItem('token')
-        },
-        body:JSON.stringify({
-            id:id,
-            description:desc,
-            options:l1,
-            type:type,
-            response:response,
-            quizId:'',
-            eventId:id2
-        })
-    })
-    const resp1=await resp.json();
-    if(resp1.success){
-        toast.success('Question edited successfully',{
-            autoClose:4000,
-            pauseOnHover:true,
-            closeOnClick:true
-        })
-        setId('');
-        setEdit(false);
-        setType('');setOption('');setDesc('');setResponse('');
-        navigate('/event');
-    }
-    else {
-        toast.error(resp1.msg,{
-            autoClose:4000,
-            pauseOnHover:true,
-            closeOnClick:true
-        })
-    }
-}
-    
-    const handlePost=async (eventId)=>{
-        const resp=await fetch('http://13.232.129.172:8000/postQues',{
-            method:'POST',
-            headers:{
-                'auth-token':localStorage.getItem('token'),
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify({
-                eventId:eventId,
-            })
-        })
-        const resp1=await resp.json();
-        if(resp1.success){
-            toast.success('Question Posted Successfully',{
-                autoClose:4000,
-                pauseOnHover:true,
-                closeOnClick:true
-            })
-        }
-        else {
-            toast.error(resp1.msg,{
-                autoClose:4000,
-                pauseOnHover:true,
-                closeOnClick:true
-            })
-        }
-    }
 
     const handle=async ()=>{
         const resp=await fetch('http://13.232.129.172:8000/getData2',{
@@ -470,7 +349,7 @@ const handleEditClick=async ()=>{
         let part=event.participant
         for(let i=0;i<part.length;++i){
             console.log(part[i])
-            mqttClient.publish(`${event._id}/${part[i]}/inst`,JSON.stringify(chat));
+            mqttClient.publish(`${l1.state._id}/${part[i]}/inst`,JSON.stringify(chat));
         }
         setChat('');
         toast.success('Sent Successfully',{
@@ -480,20 +359,19 @@ const handleEditClick=async ()=>{
         })
     }
     const handleGetQuiz=async (q1)=>{
-        console.log(q1)
         const resp=await fetch('http://13.232.129.172:8000/getQuiz1',{
             method:'POST',
             headers:{
                 'auth-token':localStorage.getItem('token'),
                 'Content-Type':'application/json'
             },
-            body:JSON.stringify({id:event._id,quiz:q1})
+            body:JSON.stringify({id:l1.state._id,quiz:q1})
         })
         const resp1=await resp.json();
         if(resp1.success){
             let part=event.participant
             for(let i=0;i<part.length;++i){
-                mqttClient.publish(`${event._id}/${part[i]}/quiz`,JSON.stringify({quiz:q1,ques:resp1.ques,timer:resp1.timer}));
+                mqttClient.publish(`${l1.state._id}/${part[i]}/quiz`,JSON.stringify({quiz:q1,ques:resp1.ques,timer:resp1.timer}));
             }
             toast.success('Quiz Sent Successfully',{
                 autoClose:4000,
@@ -502,12 +380,7 @@ const handleEditClick=async ()=>{
             })
         }
     }
-    const clipBoard=()=>{
-        navigator.clipboard.writeText(event._id);
-
-  // Alert the copied text
-  alert("Copied the EventId");
-    }
+    
   return (
     <>
 <div>
@@ -526,7 +399,7 @@ const handleEditClick=async ()=>{
 </div>
 <p className='mt-5 text-lg'>{event.description}</p>
 <div className='mt-5'></div>
-<QRCodeCanvas value={`http://13.232.129.172:8000/register?event=${event._id}`}/>
+<QRCodeCanvas value={`http://13.232.129.172:8000/register?event=${l1.state._id}`}/>
 {quizSent.length? (<div className='mt-5'>Quiz List</div>):('')}
 
 {quizSent.map((q1,ind)=>{
