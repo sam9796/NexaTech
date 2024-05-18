@@ -102,12 +102,12 @@ app.post('/verifyMail',async (req,res)=>{
         service: 'gmail',
         host:'smtp.gmail.com',
   auth: {
-    user: 'jhashubham976@gmail.com',
-    pass: 'lwfr rrzd qmmh zrpl'
+    user: process.env.email,
+    pass: process.env.pass
   }
       });
       var mailOptions = {
-        from: 'jhashubham976@gmail.com',
+        from: process.env.email,
         to: [email],
         subject: 'Nexiara Verification Code',
         text: `${otp}`
