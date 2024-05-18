@@ -48,7 +48,7 @@ function login1() {
     <div className='bg-[#C6D2ED] w-5/6 sm:w-1/2 rounded-xl flex flex-col justify-center'>
       <img src={Logo} alt="Not found" className='mx-auto' />
       <div className='text-xl font-bold text-center mt-10'>Welcome Participant</div>
-      <div className='text-md font-bold text-center mt-7'>Login to Nexiara Dashboard</div>
+      <div className='text-md font-bold text-center mt-7'>Login to NexaTech Dashboard</div>
       <div className='w-5/6 md:w-1/2 mx-auto mt-5'>
       <div >Email Address</div>
       <input type="email" value={user} onChange={(e)=>{setUser(e.target.value)}} className='w-full py-2 px-3 text-md outline-none border border-[#315EFF] rounded-lg placeholder:text-sm' placeholder='Enter your username or email address here'/>

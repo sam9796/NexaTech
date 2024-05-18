@@ -154,7 +154,7 @@ function Register() {
     <div className='flex flex-wrap-reverse sm:flex-nowrap flex-row justify-center py-2 w-full lg:w-5/6 mx-auto'>
       <div className='bg-[#C6D2ED] w-5/6 sm:w-1/2 rounded-xl flex py-2 flex-col justify-center'>
         <img src={Logo} alt="Not found" className='mx-auto' />
-        <div className='text-md font-bold text-center mt-5'>Register to Enroll Nexiaras Training Program</div>
+        <div className='text-md font-bold text-center mt-5'>Register to Enroll NexaTechs Training Program</div>
         <div className='w-5/6 md:w-1/2 mx-auto mt-3'>
         <div>First Name</div>
         <input type="text" value={first} onChange={(e)=>{setFirst(e.target.value)}} className='w-full py-2 px-3 text-md outline-none border border-[#315EFF] rounded-lg placeholder:text-sm' placeholder='Enter your first name'/>

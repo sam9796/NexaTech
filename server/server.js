@@ -109,7 +109,7 @@ app.post('/verifyMail',async (req,res)=>{
       var mailOptions = {
         from: process.env.email,
         to: [email],
-        subject: 'Nexiara Verification Code',
+        subject: 'NexaTech Verification Code',
         text: `${otp}`
       };
       
