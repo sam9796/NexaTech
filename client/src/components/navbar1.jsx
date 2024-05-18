@@ -11,7 +11,7 @@ function Navbar1({visible,setVisible}) {
     const navigate=useNavigate();
     useEffect(()=>{
         const handle=async ()=>{
-            const resp=await fetch('http://13.232.129.172:8000/getData1',{
+            const resp=await fetch('http://localhost:8000/getData1',{
                 method:'GET',
                 headers:{
                     'Content-Type':'application/json',

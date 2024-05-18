@@ -20,7 +20,7 @@ function Dashboard1() {
     const [user1,setUser1]=useState('');
     const [id,setId]=useState('')
     const handle=async ()=>{
-        const resp=await fetch('http://13.232.129.172:8000/getData1',{
+        const resp=await fetch('http://localhost:8000/getData1',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -43,7 +43,7 @@ function Dashboard1() {
         }
     }
     const getAll=async (param1)=>{
-        const resp=await fetch('http://13.232.129.172:8000/getAllEvents1',{
+        const resp=await fetch('http://localhost:8000/getAllEvents1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -64,7 +64,7 @@ function Dashboard1() {
                     }
                     else {arr.push(true);}
                     let l3=resp1.events[0]._id
-                    const res1=await fetch('http://13.232.129.172:8000/isSubmitted',{
+                    const res1=await fetch('http://localhost:8000/isSubmitted',{
                         method:'POST',
                         headers:{
                             'Content-Type':'application/json',
@@ -90,7 +90,7 @@ function Dashboard1() {
         }
     }
     const handleAlp=async (param1)=>{
-        const res1=await fetch('http://13.232.129.172:8000/getEvent1',{
+        const res1=await fetch('http://localhost:8000/getEvent1',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -111,7 +111,7 @@ function Dashboard1() {
     },[])
     const handleRegister=async (id)=>{
         console.log(id)
-        const resp=await fetch('http://13.232.129.172:8000/registerParticipant',{
+        const resp=await fetch('http://localhost:8000/registerParticipant',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',

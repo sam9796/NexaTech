@@ -17,7 +17,7 @@ function login1() {
             })
             return;
         }
-        const resp=await fetch('http://13.232.129.172:8000/loginParticipant',{
+        const resp=await fetch('http://localhost:8000/loginParticipant',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json'

@@ -21,14 +21,14 @@ function enrol() {
     }
   },[])
   const handlePayment=async ()=>{
-    const resp=await fetch('http://13.232.129.172:8000/api/payment',{
+    const resp=await fetch('http://localhost:8000/api/payment',{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
             'auth-token':localStorage.getItem('token1')
         }
     })
-    const key=await fetch('http://13.232.129.172:8000/api/get_key',{
+    const key=await fetch('http://localhost:8000/api/get_key',{
         method:'GET',
         headers:{
             'Content-Type':'application/json',
@@ -47,7 +47,7 @@ function enrol() {
         description:'Test transaction',
         image:id,
         order_id:resp1.order.id,
-        callback_url:'http://13.232.129.172:8000/api/verification',
+        callback_url:'http://localhost:8000/api/verification',
         "prefill": {
             "name": "Gaurav Kumar",
             "email": "gaurav.kumar@example.com",
@@ -65,7 +65,7 @@ function enrol() {
     razor.open()}
 }
 const handle=async ()=>{
-  const resp=await fetch('http://13.232.129.172:8000/getData1',{
+  const resp=await fetch('http://localhost:8000/getData1',{
       method:'GET',
       headers:{
           'Content-Type':'application/json',
