@@ -11,7 +11,7 @@ function Dashboard() {
   const [visible,setVisible]=useState(true);
   const [id,setId]=useState('')
   const handle=async ()=>{
-    const resp=await fetch('http://13.232.129.172:8000/getData2',{
+    const resp=await fetch('http://localhost:8000/getData2',{
         method:'GET',
         headers:{
             'Content-Type':'application/json',

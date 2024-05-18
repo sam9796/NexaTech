@@ -155,7 +155,7 @@ function IndiQues(params){
         mqttClient.publish(`${q1.eventId}/${part[i]}/state`,JSON.stringify(q1));}
     }
     const handleGraph=async ()=>{
-        const resp=await fetch('http://13.232.129.172:8000/getGraph',{
+        const resp=await fetch('http://localhost:8000/getGraph',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -173,7 +173,7 @@ function IndiQues(params){
         }
     }
     const handleDelete=async (id)=>{
-        const resp=await fetch('http://13.232.129.172:8000/deleteQues',{
+        const resp=await fetch('http://localhost:8000/deleteQues',{
             method:'DELETE',
             headers:{
                 'Content-Type':'application/json',
@@ -292,7 +292,7 @@ function IndiEvent() {
 
 
     const getAll=async ()=>{
-        const resp=await fetch('http://13.232.129.172:8000/getAllQues',{
+        const resp=await fetch('http://localhost:8000/getAllQues',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json',
@@ -326,7 +326,7 @@ function IndiEvent() {
    ,[])
 
     const handle=async ()=>{
-        const resp=await fetch('http://13.232.129.172:8000/getData2',{
+        const resp=await fetch('http://localhost:8000/getData2',{
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -359,7 +359,7 @@ function IndiEvent() {
         })
     }
     const handleGetQuiz=async (q1)=>{
-        const resp=await fetch('http://13.232.129.172:8000/getQuiz1',{
+        const resp=await fetch('http://localhost:8000/getQuiz1',{
             method:'POST',
             headers:{
                 'auth-token':localStorage.getItem('token'),
@@ -399,7 +399,7 @@ function IndiEvent() {
 </div>
 <p className='mt-5 text-lg'>{event.description}</p>
 <div className='mt-5'></div>
-<QRCodeCanvas value={`http://13.232.129.172:8000/register?event=${l1.state._id}`}/>
+<QRCodeCanvas value={`http://localhost:8000/register?event=${l1.state._id}`}/>
 {quizSent.length? (<div className='mt-5'>Quiz List</div>):('')}
 
 {quizSent.map((q1,ind)=>{

@@ -109,7 +109,7 @@ app.post('/verifyMail',async (req,res)=>{
       var mailOptions = {
         from: process.env.email,
         to: [email],
-        subject: 'Nexiara Verification Code',
+        subject: 'NexaTech Verification Code',
         text: `${otp}`
       };
       
@@ -746,7 +746,7 @@ app.post('/api/verification',async (req,res)=>{
       razorpay_signature,
     });
 
-   res.redirect('http://13.232.129.172:8000/dashboard1')
+   res.redirect('http://localhost:8000/dashboard1')
   } else {
    return res.status(400).json({
       success: false,
